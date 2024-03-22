@@ -1,0 +1,48 @@
+.content {
+  flex: 1;
+}
+
+.form-login {
+  max-width: 300px;
+  padding: 1rem;
+}
+
+.form-signup {
+  max-width: 500px;
+  padding: 1rem;
+}
+
+.form-mini {
+  max-width: 330px;
+  padding: 1rem;
+}
+
+.button-container {
+  display: flex;
+  gap: 10px;
+}
+
+.button-container button {
+  min-width: 80px;
+}
+
+.button-container a {
+  min-width: 80px;
+}
+
+.content-container {
+  max-width: 1000px;
+  padding: 1rem;
+}
+
+.holding-details{
+  max-width: 400px;
+}
+
+.pie-chart{
+  max-width: 450px;
+}
+
+.nav-item.active {
+  color: #ffffff; /* Change to your desired text color */
+}
