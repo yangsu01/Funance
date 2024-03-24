@@ -11,7 +11,7 @@ const Footer = ({ version }: Props) => {
           className="mb-3 me-2 mb-md-0 text-body-secondary text-decoration-none lh-1"
         >
           <img
-            src="public/funance_logo.jpg"
+            src="funance_logo.jpg"
             alt="FUNance logo"
             width="24"
             height="24"

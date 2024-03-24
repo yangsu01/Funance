@@ -1,45 +1,49 @@
 import { useState } from "react";
-import api from "../api";
+import api from "../utils/api";
 
 // components
 import Alert from "../components/Alert";
+import FormInput from "../components/FormInput";
 
-const SignIn = () => {
+interface Props {
+  setToken: (accessToken: string) => void;
+  setUserAuthenticated: (authenticated: boolean) => void;
+}
+
+const SignIn = ({ setToken, setUserAuthenticated }: Props) => {
   // alert flashing
   let [alertVisible, setAlertVisible] = useState(false);
   let [alertMessage, setAlertMessage] = useState("");
-  let [alertCategory, setAlertCategory] = useState("");
 
   const closeAlert = () => {
     setAlertVisible(false);
   };
 
   // form processing
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
 
-  const signInUser = async (e: any) => {
+  const signInUser = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log("Email:", email);
-    console.log("Password:", password);
-
+    // call backend api
     try {
       const response = await api.post("/signin-user", {
-        email: email,
-        password: password,
+        email: formData.email,
+        password: formData.password,
       });
+      setToken(response.data.accessToken);
+      setUserAuthenticated(true);
 
-      console.log("Response:", response); // debug
+      window.location.href = "/";
     } catch (error: any) {
-      // console.error("Error:", error.message); // debug
-      if (error.response.status === 401) {
-        setAlertMessage(error.response.data.error);
-        setAlertCategory("danger");
+      if (error.response && error.response.status === 401) {
+        setAlertMessage(error.response.data.msg);
         setAlertVisible(true);
       } else {
         setAlertMessage(error.message);
-        setAlertCategory("danger");
         setAlertVisible(true);
       }
     }
@@ -48,47 +52,36 @@ const SignIn = () => {
   return (
     <>
       {alertVisible && (
-        <Alert category={alertCategory} onClose={closeAlert}>
+        <Alert category="danger" onClose={closeAlert}>
           {alertMessage}
         </Alert>
       )}
 
       <main className="form-login m-auto mt-5">
-        <form>
+        <form onSubmit={signInUser}>
           <h3 className="display-6 fw-bold text-white">Sign In</h3>
 
-          <div className="form-floating mb-3">
-            <input
-              type="email"
-              className="form-control"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-            <label htmlFor="email">Email address</label>
-          </div>
-          <div className="form-floating mb-3">
-            <input
-              type="password"
-              className="form-control"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-            <label htmlFor="password">Password</label>
-          </div>
+          <FormInput
+            id="email"
+            label="Email Address"
+            type="email"
+            value={formData.email}
+            onChange={(e) =>
+              setFormData({ ...formData, email: e.target.value })
+            }
+          />
 
-          <div className="form-check text-start my-3">
-            <input type="checkbox" className="form-check-input" value="yes" />
-            <label htmlFor="remember" className="form-check-label">
-              Remember me
-            </label>
-          </div>
-          <button
-            // type="button"
-            className="btn btn-success w-100 py-2 mb-3"
-            onSubmit={signInUser}
-          >
+          <FormInput
+            id="password"
+            label="Password"
+            type="password"
+            value={formData.password}
+            onChange={(e) =>
+              setFormData({ ...formData, password: e.target.value })
+            }
+          />
+
+          <button type="submit" className="btn btn-success w-100 py-2 mb-3">
             Sign in
           </button>
         </form>

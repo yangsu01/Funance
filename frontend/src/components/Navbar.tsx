@@ -1,8 +1,28 @@
+// components
+import Button from "./Button";
+
+// utils
+import api from "../utils/api";
+
 interface Props {
   activePage: string;
+  userAuthenticated: boolean;
+  removeToken: () => void;
 }
 
-const Navbar = ({ activePage }: Props) => {
+const Navbar = ({ activePage, userAuthenticated, removeToken }: Props) => {
+  const signOutUser = async () => {
+    // call backend api
+    try {
+      await api.post("/signout-user");
+
+      removeToken();
+      window.location.href = "/";
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
+
   return (
     <header className="m-3">
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -12,7 +32,7 @@ const Navbar = ({ activePage }: Props) => {
             className="mb-3 me-2 mb-md-0 text-body-secondary text-decoration-none lh-1"
           >
             <img
-              src="public/funance_logo.jpg"
+              src="funance_logo.jpg"
               alt="FUNance logo"
               width="24"
               height="24"
@@ -70,27 +90,38 @@ const Navbar = ({ activePage }: Props) => {
                   Leaderboard
                 </a>
               </li>
-              {/* <li className="nav-item">
-                <a
-                  className={`nav-link ${activePage === "/dashboard" && "text-white"}`}
-                  href="/dashboard"
-                >
-                  My Portfolio
-                </a>
-              </li> */}
+              {userAuthenticated && (
+                <li className="nav-item">
+                  <a
+                    className={`nav-link ${
+                      activePage === "/dashboard" && "text-white"
+                    }`}
+                    href="/dashboard"
+                  >
+                    My Portfolio
+                  </a>
+                </li>
+              )}
             </ul>
             <div className="d-flex">
-              {/* <a className="btn btn-warning" id="signOut" href="{{ url_for('auth.sign_out') }}">Sign Out</a> */}
-              <a
-                className="btn btn-outline-light me-2"
-                id="signIn"
-                href="/sign-in"
-              >
-                Sign In
-              </a>
-              <a className="btn btn-warning" id="signUp" href="sign-up">
-                Sign Up
-              </a>
+              {userAuthenticated ? (
+                <Button color="primary" onClick={signOutUser}>
+                  Sign Out
+                </Button>
+              ) : (
+                <>
+                  <a
+                    className="btn btn-outline-light me-2"
+                    id="signIn"
+                    href="/sign-in"
+                  >
+                    Sign In
+                  </a>
+                  <a className="btn btn-primary" id="signUp" href="sign-up">
+                    Sign Up
+                  </a>
+                </>
+              )}
             </div>
           </div>
         </div>
