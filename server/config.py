@@ -9,8 +9,6 @@ REDIS_DEV_URL = os.environ.get('REDIS_DEV_URL')
 
 class AppConfig:
     SECRET_KEY = os.environ.get('PROD_SECRET_KEY', SECRET_KEY)
-    # JWT_COOKIE_SECURE = True
-    # JWT_TOKEN_LOCATION = ['cookies']
     JTW_SECRET_KEY = os.environ.get('PROD_SECRET_KEY', SECRET_KEY)
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
     

@@ -7,7 +7,7 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager, get_jwt, create_access_token, current_user
 
 from config import AppConfig
-from data_models import db, User
+from src.data_models import db, User
 
 # import blueprints
 from src.auth import auth
