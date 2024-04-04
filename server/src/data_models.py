@@ -1,40 +1,39 @@
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import UserMixin
+from datetime import datetime, timezone
 
 db = SQLAlchemy()
 
 
-class User(db.Model, UserMixin):
+class User(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
     username = db.Column(db.String(100), unique=True, nullable=False)
-    user_creation_date = db.Column(db.DateTime(timezone=True), nullable=False)
-    # one to one
-    portfolio = db.relationship('Portfolio', back_populates='user', uselist=False, cascade='all, delete-orphan')
-    
+    creation_date = db.Column(db.DateTime(timezone=True), nullable=False, default=datetime.now(timezone.utc))
     # one to many
-    created_games = db.relationship('Game', backref='user', lazy=True)
+    portfolios = db.relationship('Portfolio', backref='portfolio_owner', uselist=False, cascade='all, delete-orphan')
+    created_games = db.relationship('Game', backref='game_creator', lazy=True)
 
 
 class Game(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
-    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    creator_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
-    game_name = db.Column(db.String(100), nullable=False)
-    game_password = db.Column(db.String(100), nullable=True)
-    game_creation_date = db.Column(db.DateTime(timezone=True), nullable=False)
-    game_start_date = db.Column(db.Date, nullable=False)
-    game_end_date = db.Column(db.Date, nullable=False)
-    game_status = db.Column(db.String(10), nullable=False, default='not_started') # not_started, in_progress, ended
+    name = db.Column(db.String(100), nullable=False, unique=True)
+    password = db.Column(db.String(100), nullable=True)
+    creation_date = db.Column(db.DateTime(timezone=True), nullable=False, default=datetime.now(timezone.utc))
+    participants = db.Column(db.Integer, nullable=False)
+    start_date = db.Column(db.Date, nullable=False)
+    end_date = db.Column(db.Date, nullable=False)
+    status = db.Column(db.String(50), nullable=False, default='Not Started') # Not Started, In Progress, Completed
     starting_cash = db.Column(db.Float, nullable=False)
     transaction_fee = db.Column(db.Float, nullable=False)
-
+    fee_type = db.Column(db.String(50), nullable=True, default='Flat Fee') # Flat Fee, Percentage
+    last_updated = db.Column(db.DateTime(timezone=True), nullable=True)
     # one to one
-    game_summary = db.relationship('GameSummary', backref='game', uselist=False, cascade='all, delete-orphan')
-
+    game_summary = db.relationship('GameSummary', backref='game_details', uselist=False, cascade='all, delete-orphan')
     # one to many
-    portfolios = db.relationship('Portfolio', backref='game', lazy=True,  cascade='all, delete-orphan')
+    portfolios = db.relationship('Portfolio', backref='parent_game', lazy=True,  cascade='all, delete-orphan')
 
 
 class GameSummary(db.Model):
@@ -64,17 +63,14 @@ class GameSummary(db.Model):
 
 class Portfolio(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, unique=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     game_id = db.Column(db.Integer, db.ForeignKey('game.id'), nullable=False)
 
     available_cash = db.Column(db.Float, nullable=False)
-    portfolio_creation_date = db.Column(db.DateTime(timezone=True), nullable=False)
+    creation_date = db.Column(db.DateTime(timezone=True), nullable=False, default=datetime.now(timezone.utc))
     current_value = db.Column(db.Float, nullable=False)
-    updated_time = db.Column(db.DateTime(timezone=True), nullable=False)
+    last_updated = db.Column(db.DateTime(timezone=True), nullable=False)
     last_close_value = db.Column(db.Float, nullable=False)
-
-    # one to one
-    user = db.relationship('User', back_populates='portfolio')
 
     # one to many
     holdings = db.relationship('Holding', backref='portfolio', lazy=True)
@@ -92,7 +88,8 @@ class Stocks(db.Model):
     currency = db.Column(db.String(5), nullable=False)
     previous_close = db.Column(db.Float, nullable=False)
     opening_price = db.Column(db.Float, nullable=False)
-    updated_price = db.Column(db.Float, nullable=False)
+    current_price = db.Column(db.Float, nullable=False)
+    last_updated = db.Column(db.DateTime(timezone=True), nullable=False)
 
     # one to many
     holdings = db.relationship('Holding', backref='stocks', lazy=True)
@@ -113,7 +110,7 @@ class Transaction(db.Model):
     portfolio_id = db.Column(db.Integer, db.ForeignKey('portfolio.id'), nullable=False)
     stock_id = db.Column(db.Integer, db.ForeignKey('stocks.id'), nullable=False)
 
-    transaction_date = db.Column(db.DateTime(timezone=True), nullable=False)
+    transaction_date = db.Column(db.DateTime(timezone=True), nullable=False, default=datetime.now(timezone.utc))
     status = db.Column(db.String(10), nullable=False) # buy, sell
     number_of_shares = db.Column(db.Integer, nullable=False)
     price_per_share = db.Column(db.Float, nullable=False)
@@ -125,7 +122,7 @@ class History(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     portfolio_id = db.Column(db.Integer, db.ForeignKey('portfolio.id'), nullable=False)
 
-    recorded_time = db.Column(db.DateTime(timezone=True), nullable=False)
+    update_time = db.Column(db.DateTime(timezone=True), nullable=False, default=datetime.now(timezone.utc))
     portfolio_value = db.Column(db.Float, nullable=False)
 
 
@@ -135,5 +132,5 @@ class Blog(db.Model):
     title = db.Column(db.String(255), nullable=False)
     description = db.Column(db.String(255), nullable=False)
     content = db.Column(db.Text, nullable=False)
-    creation_date = db.Column(db.Date, nullable=False)
+    creation_date = db.Column(db.Date, nullable=False, default=datetime.now(timezone.utc))
     updated_date = db.Column(db.Date, nullable=False)
