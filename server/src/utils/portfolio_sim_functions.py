@@ -1,5 +1,4 @@
-import json
-from datetime import datetime
+from datetime import datetime, timezone
 import pytz
 import pandas as pd
 import yfinance as yf
@@ -68,7 +67,7 @@ def add_portfolio(game_id: int, user_id: int) -> int:
             game_id=game_id,
             available_cash=starting_funds,
             current_value=starting_funds, 
-            last_updated=get_est_time(), 
+            last_updated=datetime.now(timezone.utc), 
             last_close_value=starting_funds
         )
 
@@ -82,8 +81,7 @@ def add_portfolio(game_id: int, user_id: int) -> int:
         db.session.commit()
 
         # record portfolio history
-        history = History(portfolio_id=portfolio.id, 
-                        update_time=get_est_time(), 
+        history = History(portfolio_id=portfolio.id,
                         portfolio_value=starting_funds)
         
         db.session.add(history)
@@ -128,7 +126,7 @@ def get_games_list(user_id: int) -> list:
     return game_list
 
 
-def get_game_details(game_id: int) -> str:
+def get_game_details(game_id: int, user_id: int) -> str:
     '''Gets the details of a game
         args: 
             game_id: int - database id of the game
@@ -136,6 +134,11 @@ def get_game_details(game_id: int) -> str:
             str - json string of the game details
     '''
     game = Game.query.filter_by(id=game_id).first()
+
+    if game is None:
+        raise Exception('Game does not exist!')
+    
+    joined_game = Portfolio.query.filter_by(game_id=game.id, user_id=user_id).first() is not None
 
     return {
         'name': game.name,
@@ -146,7 +149,8 @@ def get_game_details(game_id: int) -> str:
         'status': game.status,
         'startingCash': game.starting_cash,
         'transactionFee': game.transaction_fee,
-        'feeType': game.fee_type
+        'feeType': game.fee_type,
+        'joinedGame': joined_game
     }
 
 
@@ -157,7 +161,12 @@ def get_top_performers(game_id: int) -> list:
         returns:
             list - list of all portfolios sorted by portfolio value
     '''
-    starting_funds = Game.query.filter_by(id=game_id).first().starting_cash
+    game = Game.query.filter_by(id=game_id).first()
+
+    if game is None:
+        raise Exception('Game does not exist!')
+
+    starting_funds = game.starting_cash
     portfolios = Portfolio.query.filter_by(game_id=game_id).all()
     ranked_portfolios = sorted(portfolios, key=lambda p: p.current_value, reverse=True)
 
@@ -201,7 +210,11 @@ def get_top_daily_performers(game_id: int) -> list:
         returns:
             list - list of all portfolios sorted by daily change %
     '''
-    portfolios = Portfolio.query.filter_by(id=game_id).all()
+    portfolios = Portfolio.query.filter_by(game_id=game_id).all()
+
+    if not portfolios:
+        raise Exception('No portfolios found!')
+
     ranked_portfolios = sorted(portfolios, key=lambda p: (p.current_value / p.last_close_value), reverse=True)
 
     top_performers = []
@@ -238,11 +251,15 @@ def get_performance_history(game_id) -> list:
             str - json string of the performance history of all portfolios
     '''
     portfolios = Portfolio.query.filter_by(game_id=game_id).all()
+
+    if not portfolios:
+        raise Exception('No portfolios found!')
+    
     history = []
 
     for portfolio in portfolios:
         history.append({
-            'x': [h.update_time.strftime('%Y-%m-%d %H:%M') for h in portfolio.history],
+            'x': [utc_to_est(h.update_time).strftime('%Y-%m-%d %H:%M') for h in portfolio.history],
             'y': [h.portfolio_value for h in portfolio.history],
             'name': portfolio.portfolio_owner.username
         })

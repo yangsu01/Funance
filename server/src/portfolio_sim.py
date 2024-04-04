@@ -1,6 +1,5 @@
-from flask import Blueprint, render_template, request, url_for, redirect, flash, jsonify
-from flask_jwt_extended import jwt_required, current_user, verify_jwt_in_request
-import yfinance as yf
+from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required, current_user
 
 from .utils.portfolio_sim_functions import *
 
@@ -93,11 +92,14 @@ def games_list():
 def game_leaderboard(game_id: str):
     game_id = int(game_id)
 
-    game_details = get_game_details(game_id)
-    top_performers = get_top_performers(game_id)
-    top_daily_performers = get_top_daily_performers(game_id)
-    performance_history = get_performance_history(game_id)
-    update_time = get_update_time(game_id)
+    try:
+        game_details = get_game_details(game_id, current_user.id)
+        top_performers = get_top_performers(game_id)
+        top_daily_performers = get_top_daily_performers(game_id)
+        performance_history = get_performance_history(game_id)
+        update_time = get_update_time(game_id)
+    except Exception as e:
+        return jsonify(msg=str(e)), 400
 
     return jsonify(
         gameDetails=game_details,
