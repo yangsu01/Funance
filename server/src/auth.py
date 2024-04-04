@@ -1,9 +1,8 @@
 from flask import Blueprint, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended import create_access_token, jwt_required, current_user, unset_jwt_cookies, set_access_cookies
-from datetime import datetime, timezone
+from flask_jwt_extended import create_access_token, jwt_required, current_user, unset_jwt_cookies
 
-from data_models import db, User
+from .data_models import db, User
 
 
 auth = Blueprint('auth', __name__)
@@ -25,9 +24,8 @@ def signup_user():
     new_user = User(
         email=email,
         password=generate_password_hash(password),
-        username=username,
-        user_creation_date=datetime.now(timezone.utc)
-        )
+        username=username
+    )
 
     try:
         db.session.add(new_user)
@@ -66,12 +64,17 @@ def signout_user():
     return response, 200
 
 
+# TODO: delete for production
+from .utils.portfolio_sim_functions import utc_to_est, get_est_time
+
 @auth.route("/@me", methods=["GET"])
 @jwt_required()
 def get_current_user():
     return jsonify(
-            id=current_user.id,
-            email=current_user.email,
-            username=current_user.username,
-            password=current_user.password,
-        ), 200
+        id=current_user.id,
+        email=current_user.email,
+        username=current_user.username,
+        creationDate=utc_to_est(current_user.creation_date).strftime('%Y-%m-%d %H:%M:%S'),
+        rawUTCDate=current_user.creation_date.strftime('%Y-%m-%d %H:%M:%S'),
+        estTime=get_est_time().strftime('%Y-%m-%d %H:%M:%S')
+    ), 200
