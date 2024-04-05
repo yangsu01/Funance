@@ -18,8 +18,9 @@ def create_game():
     fee_type = request.json.get('feeType', None)
 
     creator_id = current_user.id
+    
     start_date = datetime.strptime(start_date_str, '%m-%d-%Y').date()
-    end_date = datetime.strptime(end_date_str, '%m-%d-%Y').date()
+    end_date = datetime.strptime(end_date_str, '%m-%d-%Y').date() if end_date_str is not None else None
 
     if check_game_exists(name):
         return jsonify(msg='Game name already taken!'), 409
@@ -109,3 +110,22 @@ def game_leaderboard(game_id: str):
         lastUpdated=update_time,
         msg="success"
     ), 200
+
+
+# @portfolio_sim.route('/portfolio-details/<portfolio_id>', methods=['GET'])
+# @jwt_required()
+# def portfolio_details(portfolio_id: str):
+#     portfolio_id = int(portfolio_id)
+
+#     if portfolio_id == -1:
+#         pass
+#     else:
+#         try:
+#             portfolio_details = get_portfolio_details(portfolio_id)
+#         except Exception as e:
+#             return jsonify(msg=str(e)), 400
+
+#         return jsonify(
+#             portfolioDetails=portfolio_details,
+#             msg="success"
+#         ), 200

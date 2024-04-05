@@ -139,13 +139,14 @@ def get_game_details(game_id: int, user_id: int) -> str:
         raise Exception('Game does not exist!')
     
     joined_game = Portfolio.query.filter_by(game_id=game.id, user_id=user_id).first() is not None
+    end_date = game.end_date.strftime('%Y-%m-%d') if game.end_date is not None else 'n/a'
 
     return {
         'name': game.name,
         'creator': game.game_creator.username,
         'participants': game.participants,
         'startDate': game.start_date.strftime('%Y-%m-%d'),
-        'endDate': game.end_date.strftime('%Y-%m-%d'),
+        'endDate': end_date,
         'status': game.status,
         'startingCash': game.starting_cash,
         'transactionFee': game.transaction_fee,

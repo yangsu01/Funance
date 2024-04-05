@@ -24,7 +24,7 @@ class Game(db.Model):
     creation_date = db.Column(db.DateTime(timezone=True), nullable=False, default=datetime.now(timezone.utc))
     participants = db.Column(db.Integer, nullable=False)
     start_date = db.Column(db.Date, nullable=False)
-    end_date = db.Column(db.Date, nullable=False)
+    end_date = db.Column(db.Date, nullable=True)
     status = db.Column(db.String(50), nullable=False, default='Not Started') # Not Started, In Progress, Completed
     starting_cash = db.Column(db.Float, nullable=False)
     transaction_fee = db.Column(db.Float, nullable=False)
