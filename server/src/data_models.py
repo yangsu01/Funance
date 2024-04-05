@@ -78,7 +78,7 @@ class Portfolio(db.Model):
     history = db.relationship('History', backref='portfolio', lazy=True)
 
 
-class Stocks(db.Model):
+class Stock(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
 
     company_name = db.Column(db.String(150), nullable=False)
@@ -92,14 +92,14 @@ class Stocks(db.Model):
     last_updated = db.Column(db.DateTime(timezone=True), nullable=False)
 
     # one to many
-    holdings = db.relationship('Holding', backref='stocks', lazy=True)
-    transactions = db.relationship('Transaction', backref='stocks', lazy=True)
+    holdings = db.relationship('Holding', backref='stock', lazy=True)
+    transactions = db.relationship('Transaction', backref='stock', lazy=True)
 
 
 class Holding(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     portfolio_id = db.Column(db.Integer, db.ForeignKey('portfolio.id'), nullable=False)
-    stock_id = db.Column(db.Integer, db.ForeignKey('stocks.id'), nullable=False)
+    stock_id = db.Column(db.Integer, db.ForeignKey('stock.id'), nullable=False)
 
     shares_owned = db.Column(db.Integer, nullable=False)
     average_price = db.Column(db.Float, nullable=False)
@@ -108,14 +108,14 @@ class Holding(db.Model):
 class Transaction(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     portfolio_id = db.Column(db.Integer, db.ForeignKey('portfolio.id'), nullable=False)
-    stock_id = db.Column(db.Integer, db.ForeignKey('stocks.id'), nullable=False)
+    stock_id = db.Column(db.Integer, db.ForeignKey('stock.id'), nullable=False)
 
     transaction_date = db.Column(db.DateTime(timezone=True), nullable=False, default=datetime.now(timezone.utc))
     status = db.Column(db.String(10), nullable=False) # buy, sell
     number_of_shares = db.Column(db.Integer, nullable=False)
     price_per_share = db.Column(db.Float, nullable=False)
     total_value = db.Column(db.Float, nullable=False)
-    profit_loss = db.Column(db.Float, nullable=True, default='N/A')
+    profit_loss = db.Column(db.Float, nullable=True)
 
 
 class History(db.Model):
