@@ -94,11 +94,12 @@ def game_leaderboard(game_id: str):
     game_id = int(game_id)
 
     try:
-        game_details = get_game_details(game_id, current_user.id)
-        top_performers = get_top_performers(game_id)
-        top_daily_performers = get_top_daily_performers(game_id)
-        performance_history = get_performance_history(game_id)
-        update_time = get_update_time(game_id)
+        game_details = get_game_details(game_id, current_user.id) # game info
+        top_performers = get_top_performers(game_id) # for display in a table
+        top_daily_performers = get_top_daily_performers(game_id) # for display in a table
+        performance_history = get_leaderboard_history(game_id) # for display in a time series plot
+        update_time = get_game_update_time(game_id) # last time the portfolio values were updated in the game
+    
     except Exception as e:
         return jsonify(msg=str(e)), 400
 
@@ -112,20 +113,35 @@ def game_leaderboard(game_id: str):
     ), 200
 
 
-# @portfolio_sim.route('/portfolio-details/<portfolio_id>', methods=['GET'])
-# @jwt_required()
-# def portfolio_details(portfolio_id: str):
-#     portfolio_id = int(portfolio_id)
+@portfolio_sim.route('/my-portfolio/<portfolio_id>', methods=['GET'])
+@jwt_required()
+def my_portfolio(portfolio_id: str):
+    portfolio_id = int(portfolio_id)
 
-#     if portfolio_id == -1:
-#         pass
-#     else:
-#         try:
-#             portfolio_details = get_portfolio_details(portfolio_id)
-#         except Exception as e:
-#             return jsonify(msg=str(e)), 400
+    try:
+        user_portfolios = get_user_portfolios(current_user.id) # list of all portfolios the user has
+        
+        # check if user has any portfolios
+        if len(user_portfolios) == 0:
+            return jsonify(msg='You do not have any portfolios!'), 404
+    
+        portfolio_details = get_portfolio_details(portfolio_id, current_user.id) # portfolio info
+        portfolio_history = get_portfolio_history(portfolio_id, current_user.id) # for display in a time series plot
+        holdings_breakdown = get_holdings_breakdown(portfolio_id, current_user.id) # for display in a pie chart
+        sector_breakdown = get_sector_breakdown(portfolio_id, current_user.id) # for display in a pie chart
+        portfolio_transactions = get_portfolio_transactions(portfolio_id, current_user.id) # for display in a table
+        portfolio_holdings = get_portfolio_holdings(portfolio_id, current_user.id) # for display in a table
 
-#         return jsonify(
-#             portfolioDetails=portfolio_details,
-#             msg="success"
-#         ), 200
+    except Exception as e:
+        return jsonify(msg=str(e)), 400
+
+    return jsonify(
+        user_portfolios=user_portfolios,
+        portfolioDetails=portfolio_details,
+        portfolioHistory=portfolio_history,
+        holdingsBreakdown=holdings_breakdown,
+        sectorBreakdown=sector_breakdown,
+        portfolioTransactions=portfolio_transactions,
+        portfolioHoldings=portfolio_holdings,
+        msg="success"
+    ), 200
