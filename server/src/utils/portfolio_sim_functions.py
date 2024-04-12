@@ -3,7 +3,7 @@ import pytz
 import pandas as pd
 import yfinance as yf
 
-from ..data_models import db, Portfolio, Holding, Transaction, History, Game
+from ..data_models import db, Portfolio, Holding, Transaction, History, Game, Stock
 
 
 # creating data in database
@@ -88,6 +88,33 @@ def add_portfolio(game_id: int, user_id: int) -> int:
         db.session.commit()
 
         return portfolio.id
+
+
+def add_stock(ticker: str, company_name: str, industry: str, sector: str, currency: str, previous_close: float, opening_price: float, current_price: float) -> int:
+    '''Creates a new stock in the database
+        args:
+            ticker: str - stock ticker
+            company_name: str - company name
+            sector: str - sector of the company
+            currency: str - currency of the stock
+            opening_price: float - opening price of the stock
+            current_price: float - current price of the stock
+        returns:
+            int - database id of the stock
+    '''
+    new_stock = Stock(
+        ticker=ticker, 
+        company_name=company_name, 
+        sector=sector, 
+        currency=currency, 
+        opening_price=opening_price, 
+        current_price=current_price
+    )
+
+    db.session.add(new_stock)
+    db.session.commit()
+
+    return new_stock.id
 
 
 # getting data from database
@@ -507,6 +534,85 @@ def get_sector_breakdown(portfolio_id: int, user_id: int) -> dict:
         'labels': list(sector_breakdown.keys()),
         'values': list(sector_breakdown.values())
     }
+
+
+# stock data 
+
+def get_stock_info(ticker: str) -> dict:
+    '''Gets detailed stock information from yfinance
+        args:
+            ticker: str - stock ticker
+        returns:
+            dict - stock information
+    '''
+    stock_info = yf.Ticker(ticker).info
+    
+    if 'currentPrice' not in stock_info:
+        raise Exception('cannot find ticker')
+    else:
+        return {
+        'price': round(float(stock_info.get('currentPrice', 0)), 2),
+        'sector': stock_info.get('sector', 'n/a'),
+        'industry': stock_info.get('industry', 'n/a'),
+        'company_summary': stock_info.get('longBusinessSummary', 'n/a'),
+        'currency': stock_info.get('currency', 'n/a'),
+        'company_name': stock_info.get('longName', 'n/a'),
+        'open': stock_info.get('open', 'n/a'),
+        'previous_close': stock_info.get('previousClose', 'n/a'),
+        'day_change': round(float(stock_info.get('currentPrice', 0))-float(stock_info.get('open', 1)), 2),
+        '%_day_change': round((float(stock_info.get('currentPrice', 0))/float(stock_info.get('open', 1)) - 1)*100, 2),
+        '52_week_returns': round(float(stock_info.get('52WeekChange', 0))*100, 2),
+        '52_week_high': round(float(stock_info.get('fiftyTwoWeekHigh', 0)), 2),
+        '52_week_low': round(float(stock_info.get('fiftyTwoWeekLow', 0)), 2)
+    }
+        
+
+def get_stock_history(ticker: str, period='5y', detailed=False) -> dict:
+    '''Gets the historical price of a stock
+        args:
+            ticker: str - stock ticker
+            period: str - time period for the historical data
+            detailed: bool - whether to included detailed data: open, high, low, close
+        returns:
+            dict - dictionary of the historical price of a stock
+    '''
+    stock = yf.Ticker(ticker).history(period=period).dropna()
+
+    if detailed:
+        history = {
+            'date': [d.strftime('%Y-%m-%d') for d in stock.index],
+            'close': [p for p in round(stock['Close'], 2)],
+            'open': [p for p in round(stock['Open'], 2)],
+            'high': [p for p in round(stock['High'], 2)],
+            'low': [p for p in round(stock['Low'], 2)]
+        }
+    else:
+        history = {
+            'date': [d.strftime('%Y-%m-%d') for d in stock.index],
+            'price': [p for p in round(stock['Close'], 2)]
+        }
+
+    return history
+
+
+def get_stock_news(ticker: str) -> list:
+    '''Gets the related news articles for a stock
+        args:
+            ticker: str - stock ticker
+        returns:
+            list - news articles for the stock
+    '''
+    news = yf.Ticker(ticker).news
+    articles = []
+
+    for n in news:
+        articles.append({
+            'name': n['title'],
+            'url': n['link']
+        })
+
+    return articles
+
 
 # other util functions
 

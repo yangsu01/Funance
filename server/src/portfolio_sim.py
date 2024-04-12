@@ -145,3 +145,42 @@ def my_portfolio(portfolio_id: str):
         portfolioHoldings=portfolio_holdings,
         msg="success"
     ), 200
+
+
+@portfolio_sim.route('/stock-info/<ticker>', methods=['GET'])
+@jwt_required()
+def stock_info(ticker: str):
+    try:
+        stock_info = get_stock_info(ticker)
+
+        # add_stock()
+
+        news = get_stock_news(ticker)
+        history = get_stock_history(ticker, '1y', True)
+
+        
+    except Exception as e:
+        return jsonify(msg=str(e)), 400
+
+    return jsonify(
+        stockInfo=stock_info,
+        news=news,
+        history=history,
+        msg="success"
+    ), 200
+
+
+@portfolio_sim.route('/buy-stock', methods=['POST'])
+@jwt_required()
+def buy_stock():
+    portfolio_id = request.json.get('portfolioId', None)
+    ticker = request.json.get('ticker', None)
+    shares = int(request.json.get('shares', None))
+    price = float(request.json.get('price', None))
+
+    try:
+        buy_stock_transaction(portfolio_id, ticker, shares, current_user.id)
+    except Exception as e:
+        return jsonify(msg=str(e)), 400
+
+    return jsonify(msg='Stock bought successfully!'), 200
