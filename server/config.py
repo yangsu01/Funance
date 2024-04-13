@@ -3,9 +3,8 @@ from dotenv import load_dotenv
 from datetime import timedelta
 
 load_dotenv()
-SECRET_KEY = os.environ.get('SECRET_KEY')
-DEV_DB_URL = os.environ.get('DEV_DB_URL')
-REDIS_DEV_URL = os.environ.get('REDIS_DEV_URL')
+SECRET_KEY = os.getenv('SECRET_KEY')
+DEV_DB_URL = os.getenv('DEV_DB_URL')
 
 class AppConfig:
     SECRET_KEY = os.environ.get('PROD_SECRET_KEY', SECRET_KEY)
