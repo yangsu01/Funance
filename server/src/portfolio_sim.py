@@ -179,7 +179,11 @@ def buy_stock():
     price = float(request.json.get('price', None))
 
     try:
-        buy_stock_transaction(portfolio_id, ticker, shares, current_user.id)
+        stock_id = add_stock(ticker, price)
+        add_transaction(portfolio_id, stock_id, 'buy', shares, price)
+        update_holding(portfolio_id, stock_id, shares, price, 'buy')
+        update_portfolio_cash(portfolio_id, shares*price, 'buy')
+
     except Exception as e:
         return jsonify(msg=str(e)), 400
 

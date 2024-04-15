@@ -6,7 +6,7 @@ import yfinance as yf
 from ..data_models import db, Portfolio, Holding, Transaction, History, Game, Stock
 
 
-# creating data in database
+# changing data in database
 
 def add_game(creator_id: int, name: str, password: str, start_date: datetime, end_date: datetime, starting_cash: float, transaction_fee: float, fee_type: str) -> int:
     '''Creates a new portfolio simulation game and a portfolio for the owner
@@ -90,31 +90,134 @@ def add_portfolio(game_id: int, user_id: int) -> int:
         return portfolio.id
 
 
-def add_stock(ticker: str, company_name: str, industry: str, sector: str, currency: str, previous_close: float, opening_price: float, current_price: float) -> int:
+def add_stock(ticker: str, price: float) -> int:
     '''Creates a new stock in the database
+        If stock is already in database, returns existing stock id
         args:
             ticker: str - stock ticker
-            company_name: str - company name
-            sector: str - sector of the company
-            currency: str - currency of the stock
-            opening_price: float - opening price of the stock
-            current_price: float - current price of the stock
+            price: float - current price of the stock
         returns:
             int - database id of the stock
     '''
-    new_stock = Stock(
-        ticker=ticker, 
-        company_name=company_name, 
-        sector=sector, 
-        currency=currency, 
-        opening_price=opening_price, 
-        current_price=current_price
+    stock = Stock.query.filter_by(ticker=ticker).first()
+
+    if stock is None:
+        id = stock.id
+        stock.current_price = price
+        stock.last_updated = datetime.now(timezone.utc)
+
+        db.session.commit()
+    else:
+        stock_info = get_stock_info(ticker)
+
+        new_stock = Stock(
+            ticker=ticker, 
+            company_name=stock_info.get('company_name', 'n/a'),
+            industry=stock_info.get('industry', 'n/a'),
+            sector=stock_info.get('sector', 'n/a'),
+            currency=stock_info.get('currency', 'n/a'),
+            previous_close=stock_info.get('previous_close', price),
+            opening_price=stock_info.get('open', price),
+            current_price=price,
+            last_updated=datetime.now(timezone.utc)
+        )
+        db.session.add(new_stock)
+        db.session.commit()
+
+        id = new_stock.id
+
+    return id
+
+
+def add_transaction(portfolio_id: int, stock_id: int, status: str, number_of_shares: int, price_per_share: float) -> None:
+    '''Adds a transaction to the database
+        args:
+            portfolio_id: int - database id of the portfolio
+            stock_id: int - database id of the stock
+            status: str - type of transaction: buy, sell
+            number_of_shares: int - number of shares bought/sold
+            price_per_share: float - price per share
+    '''
+    # if sell transaction, calculate profit/loss
+    if status == 'sell':
+        holding = Holding.query.filter_by(portfolio_id=portfolio_id, stock_id=stock_id).first()
+
+        if holding is None:
+            raise Exception('You do not own this stock.')
+        
+        profit_loss = (price_per_share - holding.average_price) * number_of_shares
+    else:
+        profit_loss = None
+
+    transaction = Transaction(
+        portfolio_id=portfolio_id, 
+        stock_id=stock_id, 
+        status=status, 
+        number_of_shares=number_of_shares, 
+        price_per_share=price_per_share, 
+        total_value=number_of_shares * price_per_share,
+        profit_loss=profit_loss
     )
 
-    db.session.add(new_stock)
+    db.session.add(transaction)
     db.session.commit()
 
-    return new_stock.id
+
+def update_holding(portfolio_id: int, stock_id: int, shares: int, price: float, transaction_type: str) -> None:
+    '''Updates the holdings of a portfolio after a transaction
+        args:
+            portfolio_id: int - database id of the portfolio
+            stock_id: int - database id of the stock
+            shares: int - number of shares bought/sold
+            price: float - price per share
+            transaction_type: str - type of transaction: buy, sell
+    '''
+    holding = Holding.query.filter_by(portfolio_id=portfolio_id, stock_id=stock_id).first()
+
+    # if no holding, create new holding
+    if holding is None:
+        if transaction_type == 'buy':
+            new_holding = Holding(
+                portfolio_id=portfolio_id, 
+                stock_id=stock_id, 
+                shares_owned=shares, 
+                average_price=price
+            )
+            db.session.add(new_holding)
+        else:
+            raise Exception('You do not own this stock.')
+        
+    # if buy transaction, update average price and shares owned
+    elif transaction_type == 'buy':
+        holding.average_price = round((holding.average_price*holding.shares_owned + price*shares) / (holding.shares_owned + shares), 2)
+        holding.shares_owned += shares
+
+    # if sell transaction, update shares owned or delete holding if all shares sold
+    else:
+        if holding.shares_owned == shares:
+            db.session.delete(holding)
+        else:
+            holding.shares_owned -= shares
+
+    db.session.commit()
+
+
+def update_portfolio_cash(portfolio_id: int, transaction_cost: float, transaction_type: str) -> None:
+    '''Updates the available cash for a portfolio 
+    (subtracts the transaction cost from the available cash)
+        args:
+            portfolio_id: int - database id of the portfolio
+            transaction_cost: float - total value of the transaction
+            transaction_type: str - type of transaction: buy, sell
+    '''
+    portfolio = Portfolio.query.filter_by(id=portfolio_id).first()
+
+    if transaction_type == 'sell':
+        transaction_cost *= -1
+        
+    portfolio.available_cash = round(portfolio.available_cash - transaction_cost, 2)
+
+    db.session.commit()
 
 
 # getting data from database
@@ -551,14 +654,14 @@ def get_stock_info(ticker: str) -> dict:
         raise Exception('cannot find ticker')
     else:
         return {
-        'price': round(float(stock_info.get('currentPrice', 0)), 2),
+        'price': round(float(stock_info.get('currentPrice')), 2),
         'sector': stock_info.get('sector', 'n/a'),
         'industry': stock_info.get('industry', 'n/a'),
         'company_summary': stock_info.get('longBusinessSummary', 'n/a'),
         'currency': stock_info.get('currency', 'n/a'),
         'company_name': stock_info.get('longName', 'n/a'),
-        'open': stock_info.get('open', 'n/a'),
-        'previous_close': stock_info.get('previousClose', 'n/a'),
+        'open': stock_info.get('open'),
+        'previous_close': stock_info.get('previousClose'),
         'day_change': round(float(stock_info.get('currentPrice', 0))-float(stock_info.get('open', 1)), 2),
         '%_day_change': round((float(stock_info.get('currentPrice', 0))/float(stock_info.get('open', 1)) - 1)*100, 2),
         '52_week_returns': round(float(stock_info.get('52WeekChange', 0))*100, 2),
