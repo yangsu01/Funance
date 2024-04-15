@@ -101,12 +101,15 @@ def add_stock(ticker: str, price: float) -> int:
     '''
     stock = Stock.query.filter_by(ticker=ticker).first()
 
-    if stock is None:
+    # if stock already exists, update price
+    if stock is not None:
         id = stock.id
         stock.current_price = price
         stock.last_updated = datetime.now(timezone.utc)
 
         db.session.commit()
+
+    # if stock does not exist, create new stock
     else:
         stock_info = get_stock_info(ticker)
 
@@ -214,7 +217,7 @@ def update_portfolio_cash(portfolio_id: int, transaction_cost: float, transactio
 
     if transaction_type == 'sell':
         transaction_cost *= -1
-        
+
     portfolio.available_cash = round(portfolio.available_cash - transaction_cost, 2)
 
     db.session.commit()
@@ -232,6 +235,19 @@ def check_game_exists(name: str) -> bool:
     game = Game.query.filter_by(name=name).first()
 
     return game is not None
+
+
+def check_portfolio_exists(portfolio_id: int, user_id: int) -> bool:
+    '''Checks if a portfolio exists
+        args:
+            portfolio_id: int - database id of the portfolio
+            user_id: int - database id of the user
+        returns:
+            bool - True if portfolio exists, False otherwise
+    '''
+    portfolio = Portfolio.query.filter_by(id=portfolio_id, user_id=user_id).first()
+
+    return portfolio is not None
 
 
 def get_games_list(user_id: int) -> list:

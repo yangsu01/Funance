@@ -178,7 +178,11 @@ def buy_stock():
     shares = int(request.json.get('shares', None))
     price = float(request.json.get('price', None))
 
+    if not check_portfolio_exists(portfolio_id, current_user.id):
+        return jsonify(msg='Portfolio does not exist!'), 404
+
     try:
+        # assumes transaction can be afforded (validation in frontend)
         stock_id = add_stock(ticker, price)
         add_transaction(portfolio_id, stock_id, 'buy', shares, price)
         update_holding(portfolio_id, stock_id, shares, price, 'buy')
