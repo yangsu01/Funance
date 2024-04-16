@@ -75,7 +75,8 @@ class Portfolio(db.Model):
     # one to many
     holdings = db.relationship('Holding', backref='portfolio', lazy=True)
     transactions = db.relationship('Transaction', backref='portfolio', lazy=True)
-    history = db.relationship('History', backref='portfolio', lazy=True)
+    daily_history = db.relationship('DailyHistory', backref='portfolio', lazy=True)
+    closing_history = db.relationship('ClosingHistory', backref='portfolio', lazy=True)
 
 
 class Stock(db.Model):
@@ -111,17 +112,26 @@ class Transaction(db.Model):
     stock_id = db.Column(db.Integer, db.ForeignKey('stock.id'), nullable=False)
 
     transaction_date = db.Column(db.DateTime(timezone=True), nullable=False, default=datetime.now(timezone.utc))
-    status = db.Column(db.String(10), nullable=False) # buy, sell
+    transaction_type = db.Column(db.String(10), nullable=False) # buy, sell
     number_of_shares = db.Column(db.Integer, nullable=False)
     price_per_share = db.Column(db.Float, nullable=False)
     total_value = db.Column(db.Float, nullable=False)
     profit_loss = db.Column(db.Float, nullable=True)
 
 
-class History(db.Model):
+class ClosingHistory(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     portfolio_id = db.Column(db.Integer, db.ForeignKey('portfolio.id'), nullable=False)
 
+    date = db.Column(db.Date, nullable=False)
+    portfolio_value = db.Column(db.Float, nullable=False)
+
+
+class DailyHistory(db.Model):
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    portfolio_id = db.Column(db.Integer, db.ForeignKey('portfolio.id'), nullable=False)
+
+    date = db.Column(db.Date, nullable=False)
     update_time = db.Column(db.DateTime(timezone=True), nullable=False, default=datetime.now(timezone.utc))
     portfolio_value = db.Column(db.Float, nullable=False)
 
