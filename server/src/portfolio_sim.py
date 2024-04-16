@@ -70,13 +70,10 @@ def join_game():
     name = request.json.get('gameName', None)
     password = request.json.get('gamePassword', None)
 
-    game = Game.query.filter_by(name=name).first()
+    game = check_game_password(name, password)
 
-    if not game:
-        return jsonify(msg='Game does not exist!'), 404
-
-    if game.password != password and game.password is not None:
-        return jsonify(msg='Incorrect password!'), 403
+    if game == -1:
+        return jsonify(msg='Incorrect Password!'), 404
 
     user_id = current_user.id
     game_id = game.id

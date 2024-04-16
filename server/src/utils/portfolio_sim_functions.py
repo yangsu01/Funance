@@ -263,6 +263,24 @@ def check_game_exists(game_id: int) -> bool:
     return game is not None
 
 
+def check_game_password(name: str, password: str) -> int:
+    '''Checks if the password of a game is correct
+        args:
+            name: str - name of the game
+            password: str - password for the game
+        returns:
+            int - database id of the game if password is correct or no password, -1 otherwise
+    '''
+    game = Game.query.filter_by(name=name).first()
+
+    if game is None:
+        return -1
+    elif game.password is None or game.password == password:
+        return game.id
+    else:
+        return -1
+
+
 def check_portfolio_exists(portfolio_id: int, user_id: int) -> bool:
     '''Checks if a portfolio exists
         args:
