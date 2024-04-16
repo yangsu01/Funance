@@ -3,7 +3,7 @@ import pytz
 import pandas as pd
 import yfinance as yf
 
-from ..data_models import db, Portfolio, Holding, Transaction, History, Game, Stock
+from ..data_models import db, Portfolio, Holding, Transaction, DailyHistory, ClosingHistory, Game, Stock
 
 
 # changing data in database
@@ -80,11 +80,25 @@ def add_portfolio(game_id: int, user_id: int) -> int:
 
         db.session.commit()
 
-        # record portfolio history
-        history = History(portfolio_id=portfolio.id,
-                        portfolio_value=starting_cash)
+        # record current portfolio value in daily history
+        daily_history = DailyHistory(
+            portfolio_id=portfolio.id,
+            date=get_est_time().date(),
+            portfolio_value=starting_cash
+        )
         
-        db.session.add(history)
+        db.session.add(daily_history)
+
+        # record portfolio value in closing history if market is closed
+        if check_market_closed():
+            closing_history = ClosingHistory(
+                portfolio_id=portfolio.id,
+                date=get_est_time().date(),
+                portfolio_value=starting_cash
+            )
+            
+            db.session.add(closing_history)
+
         db.session.commit()
 
         return portfolio.id
@@ -132,17 +146,17 @@ def add_stock(ticker: str, price: float) -> int:
     return id
 
 
-def add_transaction(portfolio_id: int, stock_id: int, status: str, number_of_shares: int, price_per_share: float) -> None:
+def add_transaction(portfolio_id: int, stock_id: int, transaction_type: str, number_of_shares: int, price_per_share: float) -> None:
     '''Adds a transaction to the database
         args:
             portfolio_id: int - database id of the portfolio
             stock_id: int - database id of the stock
-            status: str - type of transaction: buy, sell
+            transaction_type: str - type of transaction: buy, sell
             number_of_shares: int - number of shares bought/sold
             price_per_share: float - price per share
     '''
     # if sell transaction, calculate profit/loss
-    if status == 'sell':
+    if transaction_type == 'sell':
         holding = Holding.query.filter_by(portfolio_id=portfolio_id, stock_id=stock_id).first()
 
         if holding is None:
@@ -155,7 +169,7 @@ def add_transaction(portfolio_id: int, stock_id: int, status: str, number_of_sha
     transaction = Transaction(
         portfolio_id=portfolio_id, 
         stock_id=stock_id, 
-        status=status, 
+        transaction_type=transaction_type, 
         number_of_shares=number_of_shares, 
         price_per_share=price_per_share, 
         total_value=number_of_shares * price_per_share,
@@ -225,14 +239,26 @@ def update_portfolio_cash(portfolio_id: int, transaction_cost: float, transactio
 
 # getting data from database
     
-def check_game_exists(name: str) -> bool:
-    '''Checks if a game exists
+def check_game_name_exists(name: str) -> bool:
+    '''Checks if the name of a game is already taken
         args:
             name: str - name of the game
         returns:
             bool - True if game exists, False otherwise
     '''
     game = Game.query.filter_by(name=name).first()
+
+    return game is not None
+
+
+def check_game_exists(game_id: int) -> bool:
+    '''Checks if a game exists
+        args:
+            game_id: int - database id of the game
+        returns:
+            bool - True if game exists, False otherwise
+    '''
+    game = Game.query.filter_by(id=game_id).first()
 
     return game is not None
 
@@ -266,7 +292,10 @@ def get_games_list(user_id: int) -> list:
             'name': game.name,
             'creator': game.game_creator.username,
             'status': game.status,
-            'participants': game.participants
+            'participants': game.participants,
+            'password': game.password is not None,
+            'startDate': game.start_date.strftime('%Y-%m-%d'),
+            'endDate': game.end_date.strftime('%Y-%m-%d') if game.end_date is not None else 'n/a'
         })
 
     return game_list
@@ -276,13 +305,11 @@ def get_game_details(game_id: int, user_id: int) -> dict:
     '''Gets the details of a game
         args: 
             game_id: int - database id of the game
+            user_id: int - database id of the user
         returns:
             dict - dicitonary of details of the game
     '''
     game = Game.query.filter_by(id=game_id).first()
-
-    if game is None:
-        raise Exception('Game does not exist!')
     
     joined_game = Portfolio.query.filter_by(game_id=game.id, user_id=user_id).first() is not None
     end_date = game.end_date.strftime('%Y-%m-%d') if game.end_date is not None else 'n/a'
@@ -297,7 +324,8 @@ def get_game_details(game_id: int, user_id: int) -> dict:
         'startingCash': game.starting_cash,
         'transactionFee': game.transaction_fee,
         'feeType': game.fee_type,
-        'joinedGame': joined_game
+        'joinedGame': joined_game,
+        'password': game.password is not None
     }
 
 
@@ -314,6 +342,17 @@ def get_game_update_time(game_id: int) -> str:
         return 'n/a'
     else:
         return last_updated.strftime('%Y-%m-%d %H:%M')
+
+
+def get_latest_portfolio_id(user_id: int) -> int:
+    '''Gets the database id of the most recent portfolio the user created
+        args:
+            user_id: int - database id of the user
+        returns:
+            int - database id of the portfolio
+    '''
+    portfolio = Portfolio.query.filter_by(user_id=user_id).order_by(Portfolio.creation_date.desc()).first()
+    return portfolio.id if portfolio is not None else None
 
 
 def get_user_portfolios(user_id: int) -> list:
@@ -338,32 +377,33 @@ def get_user_portfolios(user_id: int) -> list:
     return portfolio_list
 
 
-def get_portfolio_details(portfolio_id: int, user_id: int) -> dict:
-    '''Gets the details of a portfolio
-        if -1 is passed as the portfolio_id, returns the details of the user's most recent portfolio
+def get_portfolio_details(portfolio_id: int) -> dict:
+    '''Gets the details of a portfolio and its parent game
         args:
             portfolio_id: int - database id of the portfolio
         returns:
             dict - dictionary of details of the portfolio
     '''
-    if portfolio_id == -1:
-        portfolio = Portfolio.query.filter_by(user_id=user_id).order_by(Portfolio.id.desc()).first()
-    else:
-        portfolio = Portfolio.query.filter_by(id=portfolio_id, user_id=user_id).first()
-
-    if portfolio is None:
-        raise Exception('Portfolio does not exist!')
-        
-    starting_cash = portfolio.parent_game.starting_cash
+    portfolio = Portfolio.query.filter_by(id=portfolio_id).first()
+    
+    parent_game = portfolio.parent_game
+    starting_cash = parent_game.starting_cash
     current_value = portfolio.current_value
     change = round((current_value/starting_cash - 1) * 100, 2)
     profit = round(current_value - starting_cash, 2)
     last_updated = utc_to_est(portfolio.last_updated).strftime('%a, %b %d. %Y %I:%M%p') + ' EST'
 
     return {
-        'gameName': portfolio.parent_game.name,
+        'gameName': parent_game.name,
+        'gameStatus': parent_game.status,
+        'startingCash': starting_cash,
+        'numberOfParticipants': parent_game.participants,
+        'gameStartDate': parent_game.start_date.strftime('%Y-%m-%d'),
+        'gameEndDate': parent_game.end_date.strftime('%Y-%m-%d') if parent_game.end_date is not None else 'n/a',
+        'TransactionFee': parent_game.transaction_fee,
+        'FeeType': parent_game.fee_type,
         'availableCash': portfolio.available_cash,
-        'currentValue': current_value,
+        'portfolioValue': current_value,
         'change': change,
         'profit': profit,
         'lastUpdated': last_updated,
@@ -384,6 +424,7 @@ def get_stock_id(ticker: str) -> int:
     else:
         return stock.id
 
+
 # getting data for tables
     
 def get_top_performers(game_id: int) -> list:
@@ -394,9 +435,6 @@ def get_top_performers(game_id: int) -> list:
             list - list of all portfolios sorted by portfolio value
     '''
     game = Game.query.filter_by(id=game_id).first()
-
-    if game is None:
-        raise Exception('Game does not exist!')
 
     starting_cash = game.starting_cash
     portfolios = Portfolio.query.filter_by(game_id=game_id).order_by(Portfolio.current_value.desc()).all()
@@ -443,9 +481,6 @@ def get_top_daily_performers(game_id: int) -> list:
     '''
     portfolios = Portfolio.query.filter_by(game_id=game_id).all()
 
-    if not portfolios:
-        raise Exception('No portfolios found!')
-
     ranked_portfolios = sorted(portfolios, key=lambda p: (p.current_value / p.last_close_value), reverse=True)
 
     top_performers = []
@@ -474,23 +509,14 @@ def get_top_daily_performers(game_id: int) -> list:
     return top_performers
 
 
-def get_portfolio_transactions(portfolio_id: int, user_id: int) -> list:
+def get_portfolio_transactions(portfolio_id: int) -> list:
     '''Gets the transactions of a portfolio
-        if -1 is passed as the portfolio_id, returns the transactions of the user's most recent portfolio
         args:
             portfolio_id: int - database id of the portfolio
         returns:
             list - list of all the transactions of the portfolio
     '''
-    if portfolio_id == -1:
-        portfolio = Portfolio.query.filter_by(user_id=user_id).order_by(Portfolio.id.desc()).first()
-    else:
-        portfolio = Portfolio.query.filter_by(id=portfolio_id).first()
-
-    if portfolio is None:
-        raise Exception('Portfolio does not exist!')
-
-    transactions = Transaction.query.filter_by(portfolio_id=portfolio.id).all()
+    transactions = Transaction.query.filter_by(portfolio_id=portfolio_id).all()
     transaction_list = []
 
     if transactions is None:
@@ -503,31 +529,22 @@ def get_portfolio_transactions(portfolio_id: int, user_id: int) -> list:
             'Type': transaction.transaction_type,
             'Shares': transaction.number_of_shares,
             'Price': transaction.price_per_share,
-            'Total': transaction.total_price,
+            'Total': transaction.total_value,
             'Currency': transaction.stock.currency,
-            'Date (EST)': utc_to_est(transaction.transaction_time).strftime('%H:%M:%S %m-%d-%Y')
+            'Date (EST)': utc_to_est(transaction.transaction_date).strftime('%H:%M:%S %m-%d-%Y')
         })
 
     return transaction_list
 
 
-def get_portfolio_holdings(portfolio_id: int, user_id: int) -> list:
+def get_portfolio_holdings(portfolio_id: int) -> list:
     '''Gets the holdings of a portfolio
-        if -1 is passed as the portfolio_id, returns the holdings of the user's most recent portfolio
         args:
             portfolio_id: int - database id of the portfolio
         returns:
             list - list of all the holdings of the portfolio
     '''
-    if portfolio_id == -1:
-        portfolio = Portfolio.query.filter_by(user_id=user_id).order_by(Portfolio.id.desc()).first()
-    else:
-        portfolio = Portfolio.query.filter_by(id=portfolio_id).first()
-
-    if portfolio is None:
-        raise Exception('Portfolio does not exist!')
-
-    holdings = Holding.query.filter_by(portfolio_id=portfolio.id).all()
+    holdings = Holding.query.filter_by(portfolio_id=portfolio_id).all()
     holding_list = []
 
     if holdings is None:
@@ -560,70 +577,87 @@ def get_portfolio_holdings(portfolio_id: int, user_id: int) -> list:
 
 # getting data for plots
 
-def get_leaderboard_history(game_id) -> list:
-    '''Gets the performance history of all portfolios
+def get_game_history(game_id) -> dict:
+    '''Gets todays performance history and daily closing history of all portfolios in a game
+        if market is closed, gets the history for the last day the market was open
         args:
             game_id: int - database id of the game
         returns:
-            str - json string of the performance history of all portfolios
+            dict - dictionary of the day history and closing history of each portfolio
     '''
-    portfolios = Portfolio.query.filter_by(game_id=game_id).all()
+    # closing history
+    closing_history = ClosingHistory.query.join(Portfolio).filter_by(game_id=game_id).order_by(ClosingHistory.date.desc()).all()
+    close = {}
 
-    if not portfolios:
-        raise Exception('No portfolios found!')
-    
-    history = []
+    if closing_history is not None:
+        for row in closing_history:
+            data = close.get(row.portfolio_id, {'x': [], 'y': [], 'name': row.portfolio.portfolio_owner.username})
+            data['x'].append(row.date.strftime('%Y-%m-%d'))
+            data['y'].append(row.portfolio_value)
+            close[row.portfolio_id] = data
 
-    for portfolio in portfolios:
-        history.append({
-            'x': [utc_to_est(h.update_time).strftime('%Y-%m-%d %H:%M') for h in portfolio.history],
-            'y': [h.portfolio_value for h in portfolio.history],
-            'name': portfolio.portfolio_owner.username
-        })
+    # todays performance history
+    market_date = get_market_date(get_est_time()) # last date the market was open
 
-    return history
+    daily_history = DailyHistory.query.filter_by(date=market_date).join(Portfolio).filter_by(game_id=game_id).order_by(DailyHistory.update_time.desc()).all()
+    day = {}
+
+    if daily_history is not None:
+        for row in daily_history:
+            data = day.get(row.portfolio_id, {'x': [], 'y': [], 'name': row.portfolio.portfolio_owner.username})
+            data['x'].append(utc_to_est(row.update_time).strftime('%Y-%m-%d %H:%M'))
+            data['y'].append(row.portfolio_value)
+            day[row.portfolio_id] = data
+
+    return {
+        'closingHistory': list(close.values()),
+        'dailyHistory': list(day.values()),
+        'date': market_date.strftime('%Y-%m-%d')
+    }
 
 
-def get_portfolio_history(portfolio_id: int, user_id: int) -> dict:
-    '''Gets the history of a portfolio
-        if -1 is passed as the portfolio_id, returns the history of the user's most recent portfolio
+def get_portfolio_history(portfolio_id: int) -> dict:
+    '''Gets the closing price history and todays history of a portfolio
+        if market is closed, gets the history for the last day the market was open
         args:
             portfolio_id: int - database id of the portfolio
         returns:
             dict - dictionary of the history of the portfolio
     '''
-    if portfolio_id == -1:
-        portfolio = Portfolio.query.filter_by(user_id=user_id).order_by(Portfolio.id.desc()).first()
-    else:
-        portfolio = Portfolio.query.filter_by(id=portfolio_id).first()
+    # closing history
+    closing_history = ClosingHistory.query.filter_by(portfolio_id=portfolio_id).order_by(ClosingHistory.date.desc()).all()
+    close = {'x': [], 'y': []}
 
-    if portfolio is None:
-        raise Exception('Portfolio does not exist!')
+    if closing_history is not None:
+        for row in closing_history:
+            close['x'].append(row.date.strftime('%Y-%m-%d'))
+            close['y'].append(row.portfolio_value)
 
-    history = History.query.filter_by(portfolio_id=portfolio_id).all()
+    # todays performance history
+    market_date = get_market_date(get_est_time()) # last date the market was open
+
+    daily_history = DailyHistory.query.filter_by(portfolio_id=portfolio_id, date=market_date).order_by(DailyHistory.update_time.desc()).all()
+    day = {'x': [], 'y': []}
+
+    if daily_history is not None:
+        for row in daily_history:
+            day['x'].append(utc_to_est(row.update_time).strftime('%Y-%m-%d %H:%M'))
+            day['y'].append(row.portfolio_value)
 
     return {
-        'x': [utc_to_est(h.update_time).strftime('%Y-%m-%d %H:%M') for h in history],
-        'y': [h.portfolio_value for h in history],
+        'closingHistory': close,
+        'dailyHistory': day,
+        'date': market_date.strftime('%Y-%m-%d')
     }
 
 
-def get_holdings_breakdown(portfolio_id: int, user_id: int) -> dict:
+def get_holdings_breakdown(portfolio_id: int) -> dict:
     '''Gets the values for each holding in a portfolio
-        if -1 is passed as the portfolio_id, returns the breakdown of the user's most recent portfolio
         args:
             portfolio_id: int - database id of the portfolio
         returns:
             dict - dictionary of the list of holdings and their values
     '''
-    if portfolio_id == -1:
-        portfolio = Portfolio.query.filter_by(user_id=user_id).order_by(Portfolio.id.desc()).first()
-    else:
-        portfolio = Portfolio.query.filter_by(id=portfolio_id).first()
-
-    if portfolio is None:
-        raise Exception('Portfolio does not exist!')
-
     holding_breakdown = {}
     holdings = Holding.query.filter_by(portfolio_id=portfolio_id).all()
 
@@ -637,22 +671,13 @@ def get_holdings_breakdown(portfolio_id: int, user_id: int) -> dict:
     return holding_breakdown
 
 
-def get_sector_breakdown(portfolio_id: int, user_id: int) -> dict:
+def get_sector_breakdown(portfolio_id: int) -> dict:
     '''Gets the total values of each sector category in a portfolio
-    if -1 is passed as the portfolio_id, returns the breakdown of the user's most recent portfolio
     args:
         portfolio_id: int - database id of the portfolio
     returns:
         dict - dictionary of the list of sector and their total values
     '''
-    if portfolio_id == -1:
-        portfolio = Portfolio.query.filter_by(user_id=user_id).order_by(Portfolio.id.desc()).first()
-    else:
-        portfolio = Portfolio.query.filter_by(id=portfolio_id).first()
-
-    if portfolio is None:
-        raise Exception('Portfolio does not exist!')
-
     sector_breakdown = {}
     holdings = Holding.query.filter_by(portfolio_id=portfolio_id).all()
 
@@ -661,7 +686,7 @@ def get_sector_breakdown(portfolio_id: int, user_id: int) -> dict:
 
     for holding in holdings:
         sector = holding.stock.sector
-        sector_breakdown[sector] = sector_breakdown.get(sector, 0) + holding.stock.current_price * holding.number_of_shares
+        sector_breakdown[sector] = sector_breakdown.get(sector, 0) + holding.stock.current_price * holding.shares_owned
 
     return {
         'labels': list(sector_breakdown.keys()),
@@ -770,3 +795,33 @@ def utc_to_est(utc_time: datetime) -> datetime:
     est = pytz.timezone('US/Eastern')
 
     return utc_time.astimezone(est)
+
+
+def check_market_closed() -> bool:
+    '''Checks if the stock market is open
+        assumes stock market closes on 4pm EST every weekday
+        returns:
+            bool - True if market is closed, False otherwise
+    '''
+    est_time = get_est_time()
+
+    if est_time.weekday() < 5 and est_time.hour < 16:
+        return False
+    else:
+        return True
+    
+
+def get_market_date(est_time: datetime) -> datetime.date:
+    '''Gets the last date the stock market was open
+        If the market is currently open, returns the current date
+        args:
+            date: datetime - current date and time
+        returns:
+            datetime.date - last date that the market was open
+    '''
+
+    # if market is currently open, return current date
+    if est_time.weekday() < 5 and est_time.hour >= 10:
+        return est_time.date()
+    else:
+        return est_time.date() - pd.tseries.offsets.BDay(1)
