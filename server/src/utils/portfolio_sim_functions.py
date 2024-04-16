@@ -228,9 +228,16 @@ def update_portfolio_cash(portfolio_id: int, transaction_cost: float, transactio
             transaction_type: str - type of transaction: buy, sell
     '''
     portfolio = Portfolio.query.filter_by(id=portfolio_id).first()
+    transaction_fee = portfolio.parent_game.transaction_fee
+    fee_type = portfolio.parent_game.fee_type
 
     if transaction_type == 'sell':
         transaction_cost *= -1
+
+    if fee_type == 'Flat Fee':
+        transaction_cost += transaction_fee
+    elif fee_type == 'Percentage':
+        transaction_cost += abs(transaction_cost) * transaction_fee
 
     portfolio.available_cash = round(portfolio.available_cash - transaction_cost, 2)
 
