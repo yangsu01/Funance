@@ -370,6 +370,20 @@ def get_portfolio_details(portfolio_id: int, user_id: int) -> dict:
     }
 
 
+def get_stock_id(ticker: str) -> int:
+    '''Gets the database id of a stock
+        args:
+            ticker: str - stock ticker
+        returns:
+            int - database id of the stock
+    '''
+    stock = Stock.query.filter_by(ticker=ticker).first()
+
+    if stock is None:
+        raise Exception('Stock does not exist!')
+    else:
+        return stock.id
+
 # getting data for tables
     
 def get_top_performers(game_id: int) -> list:

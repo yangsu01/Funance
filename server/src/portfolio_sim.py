@@ -152,9 +152,6 @@ def my_portfolio(portfolio_id: str):
 def stock_info(ticker: str):
     try:
         stock_info = get_stock_info(ticker)
-
-        # add_stock()
-
         news = get_stock_news(ticker)
         history = get_stock_history(ticker, '1y', True)
 
@@ -173,6 +170,8 @@ def stock_info(ticker: str):
 @portfolio_sim.route('/buy-stock', methods=['POST'])
 @jwt_required()
 def buy_stock():
+    # assumes transaction can be afforded (validation in frontend)
+
     portfolio_id = request.json.get('portfolioId', None)
     ticker = request.json.get('ticker', None)
     shares = int(request.json.get('shares', None))
@@ -182,7 +181,6 @@ def buy_stock():
         return jsonify(msg='Portfolio does not exist!'), 404
 
     try:
-        # assumes transaction can be afforded (validation in frontend)
         stock_id = add_stock(ticker, price)
         add_transaction(portfolio_id, stock_id, 'buy', shares, price)
         update_holding(portfolio_id, stock_id, shares, price, 'buy')
@@ -192,3 +190,28 @@ def buy_stock():
         return jsonify(msg=str(e)), 400
 
     return jsonify(msg='Stock bought successfully!'), 200
+
+
+@portfolio_sim.route('/sell-stock', methods=['POST'])
+@jwt_required()
+def sell_stock():
+    # assumes stock has enough shares to sell (validation in frontend)
+
+    portfolio_id = request.json.get('portfolioId', None)
+    ticker = request.json.get('ticker', None)
+    shares = int(request.json.get('shares', None))
+    price = float(request.json.get('price', None))
+
+    if not check_portfolio_exists(portfolio_id, current_user.id):
+        return jsonify(msg='Portfolio does not exist!'), 404
+
+    try:
+        stock_id = get_stock_id(ticker)
+        add_transaction(portfolio_id, stock_id, 'sell', shares, price)
+        update_holding(portfolio_id, stock_id, shares, price, 'sell')
+        update_portfolio_cash(portfolio_id, shares*price, 'sell')
+
+    except Exception as e:
+        return jsonify(msg=str(e)), 400
+
+    return jsonify(msg='Stock sold successfully!'), 200
