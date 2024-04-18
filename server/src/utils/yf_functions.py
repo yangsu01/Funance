@@ -3,6 +3,7 @@ import yfinance as yf
 
 def get_stock_info(ticker: str) -> dict:
     '''Gets detailed stock information from yfinance
+
         args:
             ticker: str - stock ticker
         returns:
@@ -32,6 +33,7 @@ def get_stock_info(ticker: str) -> dict:
 
 def get_stock_history(ticker: str, period='5y', detailed=False) -> dict:
     '''Gets the historical price of a stock
+
         args:
             ticker: str - stock ticker
             period: str - time period for the historical data
@@ -60,6 +62,7 @@ def get_stock_history(ticker: str, period='5y', detailed=False) -> dict:
 
 def get_stock_news(ticker: str) -> list:
     '''Gets the related news articles for a stock
+    
         args:
             ticker: str - stock ticker
         returns:
