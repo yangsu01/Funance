@@ -1,10 +1,9 @@
 import os
 from dotenv import load_dotenv
-from datetime import datetime, timedelta, timezone
 
 from flask import Flask, jsonify
 from flask_cors import CORS
-from flask_jwt_extended import JWTManager, get_jwt, create_access_token, current_user
+from flask_jwt_extended import JWTManager
 from flask_apscheduler import APScheduler
 
 from config import AppConfig
@@ -40,26 +39,6 @@ def user_identity_lookup(user):
 def user_lookup_callback(_jwt_header, jwt_data):
     identity = jwt_data["sub"]
     return User.query.filter_by(id=identity).first()
-
-# automatic token refresh
-@api.after_request
-def refresh_expiring_jwts(response):
-    try:
-        exp_timestamp = get_jwt()["exp"]
-        now = datetime.now(timezone.utc)
-        target_timestamp = datetime.timestamp(now + timedelta(minutes=30))
-        if target_timestamp > exp_timestamp:
-            access_token = create_access_token(identity=current_user)
-
-            data = response.get_json()
-            if type(data) is dict:
-                data["accessToken"] = access_token 
-                response.data = jsonify(data)
-
-        return response
-    except (RuntimeError, KeyError):
-        # Case where there is not a valid JWT. Just return the original response
-        return response
     
 
 # initiate database
