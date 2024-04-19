@@ -54,7 +54,7 @@ def signin_user():
     
     access_token = create_access_token(identity=user)
 
-    return jsonify(accessToken=access_token, msg="signin successful"), 200
+    return jsonify(accessToken=access_token, msg="signin successful", username=user.username), 200
 
 
 @auth.route("/signout-user", methods=["POST"])
