@@ -52,7 +52,10 @@ api.register_blueprint(portfolio_sim, url_prefix='/api')
 # initiate scheduler
 scheduler = APScheduler()
 scheduler.init_app(api)
+scheduler.start()
 
+#TODO delete in production
+from src.utils.time_functions import get_est_time
 # define jobs
 def run_periodically():
     with api.app_context():
@@ -61,10 +64,14 @@ def run_periodically():
         save_game_update_time()
         save_daily_history()
 
+        print(f'periodic process completed at {get_est_time()} EST')
+
 def run_at_open():
     with api.app_context():
         update_last_close_value()
         update_started_games()
+
+        print(f'open process completed at {get_est_time()} EST')
 
         run_periodically()
         
@@ -74,6 +81,8 @@ def run_at_close():
 
         save_closing_history()
         update_completed_games()
+
+        print(f'end process completed at {get_est_time()} EST')
 
 # add jobs
 scheduler.add_job(
@@ -106,8 +115,6 @@ scheduler.add_job(
     minute='0',
     timezone='US/Eastern'
 )
-
-scheduler.start()
 
 
 if __name__ == '__main__':
