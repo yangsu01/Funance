@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 
 from ..data_models import db, Portfolio, Holding, Transaction, DailyHistory, ClosingHistory, Game, Stock
 from .time_functions import get_est_time, check_market_closed, get_market_date, utc_to_est
+from .yf_functions import get_stock_info
 
 
 # changing data in database
@@ -321,15 +322,22 @@ def get_games_list(user_id: int) -> list:
     for game in games:
         joined_game = Portfolio.query.filter_by(game_id=game.id, user_id=user_id).first() is not None
 
+        if game.fee_type == 'Flat Fee':
+            transaction_fee = f'flat fee of ${game.transaction_fee}'
+        else:
+            transaction_fee = f'{game.transaction_fee * 100}% fee'
+
+        game_details = f'${game.starting_cash} starting cash, with {transaction_fee} per transaction. {"Password required." if game.password is not None else "No password required."}'
+
         game_list.append({
             'joinedGame': joined_game,
             'name': game.name,
             'creator': game.game_creator.username,
             'status': game.status,
             'participants': game.participants,
-            'password': game.password is not None,
-            'startDate': game.start_date.strftime('%Y-%m-%d'),
-            'endDate': game.end_date.strftime('%Y-%m-%d') if game.end_date is not None else 'n/a'
+            'startDate': game.start_date.strftime("%B %d, %Y"),
+            'endDate': game.end_date.strftime("%B %d, %Y") if game.end_date is not None else 'n/a',
+            'details': game_details,
         })
 
     return game_list
