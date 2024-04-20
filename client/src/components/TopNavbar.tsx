@@ -50,12 +50,16 @@ const TopNavbar = ({
             <NavLink to="/" className="nav-link">
               Home
             </NavLink>
+
             <NavLink to="/about" className="nav-link">
               About
             </NavLink>
+
             <NavLink to="/blog" className="nav-link">
               Blog
             </NavLink>
+
+            {/* portfolio sim dropdown */}
             <NavDropdown title="Portfolio Simulator" id="portfolio-simulator">
               <NavLink to="/game-rules" className="nav-link ps-3">
                 Game Rules
@@ -73,17 +77,24 @@ const TopNavbar = ({
               )}
             </NavDropdown>
           </Nav>
+
           <Nav>
             {userAuthenticated ? (
-              <Button variant="outline-light" onClick={signOutUser}>
+              <Button variant="outline-light mb-2" onClick={signOutUser}>
                 Sign Out
               </Button>
             ) : (
               <>
-                <NavLink to="/sign-in" className="btn btn-outline-light me-2">
+                <NavLink
+                  to="/sign-in"
+                  className="btn btn-outline-light me-2 mb-2"
+                >
                   Sign In
                 </NavLink>
-                <NavLink to="/sign-up" className="btn btn-outline-light">
+                <NavLink
+                  to="/sign-up"
+                  className="btn btn-outline-light me-2 mb-2"
+                >
                   Sign Up
                 </NavLink>
               </>
