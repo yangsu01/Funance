@@ -10,6 +10,7 @@ class AppConfig:
 
     # JWT
     JTW_SECRET_KEY = os.environ.get('PROD_SECRET_KEY', SECRET_KEY)
+    JWT_ACCESS_TOKEN_EXPIRES = False 
     
     # SQLAlchemy
     SQLALCHEMY_TRACK_MODIFICATIONS = False
