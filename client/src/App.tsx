@@ -1,5 +1,5 @@
-import { Routes, Route } from "react-router-dom";
-import { useState } from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
 
 // bootstrap elements
 import { Alert } from "react-bootstrap";
@@ -8,13 +8,19 @@ import { Alert } from "react-bootstrap";
 import useToken from "./utils/useToken";
 
 // Pages
-import Home from "./pages/Home";
-import GameRules from "./pages/GameRules";
 import NotFound from "./pages/NotFound";
+import Home from "./pages/Home";
+import About from "./pages/About";
+import BlogList from "./pages/BlogList";
+import GameRules from "./pages/GameRules";
+import GameList from "./pages/GameList";
+import MyPortfolio from "./pages/MyPortfolio";
+import GameLeaderboard from "./pages/GameLeaderboard";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 
 // UI components
+import PrivateRoutes from "./components/PrivateRoutes";
 import TopNavbar from "./components/TopNavbar";
 import Footer from "./components/Footer";
 
@@ -35,6 +41,8 @@ function App() {
   let [alertMessage, setAlertMessage] = useState("");
   let [alertType, setAlertType] = useState("success");
 
+  const { state } = useLocation();
+
   const showAlert = (
     message: string,
     type: "success" | "danger" | "warning"
@@ -44,38 +52,15 @@ function App() {
     setAlertVisible(true);
   };
 
-  // routes
-  const routes = [
-    { path: "/", component: <Home /> },
-    {
-      path: "/game-rules",
-      component: <GameRules userAuthenticated={userAuthenticated} />,
-    },
-    { path: "*", component: <NotFound /> },
-    {
-      path: "/sign-up",
-      component: (
-        <SignUp
-          setToken={setToken}
-          setUserAuthenticated={setUserAuthenticated}
-          showAlert={showAlert}
-        />
-      ),
-    },
-    {
-      path: "/sign-in",
-      component: (
-        <SignIn
-          setToken={setToken}
-          setUserAuthenticated={setUserAuthenticated}
-          showAlert={showAlert}
-        />
-      ),
-    },
-  ];
+  useEffect(() => {
+    if (state) {
+      showAlert(state.alert, state.alertType);
+    }
+  }, [state]);
 
   return (
     <>
+      {/* navbar */}
       <TopNavbar
         userAuthenticated={userAuthenticated}
         removeToken={removeToken}
@@ -83,27 +68,69 @@ function App() {
       />
 
       <main className="container flex-shrink-0 content content-container my-4 w-100">
+        {/* alert flashing */}
         {alertVisible && (
           <Alert
             variant={alertType}
             onClose={() => setAlertVisible(false)}
             dismissible
-            className=""
           >
             {alertMessage}
           </Alert>
         )}
+
+        {/* routes */}
         <Routes>
-          {routes.map((route) => (
+          <Route path="*" element={<NotFound />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/blog" element={<BlogList />} />
+          <Route
+            path="/game-rules"
+            element={<GameRules userAuthenticated={userAuthenticated} />}
+          />
+          <Route
+            path="/sign-in"
+            element={
+              <SignIn
+                setToken={setToken}
+                setUserAuthenticated={setUserAuthenticated}
+                showAlert={showAlert}
+              />
+            }
+          />
+          <Route
+            path="/sign-up"
+            element={
+              <SignUp
+                setToken={setToken}
+                setUserAuthenticated={setUserAuthenticated}
+                showAlert={showAlert}
+              />
+            }
+          />
+
+          {/* private routes (require authentication) */}
+          <Route
+            element={<PrivateRoutes userAuthenticated={userAuthenticated} />}
+          >
             <Route
-              key={route.path}
-              path={route.path}
-              element={route.component}
+              path="/games-list"
+              element={
+                <GameList
+                  token={token}
+                  removeToken={removeToken}
+                  showAlert={showAlert}
+                />
+              }
             />
-          ))}
+            <Route path="/my-portfolio" element={<MyPortfolio />} />
+            <Route path="/game-leaderboard" element={<GameLeaderboard />} />
+          </Route>
         </Routes>
       </main>
 
+      {/* footer */}
       <Footer version={version} />
     </>
   );
