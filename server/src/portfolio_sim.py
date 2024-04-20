@@ -101,9 +101,9 @@ def join_game():
     ), 200
 
 
-@portfolio_sim.route('/games-list', methods=['GET'])
+@portfolio_sim.route('/game-list', methods=['GET'])
 @jwt_required()
-def games_list():
+def game_list():
     '''Get a summary list of all created games
     '''
     data = get_games_list(current_user.id)
