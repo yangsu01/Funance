@@ -29,9 +29,13 @@ const SignIn = ({ setToken, setUserAuthenticated, showAlert }: Props) => {
       setToken(response.data.accessToken);
       setUserAuthenticated(true);
 
-      showAlert(`Welcome back ${response.data.username}!`, "success");
-
-      navigate(-1);
+      navigate("/", {
+        replace: true,
+        state: {
+          alert: `Welcome back ${response.data.username}!`,
+          alertType: "success",
+        },
+      });
     } catch (error: any) {
       if (error.response && error.response.status === 401) {
         showAlert(error.response.data.msg, "danger");
