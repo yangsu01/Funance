@@ -31,7 +31,14 @@
 }
 
 .content-container {
+  margin: auto;
   max-width: 1000px;
+  padding: 1rem;
+}
+
+.home-container {
+  margin: auto;
+  max-width: 600px;
   padding: 1rem;
 }
 
@@ -43,6 +50,16 @@
   max-width: 450px;
 }
 
-.nav-item.active {
-  color: #ffffff; /* Change to your desired text color */
+.active {
+  color: #ffffff;
+}
+
+.alert {
+  position: fixed;
+  top: 70px; /* Adjust this value to position the alert below the nav bar */
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: calc(100% - 20px); /* Adjust the width as needed */
+  max-width: 1000px;
 }
