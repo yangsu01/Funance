@@ -1,23 +1,18 @@
 import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import api from "../utils/api";
 
-// components
-import Alert from "../components/Alert";
-import FormInput from "../components/FormInput";
+// bootstrap elements
+import { Form, FloatingLabel, Button } from "react-bootstrap";
 
 interface Props {
   setToken: (accessToken: string) => void;
   setUserAuthenticated: (authenticated: boolean) => void;
+  showAlert: (message: string, type: "success" | "danger" | "warning") => void;
 }
 
-const SignUp = ({ setToken, setUserAuthenticated }: Props) => {
-  // alert flashing
-  let [alertVisible, setAlertVisible] = useState(false);
-  let [alertMessage, setAlertMessage] = useState("");
-
-  const closeAlert = () => {
-    setAlertVisible(false);
-  };
+const SignUp = ({ setToken, setUserAuthenticated, showAlert }: Props) => {
+  const navigate = useNavigate();
 
   // form processing
   const [formData, setFormData] = useState({
@@ -27,21 +22,21 @@ const SignUp = ({ setToken, setUserAuthenticated }: Props) => {
     password2: "",
   });
 
-  const signUpUser = async (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // form validation
     if (formData.email.length < 3) {
-      setAlertMessage("Username too short");
-      setAlertVisible(true);
+      showAlert("Username too short", "danger");
+
       return;
     } else if (formData.password1 !== formData.password2) {
-      setAlertMessage("Passwords do not match");
-      setAlertVisible(true);
+      showAlert("Passwords do not match", "danger");
+
       return;
     } else if (formData.password1.length < 6) {
-      setAlertMessage("Password too short");
-      setAlertVisible(true);
+      showAlert("Password too short", "danger");
+
       return;
     }
 
@@ -55,80 +50,74 @@ const SignUp = ({ setToken, setUserAuthenticated }: Props) => {
       setToken(response.data.accessToken);
       setUserAuthenticated(true);
 
-      window.location.href = "/";
+      showAlert(`Welcome ${formData.username}`, "success");
+
+      navigate(-1);
     } catch (error: any) {
       if (error.response && error.response.status === 409) {
-        setAlertMessage(error.response.data.msg);
-        setAlertVisible(true);
+        showAlert(error.response.data.msg, "danger");
       } else {
-        setAlertMessage(error.message);
-        setAlertVisible(true);
+        showAlert(error.alertMessage, "danger");
       }
     }
   };
 
   return (
-    <>
-      {alertVisible && (
-        <Alert category="danger" onClose={closeAlert}>
-          {alertMessage}
-        </Alert>
-      )}
+    <main className="form-signup m-auto mt-5">
+      <h3 className="display-6 fw-bold text-white mb-3">Sign Up</h3>
 
-      <main className="form-signup m-auto mt-5">
-        <form onSubmit={signUpUser}>
-          <h3 className="display-6 fw-bold text-white">Sign Up</h3>
-
-          <FormInput
-            id="email"
-            label="Email Address"
+      <Form onSubmit={onSubmit}>
+        <FloatingLabel controlId="email" label="Email address" className="mb-3">
+          <Form.Control
+            required
             type="email"
-            value={formData.email}
             onChange={(e) =>
               setFormData({ ...formData, email: e.target.value })
             }
           />
-
-          <FormInput
-            id="username"
-            label="Username"
+        </FloatingLabel>
+        <FloatingLabel controlId="username" label="Username" className="mb-3">
+          <Form.Control
+            required
             type="text"
-            value={formData.username}
             onChange={(e) =>
               setFormData({ ...formData, username: e.target.value })
             }
           />
-
-          <FormInput
-            id="password1"
-            label="Password"
+        </FloatingLabel>
+        <FloatingLabel controlId="password1" label="Password" className="mb-3">
+          <Form.Control
+            required
             type="password"
-            value={formData.password1}
             onChange={(e) =>
               setFormData({ ...formData, password1: e.target.value })
             }
           />
-
-          <FormInput
-            id="password2"
-            label="Confirm Password"
+        </FloatingLabel>
+        <FloatingLabel
+          controlId="password2"
+          label="Confirm Password"
+          className="mb-3"
+        >
+          <Form.Control
+            required
             type="password"
-            value={formData.password2}
             onChange={(e) =>
               setFormData({ ...formData, password2: e.target.value })
             }
           />
+        </FloatingLabel>
+        <Button variant="success" type="submit" className="btn-lg w-100 mb-3">
+          Create Account
+        </Button>
+      </Form>
 
-          <button type="submit" className="btn btn-success w-100 py-2 mb-3">
-            Sign Up
-          </button>
-        </form>
-
-        <div className="text-center">
-          <a href="/sign-in">Already have an account?</a>
-        </div>
-      </main>
-    </>
+      <div className="text-center">
+        <Link replace to="/sign-in">
+          Already have an account?
+        </Link>
+      </div>
+    </main>
   );
 };
 

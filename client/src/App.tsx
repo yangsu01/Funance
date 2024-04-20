@@ -1,5 +1,8 @@
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { useState } from "react";
+
+// bootstrap elements
+import { Alert } from "react-bootstrap";
 
 // utilities
 import useToken from "./utils/useToken";
@@ -12,7 +15,7 @@ import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 
 // UI components
-import Navbar from "./components/Navbar";
+import TopNavbar from "./components/TopNavbar";
 import Footer from "./components/Footer";
 
 function App() {
@@ -22,15 +25,32 @@ function App() {
   // access tokens
   const { token, setToken, removeToken } = useToken();
 
-  //states
+  // user authentication
   const [userAuthenticated, setUserAuthenticated] = useState(
     token ? true : false
   );
 
+  // alert flashing
+  let [alertVisible, setAlertVisible] = useState(false);
+  let [alertMessage, setAlertMessage] = useState("");
+  let [alertType, setAlertType] = useState("success");
+
+  const showAlert = (
+    message: string,
+    type: "success" | "danger" | "warning"
+  ) => {
+    setAlertType(type);
+    setAlertMessage(message);
+    setAlertVisible(true);
+  };
+
   // routes
   const routes = [
     { path: "/", component: <Home /> },
-    { path: "/game-rules", component: <GameRules /> },
+    {
+      path: "/game-rules",
+      component: <GameRules userAuthenticated={userAuthenticated} />,
+    },
     { path: "*", component: <NotFound /> },
     {
       path: "/sign-up",
@@ -38,6 +58,7 @@ function App() {
         <SignUp
           setToken={setToken}
           setUserAuthenticated={setUserAuthenticated}
+          showAlert={showAlert}
         />
       ),
     },
@@ -47,22 +68,31 @@ function App() {
         <SignIn
           setToken={setToken}
           setUserAuthenticated={setUserAuthenticated}
+          showAlert={showAlert}
         />
       ),
     },
   ];
 
-  const activePage = useLocation().pathname;
-
   return (
     <>
-      <Navbar
-        activePage={activePage}
+      <TopNavbar
         userAuthenticated={userAuthenticated}
         removeToken={removeToken}
+        setUserAuthenticated={setUserAuthenticated}
       />
 
-      <main className="container flex-shrink-0 content content-container my-3 w-100">
+      <main className="container flex-shrink-0 content content-container my-4 w-100">
+        {alertVisible && (
+          <Alert
+            variant={alertType}
+            onClose={() => setAlertVisible(false)}
+            dismissible
+            className=""
+          >
+            {alertMessage}
+          </Alert>
+        )}
         <Routes>
           {routes.map((route) => (
             <Route

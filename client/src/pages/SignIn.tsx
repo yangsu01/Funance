@@ -1,23 +1,16 @@
 import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { Form, FloatingLabel, Button } from "react-bootstrap";
 import api from "../utils/api";
-
-// components
-import Alert from "../components/Alert";
-import FormInput from "../components/FormInput";
 
 interface Props {
   setToken: (accessToken: string) => void;
   setUserAuthenticated: (authenticated: boolean) => void;
+  showAlert: (message: string, type: "success" | "danger" | "warning") => void;
 }
 
-const SignIn = ({ setToken, setUserAuthenticated }: Props) => {
-  // alert flashing
-  let [alertVisible, setAlertVisible] = useState(false);
-  let [alertMessage, setAlertMessage] = useState("");
-
-  const closeAlert = () => {
-    setAlertVisible(false);
-  };
+const SignIn = ({ setToken, setUserAuthenticated, showAlert }: Props) => {
+  const navigate = useNavigate();
 
   // form processing
   const [formData, setFormData] = useState({
@@ -25,9 +18,8 @@ const SignIn = ({ setToken, setUserAuthenticated }: Props) => {
     password: "",
   });
 
-  const signInUser = async (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     // call backend api
     try {
       const response = await api.post("/signin-user", {
@@ -37,60 +29,56 @@ const SignIn = ({ setToken, setUserAuthenticated }: Props) => {
       setToken(response.data.accessToken);
       setUserAuthenticated(true);
 
-      window.location.href = "/";
+      showAlert(`Welcome back ${response.data.username}!`, "success");
+
+      navigate(-1);
     } catch (error: any) {
       if (error.response && error.response.status === 401) {
-        setAlertMessage(error.response.data.msg);
-        setAlertVisible(true);
+        showAlert(error.response.data.msg, "danger");
       } else {
-        setAlertMessage(error.message);
-        setAlertVisible(true);
+        showAlert(error.response.data.msg, "danger");
       }
     }
   };
 
   return (
-    <>
-      {alertVisible && (
-        <Alert category="danger" onClose={closeAlert}>
-          {alertMessage}
-        </Alert>
-      )}
+    <main className="form-login m-auto mt-5">
+      <h3 className="display-6 fw-bold text-white mb-3">Sign In</h3>
 
-      <main className="form-login m-auto mt-5">
-        <form onSubmit={signInUser}>
-          <h3 className="display-6 fw-bold text-white">Sign In</h3>
-
-          <FormInput
-            id="email"
-            label="Email Address"
+      <Form onSubmit={onSubmit}>
+        <FloatingLabel controlId="email" label="Email address" className="mb-3">
+          <Form.Control
+            required
             type="email"
-            value={formData.email}
             onChange={(e) =>
               setFormData({ ...formData, email: e.target.value })
             }
           />
-
-          <FormInput
-            id="password"
-            label="Password"
+        </FloatingLabel>
+        <FloatingLabel
+          controlId="password"
+          label="Confirm Password"
+          className="mb-3"
+        >
+          <Form.Control
+            required
             type="password"
-            value={formData.password}
             onChange={(e) =>
               setFormData({ ...formData, password: e.target.value })
             }
           />
+        </FloatingLabel>
+        <Button variant="success" type="submit" className="btn-lg w-100 mb-3">
+          Sign In
+        </Button>
+      </Form>
 
-          <button type="submit" className="btn btn-success w-100 py-2 mb-3">
-            Sign in
-          </button>
-        </form>
-
-        <div className="text-center">
-          <a href="/sign-up">Don't have an account?</a>
-        </div>
-      </main>
-    </>
+      <div className="text-center">
+        <Link replace to="/sign-up">
+          Don't have an account?
+        </Link>
+      </div>
+    </main>
   );
 };
 
