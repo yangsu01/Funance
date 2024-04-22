@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { useMediaQuery } from "react-responsive";
 import { NavLink, useNavigate } from "react-router-dom";
 
 // bootstrap elements
@@ -18,6 +20,14 @@ const TopNavbar = ({
   setUserAuthenticated,
 }: Props) => {
   const navigate = useNavigate();
+  const [expanded, setExpanded] = useState(false);
+  const isSmallScreen = useMediaQuery({ maxWidth: 767 });
+
+  const handleToggle = () => {
+    if (isSmallScreen) {
+      setExpanded(!expanded);
+    }
+  };
 
   const signOutUser = async () => {
     // call backend api
@@ -34,50 +44,66 @@ const TopNavbar = ({
   };
 
   return (
-    <Navbar data-bs-theme="dark" bg="dark" expand="lg md" className="m-3">
-      <Container fluid>
-        <NavLink to="/" className="me-3">
+    <Navbar expand="md" expanded={expanded} className="mt-3">
+      <Container>
+        <Navbar.Brand href="/" className="mb-3">
           <img
             src="funance_logo.jpg"
             alt="FUNance logo"
             width="36"
             height="36"
           />
-        </NavLink>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="me-auto">
-            <NavLink to="/" className="nav-link">
+        </Navbar.Brand>
+        <Navbar.Toggle
+          aria-controls="responsive-navbar-nav"
+          onClick={handleToggle}
+          className="mb-3"
+        />
+        <Navbar.Collapse id="responsive-navbar-nav">
+          <Nav className="me-auto mb-3">
+            <Nav.Link as={NavLink} to="/" onClick={handleToggle}>
               Home
-            </NavLink>
+            </Nav.Link>
 
-            <NavLink to="/about" className="nav-link">
+            <Nav.Link as={NavLink} to="/about" onClick={handleToggle}>
               About
-            </NavLink>
+            </Nav.Link>
 
-            <NavLink to="/blog" className="nav-link">
+            <Nav.Link as={NavLink} to="/blog" onClick={handleToggle}>
               Blog
-            </NavLink>
-
-            {/* portfolio sim dropdown */}
+            </Nav.Link>
             <NavDropdown title="Portfolio Simulator" id="portfolio-simulator">
-              <NavLink to="/game-rules" className="nav-link ps-3">
+              <NavDropdown.Item
+                as={NavLink}
+                to="/game-rules"
+                className="nav-link ps-3"
+                onClick={handleToggle}
+              >
                 Game Rules
-              </NavLink>
+              </NavDropdown.Item>
               {userAuthenticated && (
                 <>
                   <NavDropdown.Divider />
-                  <NavLink to="/games-list" className="nav-link ps-3">
+                  <NavDropdown.Item
+                    as={NavLink}
+                    to="/games-list"
+                    className="nav-link ps-3"
+                    onClick={handleToggle}
+                  >
                     Games List
-                  </NavLink>
-                  <NavLink to="/my-portfolio" className="nav-link ps-3">
+                  </NavDropdown.Item>
+                  <NavDropdown.Item
+                    as={NavLink}
+                    to="/my-portfolio"
+                    className="nav-link ps-3"
+                    onClick={handleToggle}
+                  >
                     My Portfolio
-                  </NavLink>
+                  </NavDropdown.Item>
                 </>
               )}
             </NavDropdown>
           </Nav>
-
           <Nav>
             {userAuthenticated ? (
               <Button variant="outline-light mb-2" onClick={signOutUser}>
@@ -88,12 +114,14 @@ const TopNavbar = ({
                 <NavLink
                   to="/sign-in"
                   className="btn btn-outline-light me-2 mb-2"
+                  onClick={handleToggle}
                 >
                   Sign In
                 </NavLink>
                 <NavLink
                   to="/sign-up"
                   className="btn btn-outline-light me-2 mb-2"
+                  onClick={handleToggle}
                 >
                   Sign Up
                 </NavLink>

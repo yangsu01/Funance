@@ -56,10 +56,17 @@
 
 .alert {
   position: fixed;
-  top: 75px; /* Adjust this value to position the alert below the nav bar */
+  top: 75px;
   left: 0;
   right: 0;
   margin: auto;
-  width: calc(100% - 20px); /* Adjust the width as needed */
+  width: calc(100% - 20px);
   max-width: 1000px;
+}
+
+/* selected dropdown item color  */
+.dropdown-item.active,
+.dropdown-item:active {
+  background-color: rgba(255, 255, 255, 0);
+  color: rgb(255, 255, 255); 
 }
