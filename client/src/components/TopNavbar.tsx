@@ -46,24 +46,25 @@ const TopNavbar = (props: Props) => {
       sticky="top"
       expand="md"
       expanded={expanded}
-      className="mt-3 bg-dark"
+      className="mt-3 bg-dark mx-3"
     >
       <Container>
-        <Navbar.Brand href="/" className="mb-3">
+        <Navbar.Brand href="/" className="d-flex align-items-center">
           <img
             src="funance_logo.jpg"
             alt="FUNance logo"
-            width="36"
-            height="36"
+            width="30"
+            height="30"
+            className="me-2"
           />
+          <strong>FUNance</strong>
         </Navbar.Brand>
         <Navbar.Toggle
           aria-controls="responsive-navbar-nav"
           onClick={handleToggle}
-          className="mb-3"
         />
         <Navbar.Collapse id="responsive-navbar-nav">
-          <Nav className="me-auto mb-3">
+          <Nav className="me-auto pt-1">
             <Nav.Link as={NavLink} to="/" onClick={handleToggle}>
               Home
             </Nav.Link>
@@ -109,21 +110,31 @@ const TopNavbar = (props: Props) => {
           </Nav>
           <Nav>
             {userAuthenticated ? (
-              <Button variant="outline-light mb-2" onClick={signOutUser}>
+              <Button
+                variant="outline-light"
+                onClick={signOutUser}
+                className={`btn btn-outline-light me-2 ${
+                  isSmallScreen ? "mt-2 mb-2" : ""
+                }`}
+              >
                 Sign Out
               </Button>
             ) : (
               <>
                 <NavLink
                   to="/sign-in"
-                  className="btn btn-outline-light me-2 mb-2"
+                  className={`btn btn-outline-light me-2 ${
+                    isSmallScreen ? "mt-2 mb-2" : ""
+                  }`}
                   onClick={handleToggle}
                 >
                   Sign In
                 </NavLink>
                 <NavLink
                   to="/sign-up"
-                  className="btn btn-outline-light me-2 mb-2"
+                  className={`btn btn-outline-light me-2 ${
+                    isSmallScreen ? "mt-2 mb-2" : ""
+                  }`}
                   onClick={handleToggle}
                 >
                   Sign Up
