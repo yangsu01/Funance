@@ -85,7 +85,7 @@ def join_game():
     game = check_game_password(name, password)
 
     if game == -1:
-        return jsonify(msg='Incorrect Password!'), 404
+        return jsonify(msg='Incorrect Password!'), 401
 
     user_id = current_user.id
     game_id = game
