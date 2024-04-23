@@ -1,9 +1,11 @@
-interface Props {
+type Props = {
   tableName: string;
   content: object[];
-}
+};
 
-const Table = ({ tableName, content }: Props) => {
+const Table = (props: Props) => {
+  const { tableName, content } = props;
+
   let headers = Object.keys(content[0]);
 
   return (

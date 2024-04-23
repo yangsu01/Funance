@@ -1,10 +1,12 @@
 import { Navigate, Outlet } from "react-router-dom";
 
-interface Props {
+type Props = {
   userAuthenticated: boolean;
-}
+};
 
-const PrivateRoutes = ({ userAuthenticated }: Props) => {
+const PrivateRoutes = (props: Props) => {
+  const { userAuthenticated } = props;
+
   return userAuthenticated ? (
     <Outlet />
   ) : (

@@ -5,22 +5,21 @@ import api from "../utils/api";
 // bootstrap elements
 import { Form, FloatingLabel, Button } from "react-bootstrap";
 
-interface Props {
+type Props = {
   setToken: (accessToken: string) => void;
   setUserAuthenticated: (authenticated: boolean) => void;
   showAlert: (message: string, type: "success" | "danger" | "warning") => void;
-}
+};
 
-const SignUp = ({ setToken, setUserAuthenticated, showAlert }: Props) => {
-  const navigate = useNavigate();
-
-  // form processing
+const SignUp = (props: Props) => {
+  const { setToken, setUserAuthenticated, showAlert } = props;
   const [formData, setFormData] = useState({
     email: "",
     username: "",
     password1: "",
     password2: "",
   });
+  const navigate = useNavigate();
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

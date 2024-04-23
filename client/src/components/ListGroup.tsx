@@ -1,21 +1,18 @@
 import { useState } from "react";
 
-// {items: [], heading: string}
-interface Props {
+type Props = {
   items: string[];
   heading: string;
-  // (item: string) => void
   onSelectItem: (item: string) => void;
-}
+};
 
-function ListGroup({ items, heading, onSelectItem }: Props) {
-  //   Hook
+function ListGroup(props: Props) {
+  const { items, heading, onSelectItem } = props;
   const [selectedIndex, setSelectedIndex] = useState(-1);
 
   return (
     <>
       <h1>{heading}</h1>
-      {/* does not renderlist if no items in array */}
       {items.length === 0 && <p>No items found</p>}
       <ul className="list-group">
         {items.map((item, index) => (

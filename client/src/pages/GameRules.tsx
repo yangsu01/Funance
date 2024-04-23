@@ -1,10 +1,11 @@
 import Title from "../components/Title";
 
-interface Props {
+type Props = {
   userAuthenticated: boolean;
-}
+};
 
-const GameRules = ({ userAuthenticated }: Props) => {
+const GameRules = (props: Props) => {
+  const { userAuthenticated } = props;
   const title = "Investment Simulator";
   const subTitle = "Create a portfolio and watch it grow!";
 

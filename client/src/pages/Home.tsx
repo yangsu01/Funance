@@ -6,6 +6,7 @@ import Title from "../components/Title";
 const Home = () => {
   const title = "Welcome to Funance";
   const subTitle = "Investing is fun!";
+
   return (
     <div className="home-container">
       <Title title={title} subTitle={subTitle} />

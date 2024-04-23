@@ -3,20 +3,19 @@ import { useNavigate, Link } from "react-router-dom";
 import { Form, FloatingLabel, Button } from "react-bootstrap";
 import api from "../utils/api";
 
-interface Props {
+type Props = {
   setToken: (accessToken: string) => void;
   setUserAuthenticated: (authenticated: boolean) => void;
   showAlert: (message: string, type: "success" | "danger" | "warning") => void;
-}
+};
 
-const SignIn = ({ setToken, setUserAuthenticated, showAlert }: Props) => {
-  const navigate = useNavigate();
-
-  // form processing
+const SignIn = (props: Props) => {
+  const { setToken, setUserAuthenticated, showAlert } = props;
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+  const navigate = useNavigate();
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

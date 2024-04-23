@@ -1,9 +1,11 @@
-interface Props {
+type Props = {
   title: string;
   subTitle: string;
-}
+};
 
-const Title = ({ title, subTitle }: Props) => {
+const Title = (props: Props) => {
+  const { title, subTitle } = props;
+
   return (
     <div className="border-bottom mb-4">
       <h1 className="display-5 fw-bold text-white">{title}</h1>
