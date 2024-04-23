@@ -86,11 +86,11 @@ const TopNavbar = ({
                   <NavDropdown.Divider />
                   <NavDropdown.Item
                     as={NavLink}
-                    to="/games-list"
+                    to="/game-list"
                     className="nav-link ps-3"
                     onClick={handleToggle}
                   >
-                    Games List
+                    Game List
                   </NavDropdown.Item>
                   <NavDropdown.Item
                     as={NavLink}
