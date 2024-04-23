@@ -53,7 +53,7 @@ const SignUp = ({ setToken, setUserAuthenticated, showAlert }: Props) => {
       navigate("/", {
         replace: true,
         state: {
-          alert: `Welcome back ${response.data.username}!`,
+          alert: `Welcome ${formData.username}!`,
           alertType: "success",
         },
       });
