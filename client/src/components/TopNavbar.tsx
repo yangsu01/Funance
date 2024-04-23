@@ -8,17 +8,15 @@ import { Button, Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
 // utils
 import api from "../utils/api";
 
-interface Props {
+type Props = {
   userAuthenticated: boolean;
   removeToken: () => void;
   setUserAuthenticated: (authenticated: boolean) => void;
-}
+};
 
-const TopNavbar = ({
-  userAuthenticated,
-  removeToken,
-  setUserAuthenticated,
-}: Props) => {
+const TopNavbar = (props: Props) => {
+  const { userAuthenticated, removeToken, setUserAuthenticated } = props;
+
   const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
   const isSmallScreen = useMediaQuery({ maxWidth: 767 });
@@ -44,7 +42,12 @@ const TopNavbar = ({
   };
 
   return (
-    <Navbar expand="md" expanded={expanded} className="mt-3">
+    <Navbar
+      sticky="top"
+      expand="md"
+      expanded={expanded}
+      className="mt-3 bg-dark"
+    >
       <Container>
         <Navbar.Brand href="/" className="mb-3">
           <img
