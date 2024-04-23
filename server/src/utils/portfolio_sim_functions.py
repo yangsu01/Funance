@@ -338,6 +338,7 @@ def get_games_list(user_id: int) -> list:
             'startDate': game.start_date.strftime("%B %d, %Y"),
             'endDate': game.end_date.strftime("%B %d, %Y") if game.end_date is not None else 'n/a',
             'details': game_details,
+            'passwordRequired': game.password is not None,
         })
 
     return game_list
