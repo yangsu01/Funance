@@ -53,6 +53,17 @@ function App() {
     setAlertVisible(true);
   };
 
+  // auto close alert after 5 seconds
+  useEffect(() => {
+    if (alertMessage) {
+      const timer = setTimeout(() => {
+        setAlertVisible(false);
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [alertMessage]);
+
   useEffect(() => {
     if (state) {
       showAlert(state.alert, state.alertType);
