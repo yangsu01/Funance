@@ -1,19 +1,22 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { Card, Col, Row, Button } from "react-bootstrap";
+import { Col, Row } from "react-bootstrap";
 
+// components
 import Title from "../components/Title";
+import PopupForm from "../components/PopupForm";
+import GameCard from "../components/GameCard";
 
 import api from "../utils/api";
 
-interface Props {
+type Props = {
   token: string | null;
   removeToken: () => void;
   showAlert: (message: string, type: "success" | "danger" | "warning") => void;
-}
+};
 
-interface Game {
+type Game = {
   name: string;
   creator: string;
   startDate: string;
@@ -22,15 +25,24 @@ interface Game {
   participants: number;
   joinedGame: boolean;
   details: string;
-}
+  passwordRequired: boolean;
+};
 
-const GameList = ({ token, removeToken, showAlert }: Props) => {
+const GameList = (props: Props) => {
+  const { token, removeToken, showAlert } = props;
+
+  // page title
   const title = "Game List";
   const subTitle = "Complete list of all current and past games!";
-  const navigate = useNavigate();
-  const [games, setGames] = useState<Game[]>([]);
 
-  const callAPI = async () => {
+  const [games, setGames] = useState<Game[]>([]);
+  const [showPopup, setShowPopup] = useState(false);
+  const [gameName, setGameName] = useState("");
+  // const [passwordRequired, setPasswordRequired] = useState(false);
+
+  const navigate = useNavigate();
+
+  const getGameList = async () => {
     try {
       const response = await api.get("/game-list", {
         headers: {
@@ -56,48 +68,76 @@ const GameList = ({ token, removeToken, showAlert }: Props) => {
 
   useEffect(() => {
     if (token) {
-      callAPI();
+      getGameList();
     } else {
       showAlert("An unexpected error has occurred", "warning");
     }
   }, []);
 
+  const handleJoin = (passwordRequired: boolean, name: string) => {
+    setGameName(name);
+
+    if (passwordRequired) {
+      setShowPopup(true);
+    } else {
+      joinGame(name);
+    }
+  };
+
+  const joinGame = async (name: string, password?: string) => {
+    try {
+      const response = await api.post(
+        "/join-game",
+        {
+          gameName: name,
+          gamePassword: password,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      showAlert(response.data.msg, "success");
+    } catch (error: any) {
+      showAlert(error.response.data.msg, "danger");
+      console.log(gameName, password);
+    }
+  };
+
   return (
     <>
+      {/* popup */}
+      <PopupForm
+        show={showPopup}
+        name={gameName}
+        content="Please enter the password to join the game."
+        submitName="Join Game"
+        onClose={() => setShowPopup(false)}
+        onSubmit={joinGame}
+      />
+
+      {/* page title */}
       <Title title={title} subTitle={subTitle} />
+
       {/* list of all games */}
       <Row xs={1} md={2} className="g-4">
         {games &&
           games.map((game, index) => (
             <Col key={index}>
-              <Card>
-                <Card.Header>
-                  <strong>{game.status}</strong>
-                </Card.Header>
-                <Card.Body>
-                  <Card.Title>
-                    <strong>{game.name}</strong>
-                  </Card.Title>
-                  <Card.Subtitle className="pb-2 text-muted">
-                    {`Created by: ${game.creator}`}
-                  </Card.Subtitle>
-                  <Card.Text>
-                    {`Current participants: ${game.participants}`}
-                    <br />
-                    {`${
-                      game.status === "Not Started"
-                        ? `Starts on: ${game.startDate}`
-                        : game.status === "In Progress"
-                        ? `Ends on: ${game.endDate}`
-                        : `Ended on: ${game.endDate}`
-                    }`}
-                    <br /> <br />
-                    <strong>Details:</strong> {""}
-                    {game.details}
-                  </Card.Text>
-                  <Button variant="outline-light">Join Game</Button>
-                </Card.Body>
-              </Card>
+              <GameCard
+                status={game.status}
+                name={game.name}
+                creator={game.creator}
+                participants={game.participants}
+                startDate={game.startDate}
+                endDate={game.endDate}
+                details={game.details}
+                joinedGame={game.joinedGame}
+                onJoin={() => {
+                  handleJoin(game.passwordRequired, game.name);
+                }}
+              />
             </Col>
           ))}
       </Row>
