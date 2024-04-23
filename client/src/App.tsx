@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 // bootstrap elements
@@ -42,6 +42,7 @@ function App() {
   let [alertType, setAlertType] = useState("success");
 
   const { state } = useLocation();
+  const navigate = useNavigate();
 
   const showAlert = (
     message: string,
@@ -55,6 +56,7 @@ function App() {
   useEffect(() => {
     if (state) {
       showAlert(state.alert, state.alertType);
+      navigate(location.pathname, { replace: true });
     }
   }, [state]);
 
@@ -68,17 +70,6 @@ function App() {
       />
 
       <main className="container flex-shrink-0 content content-container my-4 w-100">
-        {/* alert flashing */}
-        {alertVisible && (
-          <Alert
-            variant={alertType}
-            onClose={() => setAlertVisible(false)}
-            dismissible
-          >
-            {alertMessage}
-          </Alert>
-        )}
-
         {/* routes */}
         <Routes>
           <Route path="*" element={<NotFound />} />
@@ -115,7 +106,7 @@ function App() {
             element={<PrivateRoutes userAuthenticated={userAuthenticated} />}
           >
             <Route
-              path="/games-list"
+              path="/game-list"
               element={
                 <GameList
                   token={token}
@@ -132,6 +123,17 @@ function App() {
 
       {/* footer */}
       <Footer version={version} />
+
+      {/* alert flashing */}
+      {alertVisible && (
+        <Alert
+          variant={alertType}
+          onClose={() => setAlertVisible(false)}
+          dismissible
+        >
+          {alertMessage}
+        </Alert>
+      )}
     </>
   );
 }
