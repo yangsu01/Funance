@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 // components
 import Title from "../components/Title";
 
@@ -12,11 +14,9 @@ const Home = () => {
         Join me on my journey of learning about everything finance, especially
         the quantitative side of it! Be sure to Check out my latest{" "}
         <strong>Weekly blog</strong> posts uploaded on{" "}
-        <strong>
-          <a className="text-white" href="/blog">
-            Funance Blog
-          </a>
-        </strong>{" "}
+        <Link to="/blog" className="text-white">
+          Funance Blog
+        </Link>{" "}
         where I explore and learn about different applications of math and
         datascience in finance and investing.
       </p>
@@ -29,12 +29,14 @@ const Home = () => {
         Compete against others (or yourself) to see who can make the most money
         in a set amount of time! All prices are based on real-time stock data.
         check out the{" "}
-        <strong>
-          <a className="text-white" href="/game-rules">
-            game rules
-          </a>
-        </strong>{" "}
-        to get started.
+        <Link to="/game-rules" className="text-white">
+          Game Rules
+        </Link>{" "}
+        to get started. Want to see all the game lobbies available? Head over to{" "}
+        <Link to="/game-list" className="text-white">
+          Game List
+        </Link>{" "}
+        for the full list of games (you will need to be signed in to view).
       </p>
     </div>
   );
