@@ -33,12 +33,12 @@ const GameList = (props: Props) => {
 
   // page title
   const title = "Game List";
-  const subTitle = "Complete list of all current and past games!";
+  const subtitle = "Complete list of all games!";
+  const buttonText = "Create Game";
 
   const [games, setGames] = useState<Game[]>([]);
   const [showPopup, setShowPopup] = useState(false);
   const [gameName, setGameName] = useState("");
-  // const [passwordRequired, setPasswordRequired] = useState(false);
 
   const navigate = useNavigate();
 
@@ -74,6 +74,10 @@ const GameList = (props: Props) => {
     }
   }, []);
 
+  const handleCreateGame = () => {
+    navigate("/create-game");
+  };
+
   const handleJoin = (passwordRequired: boolean, name: string) => {
     setGameName(name);
 
@@ -98,7 +102,7 @@ const GameList = (props: Props) => {
           },
         }
       );
-      showAlert(response.data.msg, "success");
+      showAlert(response.data.msg, "success"); // change to navigate to game portfolio?
     } catch (error: any) {
       showAlert(error.response.data.msg, "danger");
       console.log(gameName, password);
@@ -107,6 +111,14 @@ const GameList = (props: Props) => {
 
   return (
     <>
+      {/* page title */}
+      <Title
+        title={title}
+        subtitle={subtitle}
+        button={buttonText}
+        onClick={handleCreateGame}
+      />
+
       {/* popup */}
       <PopupForm
         show={showPopup}
@@ -116,9 +128,6 @@ const GameList = (props: Props) => {
         onClose={() => setShowPopup(false)}
         onSubmit={joinGame}
       />
-
-      {/* page title */}
-      <Title title={title} subTitle={subTitle} />
 
       {/* list of all games */}
       <Row xs={1} md={2} className="g-4">
