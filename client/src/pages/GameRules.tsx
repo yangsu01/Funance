@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 import Title from "../components/Title";
 
 type Props = {
@@ -7,11 +9,11 @@ type Props = {
 const GameRules = (props: Props) => {
   const { userAuthenticated } = props;
   const title = "Investment Simulator";
-  const subTitle = "Create a portfolio and watch it grow!";
+  const subtitle = "Create a portfolio and watch it grow!";
 
   return (
     <>
-      <Title title={title} subTitle={subTitle} />
+      <Title title={title} subtitle={subtitle} />
       <p className="fs-5">
         Create a portfolio by creating or joining a game and start investing!
         You will be given some starting funds (depending on the specific game)
@@ -25,22 +27,21 @@ const GameRules = (props: Props) => {
         finance bro by out-performing other peoples portfolios!
       </p>
       <p className="fs-5">
-        To get started{" "}
+        To get started,{" "}
         {userAuthenticated ? (
           <></>
         ) : (
-          <strong>
-            <a className="text-white" href="/sign-up">
-              create an account
-            </a>
-          </strong>
+          <>
+            <Link className="text-white" to="/sign-up">
+              Create an Account
+            </Link>{" "}
+            and
+          </>
         )}{" "}
         create/join a game by checking out the{" "}
-        <strong>
-          <a className="text-white" href="/games-list">
-            games list
-          </a>
-        </strong>
+        <Link className="text-white" to="/game-list">
+          Game List
+        </Link>
       </p>
       <h5 className="text-white">Details:</h5>
       <ul className="fs-5">
