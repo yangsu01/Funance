@@ -6,8 +6,7 @@ type Props = {
   userAuthenticated: boolean;
 };
 
-const GameRules = (props: Props) => {
-  const { userAuthenticated } = props;
+const GameRules = ({ userAuthenticated }: Props) => {
   const title = "Investment Simulator";
   const subtitle = "Create a portfolio and watch it grow!";
 

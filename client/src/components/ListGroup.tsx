@@ -6,8 +6,7 @@ type Props = {
   onSelectItem: (item: string) => void;
 };
 
-function ListGroup(props: Props) {
-  const { items, heading, onSelectItem } = props;
+function ListGroup({ items, heading, onSelectItem }: Props) {
   const [selectedIndex, setSelectedIndex] = useState(-1);
 
   return (

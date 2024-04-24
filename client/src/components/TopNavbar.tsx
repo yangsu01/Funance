@@ -14,9 +14,11 @@ type Props = {
   setUserAuthenticated: (authenticated: boolean) => void;
 };
 
-const TopNavbar = (props: Props) => {
-  const { userAuthenticated, removeToken, setUserAuthenticated } = props;
-
+const TopNavbar = ({
+  userAuthenticated,
+  removeToken,
+  setUserAuthenticated,
+}: Props) => {
   const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
   const isSmallScreen = useMediaQuery({ maxWidth: 767 });

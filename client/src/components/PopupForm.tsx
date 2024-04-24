@@ -10,8 +10,14 @@ type Props = {
   submitName: string;
 };
 
-const PopupForm = (props: Props) => {
-  const { show, onClose, onSubmit, name, content, submitName } = props;
+const PopupForm = ({
+  show,
+  onClose,
+  onSubmit,
+  name,
+  content,
+  submitName,
+}: Props) => {
   const [formData, setFormData] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {

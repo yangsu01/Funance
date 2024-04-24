@@ -4,9 +4,7 @@ type Props = {
   userAuthenticated: boolean;
 };
 
-const PrivateRoutes = (props: Props) => {
-  const { userAuthenticated } = props;
-
+const PrivateRoutes = ({ userAuthenticated }: Props) => {
   return userAuthenticated ? (
     <Outlet />
   ) : (

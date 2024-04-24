@@ -3,9 +3,7 @@ type Props = {
   content: object[];
 };
 
-const Table = (props: Props) => {
-  const { tableName, content } = props;
-
+const Table = ({ tableName, content }: Props) => {
   let headers = Object.keys(content[0]);
 
   return (

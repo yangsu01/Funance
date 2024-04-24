@@ -8,8 +8,7 @@ type Props = {
   onClick?: () => void;
 };
 
-const Title = (props: Props) => {
-  const { title, subtitle, button, onClick } = props;
+const Title = ({ title, subtitle, button, onClick }: Props) => {
   const isSmallScreen = useMediaQuery({ maxWidth: 767 });
 
   return (

@@ -4,8 +4,7 @@ type Props = {
   version: string;
 };
 
-const Footer = (props: Props) => {
-  const { version } = props;
+const Footer = ({ version }: Props) => {
   const githubUrl = "https://github.com/yangsu01";
   const linkedInUrl = "https://www.linkedin.com/in/yangsu01/";
   const instagramUrl = "https://www.instagram.com/soappppics/";
