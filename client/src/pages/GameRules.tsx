@@ -39,7 +39,7 @@ const GameRules = (props: Props) => {
           </>
         )}{" "}
         create/join a game by checking out the{" "}
-        <Link className="text-white" to="/game-list">
+        <Link className="text-white" to="/games">
           Game List
         </Link>
       </p>

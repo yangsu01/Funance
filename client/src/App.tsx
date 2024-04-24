@@ -117,22 +117,20 @@ function App() {
           <Route
             element={<PrivateRoutes userAuthenticated={userAuthenticated} />}
           >
-            <Route
-              path="/game-list"
-              element={
-                <GameList
-                  token={token}
-                  removeToken={removeToken}
-                  showAlert={showAlert}
-                />
-              }
-            />
-            <Route
-              path="/create-game"
-              element={<CreateGame token={token} showAlert={showAlert} />}
-            />
+            <Route path="/games">
+              <Route
+                index
+                element={<GameList token={token} showAlert={showAlert} />}
+              />
+              <Route
+                path="create-game"
+                element={<CreateGame token={token} showAlert={showAlert} />}
+              />
+              <Route path="leaderboard">
+                <Route path=":id" element={<GameLeaderboard token={token} />} />
+              </Route>
+            </Route>
             <Route path="/my-portfolio" element={<MyPortfolio />} />
-            <Route path="/game-leaderboard" element={<GameLeaderboard />} />
           </Route>
         </Routes>
       </main>

@@ -33,7 +33,7 @@ const Home = () => {
         </Link>{" "}
         to get started. Want to see all the game lobbies available? Head over to
         the{" "}
-        <Link to="/game-list" className="text-white">
+        <Link to="/games" className="text-white">
           Game List
         </Link>{" "}
         for the full list of games (you will need to be signed in to view this

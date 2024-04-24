@@ -90,7 +90,7 @@ const TopNavbar = (props: Props) => {
                   <NavDropdown.Divider />
                   <NavDropdown.Item
                     as={NavLink}
-                    to="/game-list"
+                    to="/games"
                     className="nav-link ps-3"
                     onClick={handleToggle}
                   >
@@ -98,7 +98,7 @@ const TopNavbar = (props: Props) => {
                   </NavDropdown.Item>
                   <NavDropdown.Item
                     as={NavLink}
-                    to="/create-game"
+                    to="/games/create-game"
                     className="nav-link ps-3"
                     onClick={handleToggle}
                   >

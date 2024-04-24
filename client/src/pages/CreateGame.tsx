@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 // components
@@ -26,7 +25,7 @@ const CreateGame = (props: Props) => {
   const navigate = useNavigate();
 
   const handleGameList = () => {
-    navigate("/game-list");
+    navigate("/games");
   };
 
   const handleCreateGame = (formData: CreateGameFormData) => {
@@ -38,9 +37,6 @@ const CreateGame = (props: Props) => {
     const currentDateNum = currentDate.setDate(currentDate.getDate());
 
     // handle empty variables
-    // if (formData.feeType === "") {
-    //   formData.feeType = "";
-    // }
     if (!formData.endDate) {
       delete formData.endDate;
     }
