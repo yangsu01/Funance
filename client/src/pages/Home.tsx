@@ -5,11 +5,11 @@ import Title from "../components/Title";
 
 const Home = () => {
   const title = "Welcome to Funance";
-  const subTitle = "Investing is fun!";
+  const subtitle = "Investing is fun!";
 
   return (
     <div className="home-container">
-      <Title title={title} subTitle={subTitle} />
+      <Title title={title} subtitle={subtitle} />
 
       <p className="fs-5">
         Join me on my journey of learning about everything finance, especially
@@ -22,22 +22,22 @@ const Home = () => {
         datascience in finance and investing.
       </p>
 
-      <br />
-
       <p className="fs-5">
         Want to test the waters or try out a new investing strategy? Create/join
-        a lobby and start trading in the <strong>portfolio simulator</strong>:
+        a lobby and start trading in the <strong>Portfolio Simulator</strong>:
         Compete against others (or yourself) to see who can make the most money
         in a set amount of time! All prices are based on real-time stock data.
         check out the{" "}
         <Link to="/game-rules" className="text-white">
           Game Rules
         </Link>{" "}
-        to get started. Want to see all the game lobbies available? Head over to{" "}
+        to get started. Want to see all the game lobbies available? Head over to
+        the{" "}
         <Link to="/game-list" className="text-white">
           Game List
         </Link>{" "}
-        for the full list of games (you will need to be signed in to view).
+        for the full list of games (you will need to be signed in to view this
+        page).
       </p>
     </div>
   );
