@@ -14,6 +14,7 @@ import About from "./pages/About";
 import BlogList from "./pages/BlogList";
 import GameRules from "./pages/GameRules";
 import GameList from "./pages/GameList";
+import CreateGame from "./pages/CreateGame";
 import MyPortfolio from "./pages/MyPortfolio";
 import GameLeaderboard from "./pages/GameLeaderboard";
 import SignIn from "./pages/SignIn";
@@ -125,6 +126,10 @@ function App() {
                   showAlert={showAlert}
                 />
               }
+            />
+            <Route
+              path="/create-game"
+              element={<CreateGame token={token} showAlert={showAlert} />}
             />
             <Route path="/my-portfolio" element={<MyPortfolio />} />
             <Route path="/game-leaderboard" element={<GameLeaderboard />} />

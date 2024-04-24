@@ -51,8 +51,8 @@ const TopNavbar = (props: Props) => {
       <Container>
         <Navbar.Brand href="/" className="d-flex align-items-center">
           <img
-            src="funance_logo.jpg"
-            alt="FUNance logo"
+            src="funance_logo.png"
+            alt="logo"
             width="30"
             height="30"
             className="me-2"
@@ -98,6 +98,14 @@ const TopNavbar = (props: Props) => {
                   </NavDropdown.Item>
                   <NavDropdown.Item
                     as={NavLink}
+                    to="/create-game"
+                    className="nav-link ps-3"
+                    onClick={handleToggle}
+                  >
+                    Create Game
+                  </NavDropdown.Item>
+                  <NavDropdown.Item
+                    as={NavLink}
                     to="/my-portfolio"
                     className="nav-link ps-3"
                     onClick={handleToggle}
@@ -113,9 +121,7 @@ const TopNavbar = (props: Props) => {
               <Button
                 variant="outline-light"
                 onClick={signOutUser}
-                className={`btn btn-outline-light me-2 ${
-                  isSmallScreen ? "mt-2 mb-2" : ""
-                }`}
+                className={`me-2 ${isSmallScreen ? "mt-2 mb-2" : ""}`}
               >
                 Sign Out
               </Button>
