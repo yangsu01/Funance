@@ -49,23 +49,21 @@ const SignIn = (props: Props) => {
       <h3 className="display-6 fw-bold text-white mb-3">Sign In</h3>
 
       <Form onSubmit={onSubmit}>
-        <FloatingLabel controlId="email" label="Email address" className="mb-3">
+        <FloatingLabel controlId="email" label="Email" className="mb-3">
           <Form.Control
             required
             type="email"
+            placeholder="Enter email"
             onChange={(e) =>
               setFormData({ ...formData, email: e.target.value })
             }
           />
         </FloatingLabel>
-        <FloatingLabel
-          controlId="password"
-          label="Confirm Password"
-          className="mb-3"
-        >
+        <FloatingLabel controlId="password" label="Password" className="mb-3">
           <Form.Control
             required
             type="password"
+            placeholder="Enter password"
             onChange={(e) =>
               setFormData({ ...formData, password: e.target.value })
             }

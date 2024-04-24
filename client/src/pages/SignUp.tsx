@@ -70,10 +70,11 @@ const SignUp = (props: Props) => {
       <h3 className="display-6 fw-bold text-white mb-3">Sign Up</h3>
 
       <Form onSubmit={onSubmit}>
-        <FloatingLabel controlId="email" label="Email address" className="mb-3">
+        <FloatingLabel controlId="email" label="Email" className="mb-3">
           <Form.Control
             required
             type="email"
+            placeholder="Enter email"
             onChange={(e) =>
               setFormData({ ...formData, email: e.target.value })
             }
@@ -83,6 +84,7 @@ const SignUp = (props: Props) => {
           <Form.Control
             required
             type="text"
+            placeholder="Enter username"
             onChange={(e) =>
               setFormData({ ...formData, username: e.target.value })
             }
@@ -92,6 +94,7 @@ const SignUp = (props: Props) => {
           <Form.Control
             required
             type="password"
+            placeholder="Enter password"
             onChange={(e) =>
               setFormData({ ...formData, password1: e.target.value })
             }
@@ -105,6 +108,7 @@ const SignUp = (props: Props) => {
           <Form.Control
             required
             type="password"
+            placeholder="Confirm password"
             onChange={(e) =>
               setFormData({ ...formData, password2: e.target.value })
             }

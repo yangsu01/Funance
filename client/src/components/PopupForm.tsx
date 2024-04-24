@@ -36,6 +36,7 @@ const PopupForm = (props: Props) => {
             <Form.Control
               required
               type="password"
+              placeholder="Enter game password"
               onChange={(e) => setFormData(e.target.value)}
             />
           </FloatingLabel>
