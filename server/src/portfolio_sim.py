@@ -40,8 +40,8 @@ def create_game():
 
     creator_id = current_user.id
     
-    start_date = datetime.strptime(start_date_str, '%m-%d-%Y').date()
-    end_date = datetime.strptime(end_date_str, '%m-%d-%Y').date() if end_date_str is not None else None
+    start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+    end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date() if end_date_str is not None else None
 
     if check_game_name_exists(name):
         return jsonify(msg='Game name already taken!'), 409
@@ -55,7 +55,7 @@ def create_game():
             end_date,
             starting_cash,
             transaction_fee,
-            fee_type
+            fee_type if fee_type != "" else 'Flat Fee'
         )
 
         portfolio_id = add_portfolio(game_id, creator_id)
