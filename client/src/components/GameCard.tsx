@@ -1,30 +1,15 @@
+import { Link } from "react-router-dom";
 import { Card, Button } from "react-bootstrap";
 
+// custom types
+import { GameInfo } from "../utils/types";
+
 type Props = {
-  status: string;
-  name: string;
-  creator: string;
-  participants: number;
-  startDate: string;
-  endDate: string;
-  details: string;
-  joinedGame: boolean;
+  gameInfo: GameInfo;
   onJoin: () => void;
 };
 
-const GameCard = (props: Props) => {
-  const {
-    status,
-    name,
-    creator,
-    participants,
-    startDate,
-    endDate,
-    details,
-    joinedGame,
-    onJoin,
-  } = props;
-
+const GameCard = ({ gameInfo, onJoin }: Props) => {
   return (
     <Card>
       <Card.Header>
@@ -32,26 +17,26 @@ const GameCard = (props: Props) => {
       </Card.Header>
       <Card.Body>
         <Card.Title>
-          <h3>{name}</h3>
+          <h3>{gameInfo.name}</h3>
         </Card.Title>
         <Card.Subtitle className="pb-3 text-muted">
-          {`Created by: ${creator}`}
+          {`Created by: ${gameInfo.creator}`}
         </Card.Subtitle>
         <Card.Text>
-          {`Current participants: ${participants}`}
+          {`Current participants: ${gameInfo.participants}`}
           <br />
           {`${
             status === "Not Started"
-              ? `Starts on: ${startDate}`
+              ? `Starts on: ${gameInfo.startDate}`
               : status === "In Progress"
-              ? `Ends on: ${endDate}`
-              : `Ended on: ${endDate}`
+              ? `Ends on: ${gameInfo.endDate}`
+              : `Ended on: ${gameInfo.endDate}`
           }`}
           <br /> <br />
           <strong>Details:</strong> {""}
-          {details}
+          {gameInfo.details}
         </Card.Text>
-        {joinedGame ? (
+        {gameInfo.joinedGame ? (
           <Button variant="outline-light" disabled>
             You already joined this game!
           </Button>

@@ -10,21 +10,12 @@ import GameCard from "../components/GameCard";
 
 import api from "../utils/api";
 
+// custom types
+import { GameInfo, AlertMessage } from "../utils/types";
+
 type Props = {
   token: string | null;
-  showAlert: (message: string, type: "success" | "danger" | "warning") => void;
-};
-
-type Game = {
-  name: string;
-  creator: string;
-  startDate: string;
-  endDate: string;
-  status: string;
-  participants: number;
-  joinedGame: boolean;
-  details: string;
-  passwordRequired: boolean;
+  showAlert: (alertMessage: AlertMessage) => void;
 };
 
 const GameList = ({ token, showAlert }: Props) => {
@@ -33,7 +24,7 @@ const GameList = ({ token, showAlert }: Props) => {
   const subtitle = "Complete list of all games!";
   const buttonText = "Create Game";
 
-  const [games, setGames] = useState<Game[]>([]);
+  const [games, setGames] = useState<GameInfo[]>([]);
   const [showPopup, setShowPopup] = useState(false);
   const [gameName, setGameName] = useState("");
 
@@ -48,7 +39,10 @@ const GameList = ({ token, showAlert }: Props) => {
       });
       setGames(response.data.data);
     } catch (error: any) {
-      showAlert("Cannot get data from API, please try again", "danger");
+      showAlert({
+        alert: "Cannot get data from API, please try again",
+        alertType: "danger",
+      });
     }
   };
 
@@ -56,7 +50,10 @@ const GameList = ({ token, showAlert }: Props) => {
     if (token) {
       getGameList();
     } else {
-      showAlert("An unexpected error has occurred", "warning");
+      showAlert({
+        alert: "An unexpected error has occurred",
+        alertType: "warning",
+      });
     }
   }, []);
 
@@ -88,9 +85,9 @@ const GameList = ({ token, showAlert }: Props) => {
           },
         }
       );
-      showAlert(response.data.msg, "success"); // change to navigate to game portfolio?
+      showAlert({ alert: response.data.msg, alertType: "success" }); // change to navigate to game portfolio?
     } catch (error: any) {
-      showAlert(error.response.data.msg, "danger");
+      showAlert({ alert: error.response.data.msg, alertType: "danger" });
       console.log(gameName, password);
     }
   };
@@ -121,14 +118,7 @@ const GameList = ({ token, showAlert }: Props) => {
           games.map((game, index) => (
             <Col key={index}>
               <GameCard
-                status={game.status}
-                name={game.name}
-                creator={game.creator}
-                participants={game.participants}
-                startDate={game.startDate}
-                endDate={game.endDate}
-                details={game.details}
-                joinedGame={game.joinedGame}
+                gameInfo={game}
                 onJoin={() => {
                   handleJoin(game.passwordRequired, game.name);
                 }}
