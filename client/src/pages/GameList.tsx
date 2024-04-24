@@ -12,7 +12,6 @@ import api from "../utils/api";
 
 type Props = {
   token: string | null;
-  removeToken: () => void;
   showAlert: (message: string, type: "success" | "danger" | "warning") => void;
 };
 
@@ -28,9 +27,7 @@ type Game = {
   passwordRequired: boolean;
 };
 
-const GameList = (props: Props) => {
-  const { token, removeToken, showAlert } = props;
-
+const GameList = ({ token, showAlert }: Props) => {
   // page title
   const title = "Game List";
   const subtitle = "Complete list of all games!";
@@ -51,18 +48,7 @@ const GameList = (props: Props) => {
       });
       setGames(response.data.data);
     } catch (error: any) {
-      if (error.response && error.response.status === 401) {
-        removeToken();
-        navigate("/sign-in", {
-          state: {
-            alert: "Your session has expired. Please sign in again.",
-            alertType: "warning",
-          },
-        });
-        window.location.reload();
-      } else {
-        showAlert("Cannot get data from API, please try again", "danger");
-      }
+      showAlert("Cannot get data from API, please try again", "danger");
     }
   };
 
@@ -75,7 +61,7 @@ const GameList = (props: Props) => {
   }, []);
 
   const handleCreateGame = () => {
-    navigate("/create-game");
+    navigate("/games/create-game");
   };
 
   const handleJoin = (passwordRequired: boolean, name: string) => {
