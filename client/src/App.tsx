@@ -25,6 +25,9 @@ import PrivateRoutes from "./components/PrivateRoutes";
 import TopNavbar from "./components/TopNavbar";
 import Footer from "./components/Footer";
 
+//custom types
+import { AlertMessage } from "./utils/types";
+
 function App() {
   // app version
   const version = "v1.0.0";
@@ -45,12 +48,9 @@ function App() {
   const { state } = useLocation();
   const navigate = useNavigate();
 
-  const showAlert = (
-    message: string,
-    type: "success" | "danger" | "warning"
-  ) => {
-    setAlertType(type);
-    setAlertMessage(message);
+  const showAlert = (alertMessage: AlertMessage) => {
+    setAlertType(alertMessage.alertType);
+    setAlertMessage(alertMessage.alert);
     setAlertVisible(true);
   };
 
@@ -67,7 +67,7 @@ function App() {
 
   useEffect(() => {
     if (state) {
-      showAlert(state.alert, state.alertType);
+      showAlert(state as AlertMessage);
       navigate(location.pathname, { replace: true });
     }
   }, [state]);

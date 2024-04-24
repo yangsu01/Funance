@@ -1,16 +1,19 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Form, FloatingLabel, Button } from "react-bootstrap";
+
 import api from "../utils/api";
+
+// types
+import { AlertMessage } from "../utils/types";
 
 type Props = {
   setToken: (accessToken: string) => void;
   setUserAuthenticated: (authenticated: boolean) => void;
-  showAlert: (message: string, type: "success" | "danger" | "warning") => void;
+  showAlert: (alertMessage: AlertMessage) => void;
 };
 
-const SignIn = (props: Props) => {
-  const { setToken, setUserAuthenticated, showAlert } = props;
+const SignIn = ({ setToken, setUserAuthenticated, showAlert }: Props) => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -37,9 +40,9 @@ const SignIn = (props: Props) => {
       });
     } catch (error: any) {
       if (error.response && error.response.status === 401) {
-        showAlert(error.response.data.msg, "danger");
+        showAlert({ alert: error.response.data.msg, alertType: "danger" });
       } else {
-        showAlert(error.response.data.msg, "danger");
+        showAlert({ alert: error.response.data.msg, alertType: "danger" });
       }
     }
   };

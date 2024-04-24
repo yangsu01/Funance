@@ -1,18 +1,22 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import api from "../utils/api";
 
 // bootstrap elements
 import { Form, FloatingLabel, Button } from "react-bootstrap";
 
+// utils
+import api from "../utils/api";
+
+// types
+import { AlertMessage } from "../utils/types";
+
 type Props = {
   setToken: (accessToken: string) => void;
   setUserAuthenticated: (authenticated: boolean) => void;
-  showAlert: (message: string, type: "success" | "danger" | "warning") => void;
+  showAlert: (alertMessage: AlertMessage) => void;
 };
 
-const SignUp = (props: Props) => {
-  const { setToken, setUserAuthenticated, showAlert } = props;
+const SignUp = ({ setToken, setUserAuthenticated, showAlert }: Props) => {
   const [formData, setFormData] = useState({
     email: "",
     username: "",
@@ -26,15 +30,15 @@ const SignUp = (props: Props) => {
 
     // form validation
     if (formData.email.length < 3) {
-      showAlert("Username too short", "danger");
+      showAlert({ alert: "Username too short", alertType: "danger" });
 
       return;
     } else if (formData.password1 !== formData.password2) {
-      showAlert("Passwords do not match", "danger");
+      showAlert({ alert: "Passwords do not match", alertType: "danger" });
 
       return;
     } else if (formData.password1.length < 6) {
-      showAlert("Password too short", "danger");
+      showAlert({ alert: "Password too short", alertType: "danger" });
 
       return;
     }
@@ -58,9 +62,9 @@ const SignUp = (props: Props) => {
       });
     } catch (error: any) {
       if (error.response && error.response.status === 409) {
-        showAlert(error.response.data.msg, "danger");
+        showAlert({ alert: error.response.data.msg, alertType: "danger" });
       } else {
-        showAlert(error.alertMessage, "danger");
+        showAlert({ alert: error.alertMessage, alertType: "danger" });
       }
     }
   };

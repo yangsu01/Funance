@@ -8,3 +8,23 @@ export type CreateGameFormData = {
     transactionFee: number;
     feeType: string;
 }
+
+// game info
+export type GameInfo = {
+    gameId: number;
+    name: string;
+    creator: string;
+    startDate: string;
+    endDate: string;
+    status: string;
+    participants: number;
+    joinedGame: boolean;
+    details: string;
+    passwordRequired: boolean;
+}
+
+// alert message
+export type AlertMessage = {
+    alert: string;
+    alertType: "success" | "danger" | "warning";
+}

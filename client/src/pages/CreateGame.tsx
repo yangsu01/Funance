@@ -7,16 +7,14 @@ import CreateGameForm from "../components/CreateGameForm";
 import api from "../utils/api";
 
 // types
-import { CreateGameFormData } from "../utils/types";
+import { CreateGameFormData, AlertMessage } from "../utils/types";
 
 type Props = {
   token: string | null;
-  showAlert: (message: string, type: "success" | "danger" | "warning") => void;
+  showAlert: (alertMessage: AlertMessage) => void;
 };
 
-const CreateGame = (props: Props) => {
-  const { token, showAlert } = props;
-
+const CreateGame = ({ token, showAlert }: Props) => {
   // page title
   const title = "Create Game";
   const subtitle = "Create a new game with custom rules!";
@@ -46,7 +44,10 @@ const CreateGame = (props: Props) => {
 
     // form validation
     if (startDateNum <= currentDateNum) {
-      showAlert("Start date cannot be in the past!", "danger");
+      showAlert({
+        alert: "Start date cannot be in the past!",
+        alertType: "danger",
+      });
       return;
     }
 
@@ -54,18 +55,27 @@ const CreateGame = (props: Props) => {
       const endDate = new Date(formData.endDate);
 
       if (endDate <= startDate) {
-        showAlert("End date must be after start date!", "danger");
+        showAlert({
+          alert: "End date must be after start date!",
+          alertType: "danger",
+        });
         return;
       }
     }
 
     if (formData.startingCash <= 0) {
-      showAlert("Starting cash is too damn low!", "danger");
+      showAlert({
+        alert: "Starting cash is too damn low!",
+        alertType: "danger",
+      });
       return;
     }
 
     if (formData.transactionFee < 0) {
-      showAlert("Transaction fee cannot be negative!", "danger");
+      showAlert({
+        alert: "Transaction fee cannot be negative!",
+        alertType: "danger",
+      });
       return;
     }
 
@@ -91,12 +101,21 @@ const CreateGame = (props: Props) => {
           },
         }
       );
-      showAlert(response.data.msg, "success"); // change to navigate to game portfolio?
+      showAlert({
+        alert: response.data.msg,
+        alertType: "success",
+      }); // change to navigate to game portfolio?
     } catch (error: any) {
       if (error.response && error.response.status === 409) {
-        showAlert("Game name already taken!", "warning");
+        showAlert({
+          alert: "Game name already taken!",
+          alertType: "warning",
+        });
       } else {
-        showAlert("Cannot create game, please try again", "danger");
+        showAlert({
+          alert: "Cannot create game, please try again",
+          alertType: "danger",
+        });
       }
     }
   };
