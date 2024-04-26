@@ -126,9 +126,12 @@ function App() {
                 path="create-game"
                 element={<CreateGame token={token} showAlert={showAlert} />}
               />
-              <Route path="leaderboard">
-                <Route path=":id" element={<GameLeaderboard token={token} />} />
-              </Route>
+              <Route
+                path=":id"
+                element={
+                  <GameLeaderboard token={token} showAlert={showAlert} />
+                }
+              />
             </Route>
             <Route path="/my-portfolio" element={<MyPortfolio />} />
           </Route>
