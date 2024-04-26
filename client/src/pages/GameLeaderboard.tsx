@@ -15,8 +15,7 @@ import Loading from "../components/Loading";
 
 import {
   GameDetails,
-  DailyHistory,
-  ClosingHistory,
+  TimeSeriesPlotData,
   AlertMessage,
   TopPortfolio,
   DailyPortfolio,
@@ -39,8 +38,10 @@ const GameLeaderboard = ({ token, showAlert }: Props) => {
   const [gameDetails, setGameDetails] = useState<GameDetails>(
     {} as GameDetails
   );
-  const [dailyHistory, setDailyHistory] = useState<DailyHistory[]>([]);
-  const [closingHistory, setClosingHistory] = useState<ClosingHistory[]>([]);
+  const [dailyHistory, setDailyHistory] = useState<TimeSeriesPlotData[]>([]);
+  const [closingHistory, setClosingHistory] = useState<TimeSeriesPlotData[]>(
+    []
+  );
   const [dailyHistoryDate, setDailyHistoryDate] = useState("");
   const [topPortfolios, setTopPortfolios] = useState<TopPortfolio[]>([]);
   const [dailyPortfolios, setDailyPortfolios] = useState<DailyPortfolio[]>([]);
@@ -212,21 +213,40 @@ const GameLeaderboard = ({ token, showAlert }: Props) => {
         </Accordion.Item>
       </Accordion>
 
-      <Row className="mb-4">
-        <SimpleTable
-          tableName="Top Performers"
-          headers={topPortfoliosColumns}
-          content={topPortfolios}
-        />
-      </Row>
+      {gameDetails.status === "Not Started" ? (
+        <div className="my-5">
+          <h2 className="text-center">
+            The game will start on {gameDetails.startDate}.
+          </h2>
+          <h5 className="text-center">
+            Analytics will be available once the game starts
+          </h5>
+        </div>
+      ) : (
+        <>
+          {/* overall top performers */}
+          <Row className="mb-4">
+            <TimeSeriesPlot data={closingHistory} />
 
-      <Row className="mb-4">
-        <SimpleTable
-          tableName="Todays Top Performers"
-          headers={dailyPortfoliosColumns}
-          content={dailyPortfolios}
-        />
-      </Row>
+            <SimpleTable
+              tableName="Top Performers"
+              headers={topPortfoliosColumns}
+              content={topPortfolios}
+            />
+          </Row>
+
+          {/* daily top performers */}
+          {gameDetails.status === "In Progress" && (
+            <Row className="mb-4">
+              <SimpleTable
+                tableName="Todays Top Performers"
+                headers={dailyPortfoliosColumns}
+                content={dailyPortfolios}
+              />
+            </Row>
+          )}
+        </>
+      )}
     </>
   );
 };

@@ -47,14 +47,7 @@ export type GameDetails = {
 }
 
 // closing history of a portfolio
-export type ClosingHistory = {
-    x: string[];
-    y: number[];
-    name: string
-}
-
-// daily history of a portfolio
-export type DailyHistory = {
+export type TimeSeriesPlotData = {
     x: string[];
     y: number[];
     name: string
