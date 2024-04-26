@@ -53,7 +53,7 @@ const TopNavbar = ({
       <Container>
         <Navbar.Brand href="/" className="d-flex align-items-center">
           <img
-            src="funance_logo.png"
+            src="../../public/funance_logo.png"
             alt="logo"
             width="30"
             height="30"
