@@ -54,7 +54,7 @@ def create_game():
             start_date,
             end_date,
             starting_cash,
-            transaction_fee,
+            transaction_fee/100 if fee_type == 'Percentage' else transaction_fee,
             fee_type if fee_type != "" else 'Flat Fee'
         )
 
