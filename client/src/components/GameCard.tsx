@@ -13,11 +13,13 @@ const GameCard = ({ gameInfo, onJoin }: Props) => {
   return (
     <Card>
       <Card.Header>
-        <strong>{status}</strong>
+        <strong>{gameInfo.status}</strong>
       </Card.Header>
       <Card.Body>
         <Card.Title>
-          <h3>{gameInfo.name}</h3>
+          <Link to={`/games/${gameInfo.gameId}`} className="text-white">
+            <h3>{gameInfo.name}</h3>
+          </Link>
         </Card.Title>
         <Card.Subtitle className="pb-3 text-muted">
           {`Created by: ${gameInfo.creator}`}
@@ -26,9 +28,9 @@ const GameCard = ({ gameInfo, onJoin }: Props) => {
           {`Current participants: ${gameInfo.participants}`}
           <br />
           {`${
-            status === "Not Started"
+            gameInfo.status === "Not Started"
               ? `Starts on: ${gameInfo.startDate}`
-              : status === "In Progress"
+              : gameInfo.status === "In Progress"
               ? `Ends on: ${gameInfo.endDate}`
               : `Ended on: ${gameInfo.endDate}`
           }`}
@@ -40,7 +42,7 @@ const GameCard = ({ gameInfo, onJoin }: Props) => {
           <Button variant="outline-light" disabled>
             You already joined this game!
           </Button>
-        ) : status === "Completed" ? (
+        ) : gameInfo.status === "Completed" ? (
           <Button variant="outline-light" disabled>
             Game already ended!
           </Button>
