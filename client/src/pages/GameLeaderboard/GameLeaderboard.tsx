@@ -3,15 +3,15 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { Row, Col, Button, Container, Accordion } from "react-bootstrap";
 
-import api from "../utils/api";
+import api from "../../utils/api";
 
-import Title from "../components/Title";
-import TimeSeriesPlot from "../components/TimeSeriesPlot";
-import InfoList from "../components/InfoList";
-import SimpleTable from "../components/SimpleTable";
-import PopupForm from "../components/PopupForm";
-import InfoCard from "../components/InfoCard";
-import Loading from "../components/Loading";
+import Title from "../../components/UI/Title";
+import TimeSeriesPlot from "../../components/Plots/TimeSeriesPlot";
+import InfoList from "../../components/UI/InfoList";
+import SimpleTable from "../../components/UI/SimpleTable";
+import PopupForm from "../../components/Forms/PopupForm";
+import InfoCard from "../../components/UI/InfoCard";
+import Loading from "../../components/UI/Loading";
 
 import {
   GameDetails,
@@ -19,7 +19,7 @@ import {
   AlertMessage,
   TopPortfolio,
   DailyPortfolio,
-} from "../utils/types";
+} from "../../utils/types";
 
 type Props = {
   token: string | null;

@@ -2,14 +2,14 @@ import { Link } from "react-router-dom";
 import { Card, Button } from "react-bootstrap";
 
 // custom types
-import { GameInfo } from "../utils/types";
+import { GameInfo } from "../../utils/types";
 
 type Props = {
   gameInfo: GameInfo;
   onJoin: () => void;
 };
 
-const GameCard = ({ gameInfo, onJoin }: Props) => {
+const GameListCard = ({ gameInfo, onJoin }: Props) => {
   return (
     <Card>
       <Card.Header>
@@ -56,4 +56,4 @@ const GameCard = ({ gameInfo, onJoin }: Props) => {
   );
 };
 
-export default GameCard;
+export default GameListCard;

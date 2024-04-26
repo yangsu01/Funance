@@ -1,13 +1,13 @@
 import { useNavigate } from "react-router-dom";
 
 // components
-import Title from "../components/Title";
-import CreateGameForm from "../components/CreateGameForm";
+import Title from "../../components/UI/Title";
+import CreateGameForm from "./CreateGameForm";
 
-import api from "../utils/api";
+import api from "../../utils/api";
 
 // types
-import { CreateGameFormData, AlertMessage } from "../utils/types";
+import { CreateGameFormData, AlertMessage } from "../../utils/types";
 
 type Props = {
   token: string | null;

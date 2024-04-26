@@ -4,14 +4,14 @@ import { useNavigate } from "react-router-dom";
 import { Col, Row } from "react-bootstrap";
 
 // components
-import Title from "../components/Title";
-import PopupForm from "../components/PopupForm";
-import GameCard from "../components/GameCard";
+import Title from "../../components/UI/Title";
+import PopupForm from "../../components/Forms/PopupForm";
+import GameCard from "./GameListCard";
 
-import api from "../utils/api";
+import api from "../../utils/api";
 
 // custom types
-import { GameInfo, AlertMessage } from "../utils/types";
+import { GameInfo, AlertMessage } from "../../utils/types";
 
 type Props = {
   token: string | null;

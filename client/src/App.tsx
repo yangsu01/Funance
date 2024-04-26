@@ -5,20 +5,24 @@ import { useState, useEffect } from "react";
 import { Alert } from "react-bootstrap";
 
 // utilities
-import useToken from "./utils/useToken";
+import useToken from "./hooks/useToken";
 
-// Pages
-import NotFound from "./pages/NotFound";
-import Home from "./pages/Home";
-import About from "./pages/About";
-import BlogList from "./pages/BlogList";
-import GameRules from "./pages/GameRules";
-import GameList from "./pages/GameList";
-import CreateGame from "./pages/CreateGame";
-import MyPortfolio from "./pages/MyPortfolio";
-import GameLeaderboard from "./pages/GameLeaderboard";
-import SignIn from "./pages/SignIn";
-import SignUp from "./pages/SignUp";
+// general
+import NotFound from "./pages/NotFound/NotFound";
+import Home from "./pages/Home/Home";
+import About from "./pages/About/About";
+// portfolio simulation
+import GameRules from "./pages/GameRules/GameRules";
+import GameList from "./pages/GameList/GameList";
+import CreateGame from "./pages/CreateGame/CreateGame";
+import Portfolio from "./pages/Portfolio/Portfolio";
+import GameLeaderboard from "./pages/GameLeaderboard/GameLeaderboard";
+// auth
+import SignIn from "./pages/SignIn/SignIn";
+import SignUp from "./pages/SignUp/SignUp";
+// funance blog
+import BlogPost from "./pages/BlogPost/BlogPost";
+import Blog from "./pages/Blog/Blog";
 
 // UI components
 import PrivateRoutes from "./components/PrivateRoutes";
@@ -87,11 +91,17 @@ function App() {
           <Route path="*" element={<NotFound />} />
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
-          <Route path="/blog" element={<BlogList />} />
-          <Route
-            path="/game-rules"
-            element={<GameRules userAuthenticated={userAuthenticated} />}
-          />
+
+          {/* funance blog */}
+          <Route path="/blog" element={<Blog />}>
+            <Route
+              index
+              element={<GameList token={token} showAlert={showAlert} />}
+            />
+            <Route path=":id" element={<BlogPost />} />
+          </Route>
+
+          {/* auth */}
           <Route
             path="/sign-in"
             element={
@@ -113,7 +123,11 @@ function App() {
             }
           />
 
-          {/* private routes (require authentication) */}
+          {/* portfolio simulation */}
+          <Route
+            path="/game-rules"
+            element={<GameRules userAuthenticated={userAuthenticated} />}
+          />
           <Route
             element={<PrivateRoutes userAuthenticated={userAuthenticated} />}
           >
@@ -133,7 +147,7 @@ function App() {
                 }
               />
             </Route>
-            <Route path="/my-portfolio" element={<MyPortfolio />} />
+            <Route path="/my-portfolio" element={<Portfolio />} />
           </Route>
         </Routes>
       </main>

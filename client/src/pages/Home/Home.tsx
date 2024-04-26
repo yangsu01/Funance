@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 
 // components
-import Title from "../components/Title";
+import Title from "../../components/UI/Title";
 
 const Home = () => {
   const title = "Welcome to Funance";

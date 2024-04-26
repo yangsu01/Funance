@@ -1,6 +1,6 @@
 import Plot from "react-plotly.js";
 
-import { TimeSeriesPlotData } from "../utils/types";
+import { TimeSeriesPlotData } from "../../utils/types";
 
 type Props = { data: TimeSeriesPlotData[] };
 

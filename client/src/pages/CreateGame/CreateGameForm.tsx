@@ -11,7 +11,7 @@ import {
 } from "react-bootstrap";
 
 // types
-import { CreateGameFormData } from "../utils/types";
+import { CreateGameFormData } from "../../utils/types";
 
 type Props = {
   onSubmit: (formData: CreateGameFormData) => void;

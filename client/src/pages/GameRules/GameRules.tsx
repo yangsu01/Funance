@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-import Title from "../components/Title";
+import Title from "../../components/UI/Title";
 
 type Props = {
   userAuthenticated: boolean;

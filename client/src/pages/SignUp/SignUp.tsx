@@ -5,10 +5,10 @@ import { useNavigate, Link } from "react-router-dom";
 import { Form, FloatingLabel, Button } from "react-bootstrap";
 
 // utils
-import api from "../utils/api";
+import api from "../../utils/api";
 
 // types
-import { AlertMessage } from "../utils/types";
+import { AlertMessage } from "../../utils/types";
 
 type Props = {
   setToken: (accessToken: string) => void;
