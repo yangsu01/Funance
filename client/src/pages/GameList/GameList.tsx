@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Col, Row } from "react-bootstrap";
@@ -7,55 +7,36 @@ import { Col, Row } from "react-bootstrap";
 import Title from "../../components/UI/Title";
 import PopupForm from "../../components/Forms/PopupForm";
 import GameCard from "./GameListCard";
+import Loading from "../../components/UI/Loading";
 
-import api from "../../utils/api";
+// hooks
+import useFetch from "../../hooks/useFetch";
+import usePost from "../../hooks/usePost";
 
 // custom types
 import { GameInfo, AlertMessage } from "../../utils/types";
 
 type Props = {
-  token: string | null;
   showAlert: (alertMessage: AlertMessage) => void;
 };
 
-const GameList = ({ token, showAlert }: Props) => {
-  // page title
-  const title = "Game List";
-  const subtitle = "Complete list of all games!";
-  const buttonText = "Create Game";
-
-  const [games, setGames] = useState<GameInfo[]>([]);
+const GameList: React.FC<Props> = ({ showAlert }) => {
   const [showPopup, setShowPopup] = useState(false);
   const [gameName, setGameName] = useState("");
 
-  const navigate = useNavigate();
+  const { fetchData, responseData, loading } = useFetch<GameInfo[]>();
+  const { postData } = usePost();
 
-  const getGameList = async () => {
-    try {
-      const response = await api.get("/game-list", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setGames(response.data.data);
-    } catch (error: any) {
-      showAlert({
-        alert: "Cannot get data from API, please try again",
-        alertType: "danger",
-      });
-    }
-  };
-
+  // on page load
   useEffect(() => {
-    if (token) {
-      getGameList();
-    } else {
-      showAlert({
-        alert: "An unexpected error has occurred",
-        alertType: "warning",
-      });
-    }
+    fetchData("/game-list").then((response) => {
+      if (response) {
+        showAlert({ alert: response, alertType: "danger" });
+      }
+    });
   }, []);
+
+  const navigate = useNavigate();
 
   const handleCreateGame = () => {
     navigate("/games/create-game");
@@ -71,34 +52,34 @@ const GameList = ({ token, showAlert }: Props) => {
     }
   };
 
-  const joinGame = async (name: string, password?: string) => {
-    try {
-      const response = await api.post(
-        "/join-game",
-        {
-          gameName: name,
-          gamePassword: password,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      showAlert({ alert: response.data.msg, alertType: "success" }); // change to navigate to game portfolio?
-    } catch (error: any) {
-      showAlert({ alert: error.response.data.msg, alertType: "danger" });
-      console.log(gameName, password);
-    }
+  const joinGame = (name: string, password?: string) => {
+    const post = async () => {
+      return await postData("/join-game", {
+        gameName: name,
+        gamePassword: password,
+      });
+    };
+
+    post().then((res) => {
+      if (res && res.response) {
+        showAlert({ alert: res.response.msg, alertType: "success" });
+      } else if (res && res.error) {
+        showAlert({ alert: res.error, alertType: "danger" });
+      }
+    });
   };
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <>
       {/* page title */}
       <Title
-        title={title}
-        subtitle={subtitle}
-        button={buttonText}
+        title="Game List"
+        subtitle="Complete list of all games!"
+        button="Create Game"
         onClick={handleCreateGame}
       />
 
@@ -114,8 +95,8 @@ const GameList = ({ token, showAlert }: Props) => {
 
       {/* list of all games */}
       <Row xs={1} md={2} className="g-4">
-        {games &&
-          games.map((game, index) => (
+        {responseData &&
+          responseData.map((game, index) => (
             <Col key={index}>
               <GameCard
                 gameInfo={game}
