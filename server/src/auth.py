@@ -36,7 +36,7 @@ def signup_user():
     access_token = create_access_token(identity=new_user)
 
     return jsonify(data=access_token,
-                   msg='signup successful'), 200
+                   msg='Sign up successful!'), 200
 
 
 @auth.route('/signin-user', methods=['POST'])
@@ -54,7 +54,7 @@ def signin_user():
     
     access_token = create_access_token(identity=user)
 
-    return jsonify(data=access_token, msg="sign in successful"), 200
+    return jsonify(data=access_token, msg="Sign In successful!"), 200
 
 
 @auth.route("/signout-user", methods=["POST"])

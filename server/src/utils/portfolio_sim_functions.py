@@ -752,9 +752,11 @@ def get_game_leaderboard(game_id: int, user_id: int) -> dict:
 
     return {
         'gameDetails': game_details,
-        'topPerformers': top_performers,
-        'topDailyPerformers': top_daily_performers,
-        'performanceHistory': performance_history,
+        'topPortfolios': top_performers,
+        'dailyPortfolios': top_daily_performers,
+        'closingHistory': performance_history.get('closingHistory'),
+        'dailyHistory': performance_history.get('dailyHistory'),
+        'dailyHistoryDate': performance_history.get('date')
     }
 
 

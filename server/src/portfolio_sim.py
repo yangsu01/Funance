@@ -65,7 +65,7 @@ def create_game():
         return jsonify(msg=str(e)), 400
 
     return jsonify(
-        data=portfolio_id, 
+        data=str(portfolio_id), 
         msg='Game created successfully!'
     ), 200
 
@@ -96,7 +96,7 @@ def join_game():
         return jsonify(msg=str(e)), 400
 
     return jsonify(
-        data=portfolio_id, 
+        data=str(portfolio_id), 
         msg='Game joined successfully!'
     ), 200
 
