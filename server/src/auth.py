@@ -35,7 +35,7 @@ def signup_user():
     
     access_token = create_access_token(identity=new_user)
 
-    return jsonify(accessToken=access_token,
+    return jsonify(data=access_token,
                    msg='signup successful'), 200
 
 
@@ -54,7 +54,7 @@ def signin_user():
     
     access_token = create_access_token(identity=user)
 
-    return jsonify(accessToken=access_token, msg="signin successful", username=user.username), 200
+    return jsonify(data=access_token, msg="sign in successful"), 200
 
 
 @auth.route("/signout-user", methods=["POST"])
@@ -62,19 +62,3 @@ def signout_user():
     response = jsonify(msg="signout successful")
     unset_jwt_cookies(response)
     return response, 200
-
-
-# TODO: delete for production
-from .utils.portfolio_sim_functions import utc_to_est, get_est_time
-
-@auth.route("/@me", methods=["GET"])
-@jwt_required()
-def get_current_user():
-    return jsonify(
-        id=current_user.id,
-        email=current_user.email,
-        username=current_user.username,
-        creationDate=utc_to_est(current_user.creation_date).strftime('%Y-%m-%d %H:%M:%S'),
-        rawUTCDate=current_user.creation_date.strftime('%Y-%m-%d %H:%M:%S'),
-        estTime=get_est_time().strftime('%Y-%m-%d %H:%M:%S')
-    ), 200
