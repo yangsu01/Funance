@@ -3,15 +3,22 @@ import useToken from './useToken';
 
 import api from '../utils/api'
 
-type ApiResponse<T> = {
+type SuccessResponse<T> = {
+    status: "success"
     data: T
 }
 
+type ErrorResponse = {
+    status: "error"
+    msg: string
+}
+
+type FetchResponse<T> = SuccessResponse<T> | ErrorResponse
+
 export default function useFetch <T>() {
     const { token } = useToken()
-    const [responseData, setResponseData] = useState<T | null>(null)
     const [loading, setLoading] = useState<boolean | null>(null)
-    let fetchError = ''
+    let responseData: FetchResponse<T> = {status: 'error', msg: 'Failed to Load'}
 
     const fetchData = async (route: string) => {
         setLoading(true)
@@ -22,22 +29,18 @@ export default function useFetch <T>() {
                     Authorization: `Bearer ${token}`
                 }
             })
-            const data: ApiResponse<T> = response.data
-            setResponseData(data.data)
+            responseData = {status: 'success', data: response.data.data}
         } catch (err: any) {
             if (err.response && err.response.data.msg) {
-                fetchError = err.response.data.msg
+                responseData = {status: 'error', msg: err.response.data.msg}
             } else {
-                fetchError = err.message
+                responseData = {status: 'error', msg: err.message}
             }
         } finally {
             setLoading(false)
-
-            if (fetchError) {
-                return fetchError
-            }
+            return responseData
         }
     }
 
-    return { fetchData, responseData, loading }
+    return { fetchData, loading }
 }

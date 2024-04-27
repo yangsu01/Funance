@@ -2,12 +2,24 @@ import useToken from './useToken';
 
 import api from '../utils/api'
 
-import { PostResponse } from '../utils/types';
+type SuccessResponse = {
+    status: "success"
+    msg: string
+    data: string
+}
+
+type ErrorResponse = {
+    status: "error"
+    msg: string
+}
+
+type PostResponse = SuccessResponse | ErrorResponse
+
+
 
 export default function usePost <T>() {
     const { token } = useToken()
-    let postResponse: PostResponse
-    let postError = ''
+    let responseData: PostResponse = {status: 'error', msg: 'Failed to Submit'}
 
     const postData = async (route: string, data: T) => {
         try {
@@ -16,19 +28,15 @@ export default function usePost <T>() {
                     Authorization: `Bearer ${token}`
                 }
             })
-            postResponse = response.data
+            responseData = {status: "success", msg: response.data.msg, data: response.data.data}
         } catch (err: any) {
             if (err.response && err.response.data.msg) {
-                postError = err.response.data.msg
+                responseData = {status: "error", msg: err.response.data.msg}
             } else {
-                postError = err.message
+                responseData = {status: "error", msg: err.message}
             }
         } finally {
-            if (postError) {
-                return {error: postError}
-            } else {
-                return {response: postResponse}
-            }
+            return responseData
         }
     }
 
