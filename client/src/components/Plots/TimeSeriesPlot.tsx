@@ -1,73 +1,74 @@
 import React from "react";
-import Plot from "react-plotly.js";
+
+import { Line } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
 
 import { TimeSeriesPlotData } from "../../utils/types";
 
-type Props = { data: TimeSeriesPlotData[] };
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
-const TimeSeriesPlot: React.FC<Props> = ({ data }) => {
-  return (
-    <Plot
-      data={data.map((plotData) => ({
-        x: plotData.x,
-        y: plotData.y,
-        type: "scatter",
-        mode: "lines",
-        name: plotData.name,
-      }))}
-      layout={{
+type Props = { timeSeriesData: TimeSeriesPlotData[]; title: string };
+
+const TimeSeriesPlot: React.FC<Props> = ({ timeSeriesData, title }) => {
+  const data = {
+    labels: timeSeriesData[0].x,
+    datasets: timeSeriesData.map((d) => ({
+      label: d.name,
+      data: d.y,
+      fill: false,
+      borderColor: "#" + Math.floor(Math.random() * 16777215).toString(16),
+    })),
+  };
+
+  const options = {
+    responsive: true,
+    maintainAscpetRatio: false,
+    plugins: {
+      legend: {
+        position: "top" as const,
+        labels: {
+          color: "white" as const,
+        },
+      },
+      title: {
+        display: true,
+        text: title,
+      },
+    },
+    scales: {
+      x: {
         title: {
-          text: "Portfolio Performance",
-          font: {
-            size: 18,
-            color: "#FFFFFF",
-          },
+          display: true,
+          text: "Time",
         },
-        plot_bgcolor: "rgba(0, 0, 0, 0)",
-        paper_bgcolor: "rgba(0, 0, 0, 0)",
-
-        font: {
-          size: 10,
-          color: "#FFFFFF",
+      },
+      y: {
+        title: {
+          display: true,
+          text: "Value",
         },
+      },
+    },
+  };
 
-        margin: {
-          l: 30,
-          r: 30,
-          t: 80,
-          pad: 0,
-        },
-
-        showlegend: true,
-
-        legend: {
-          x: 0,
-          y: 0,
-          traceorder: "normal",
-          font: {
-            family: "sans-serif",
-            size: 10,
-            color: "#FFFFFF",
-          },
-          bgcolor: "#000",
-          borderwidth: 1,
-          orientation: "h",
-        },
-
-        xaxis: {
-          autorange: true,
-          showgrid: false,
-        },
-
-        yaxis: {
-          autorange: true,
-          type: "linear",
-          tickangle: -45,
-          showgrid: false,
-        },
-      }}
-    />
-  );
+  return <Line data={data} options={options} height={200} />;
 };
 
 export default TimeSeriesPlot;
