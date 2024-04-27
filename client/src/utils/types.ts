@@ -71,3 +71,22 @@ export type DailyPortfolio = {
     'Change ($)': number;
     'Portfolio Value': number;
 }
+
+// sign up form data
+export type SignUpFormData = {
+    email: string;
+    username: string;
+    password1: string;
+    password2: string;
+}
+
+export type SignInFormData = {
+    email: string;
+    password: string;
+}
+
+// post response data
+export type PostResponse = {
+    msg: string;
+    data?: string;
+}
