@@ -22,16 +22,19 @@ type Props = {
 
 const GameList: React.FC<Props> = ({ showAlert }) => {
   const [showPopup, setShowPopup] = useState(false);
+  const [gameData, setGameData] = useState<GameInfo[]>([] as GameInfo[]);
   const [gameName, setGameName] = useState("");
 
-  const { fetchData, responseData, loading } = useFetch<GameInfo[]>();
+  const { fetchData, loading } = useFetch<GameInfo[]>();
   const { postData } = usePost();
 
   // on page load
   useEffect(() => {
-    fetchData("/game-list").then((response) => {
-      if (response) {
-        showAlert({ alert: response, alertType: "danger" });
+    fetchData("/game-list").then((res) => {
+      if (res.status === "error") {
+        showAlert({ alert: res.msg, alertType: "danger" });
+      } else {
+        setGameData(res.data);
       }
     });
   }, []);
@@ -61,16 +64,33 @@ const GameList: React.FC<Props> = ({ showAlert }) => {
     };
 
     post().then((res) => {
-      if (res && res.response) {
-        showAlert({ alert: res.response.msg, alertType: "success" });
-      } else if (res && res.error) {
-        showAlert({ alert: res.error, alertType: "danger" });
+      if (res.status === "error") {
+        showAlert({ alert: res.msg, alertType: "danger" });
+      } else {
+        navigate(`/portfolio/${res.data}`, {
+          replace: true,
+          state: {
+            alert: res.msg,
+            alertType: "success",
+          },
+        });
       }
     });
   };
 
-  if (loading) {
-    return <Loading />;
+  if (loading || !gameData) {
+    return (
+      <>
+        {/* page title */}
+        <Title
+          title="Game List"
+          subtitle="Complete list of all games!"
+          button="Create Game"
+          onClick={handleCreateGame}
+        />
+        <Loading />
+      </>
+    );
   }
 
   return (
@@ -95,17 +115,16 @@ const GameList: React.FC<Props> = ({ showAlert }) => {
 
       {/* list of all games */}
       <Row xs={1} md={2} className="g-4">
-        {responseData &&
-          responseData.map((game, index) => (
-            <Col key={index}>
-              <GameCard
-                gameInfo={game}
-                onJoin={() => {
-                  handleJoin(game.passwordRequired, game.name);
-                }}
-              />
-            </Col>
-          ))}
+        {gameData.map((game, index) => (
+          <Col key={index}>
+            <GameCard
+              gameInfo={game}
+              onJoin={() => {
+                handleJoin(game.passwordRequired, game.name);
+              }}
+            />
+          </Col>
+        ))}
       </Row>
     </>
   );

@@ -50,10 +50,16 @@ const CreateGame: React.FC<Props> = ({ showAlert }) => {
     };
 
     post().then((res) => {
-      if (res && res.response) {
-        showAlert({ alert: res.response.msg, alertType: "success" });
-      } else if (res && res.error) {
-        showAlert({ alert: res.error, alertType: "danger" });
+      if (res.status === "error") {
+        showAlert({ alert: res.msg, alertType: "danger" });
+      } else {
+        navigate(`/portfolio/${res.data}`, {
+          replace: true,
+          state: {
+            alert: res.msg,
+            alertType: "success",
+          },
+        });
       }
     });
   };

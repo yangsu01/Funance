@@ -38,26 +38,27 @@ function App() {
 
   // access tokens
   const { token, setToken, removeToken } = useToken();
-
-  // user authentication
   const [userAuthenticated, setUserAuthenticated] = useState(
     token ? true : false
   );
-
-  // alert flashing
-  let [alertVisible, setAlertVisible] = useState(false);
-  let [alertMessage, setAlertMessage] = useState("");
-  let [alertType, setAlertType] = useState("success");
-
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertMessage, setAlertMessage] = useState<AlertMessage>(
+    {} as AlertMessage
+  );
   const { state } = useLocation();
   const navigate = useNavigate();
 
-  const showAlert = (alertMessage: AlertMessage) => {
-    setAlertType(alertMessage.alertType);
-    setAlertMessage(alertMessage.alert);
-    setAlertVisible(true);
+  // authenticate user
+  const authenticateUser = (token: string) => {
+    setToken(token);
+    setUserAuthenticated(true);
   };
 
+  // alert flashing
+  const showAlert = (alertMessage: AlertMessage) => {
+    setAlertMessage(alertMessage);
+    setAlertVisible(true);
+  };
   // auto close alert after 5 seconds
   useEffect(() => {
     if (alertMessage) {
@@ -68,7 +69,7 @@ function App() {
       return () => clearTimeout(timer);
     }
   }, [alertMessage]);
-
+  // flash alert on page change if state is updated
   useEffect(() => {
     if (state) {
       showAlert(state as AlertMessage);
@@ -93,11 +94,8 @@ function App() {
           <Route path="/about" element={<About />} />
 
           {/* funance blog */}
-          <Route path="/blog" element={<Blog />}>
-            <Route
-              index
-              element={<GameList token={token} showAlert={showAlert} />}
-            />
+          <Route path="/blog">
+            <Route index element={<Blog />} />
             <Route path=":id" element={<BlogPost />} />
           </Route>
 
@@ -106,8 +104,7 @@ function App() {
             path="/sign-in"
             element={
               <SignIn
-                setToken={setToken}
-                setUserAuthenticated={setUserAuthenticated}
+                authenticateUser={authenticateUser}
                 showAlert={showAlert}
               />
             }
@@ -116,8 +113,7 @@ function App() {
             path="/sign-up"
             element={
               <SignUp
-                setToken={setToken}
-                setUserAuthenticated={setUserAuthenticated}
+                authenticateUser={authenticateUser}
                 showAlert={showAlert}
               />
             }
@@ -132,22 +128,20 @@ function App() {
             element={<PrivateRoutes userAuthenticated={userAuthenticated} />}
           >
             <Route path="/games">
-              <Route
-                index
-                element={<GameList token={token} showAlert={showAlert} />}
-              />
+              <Route index element={<GameList showAlert={showAlert} />} />
               <Route
                 path="create-game"
-                element={<CreateGame token={token} showAlert={showAlert} />}
+                element={<CreateGame showAlert={showAlert} />}
               />
               <Route
                 path=":id"
-                element={
-                  <GameLeaderboard token={token} showAlert={showAlert} />
-                }
+                element={<GameLeaderboard showAlert={showAlert} />}
               />
             </Route>
-            <Route path="/my-portfolio" element={<Portfolio />} />
+            <Route path="/portfolio">
+              <Route index element={<Portfolio />} />
+              <Route path=":id" element={<Portfolio />} />
+            </Route>
           </Route>
         </Routes>
       </main>
@@ -158,11 +152,11 @@ function App() {
       {/* alert flashing */}
       {alertVisible && (
         <Alert
-          variant={alertType}
+          variant={alertMessage.alertType}
           onClose={() => setAlertVisible(false)}
           dismissible
         >
-          {alertMessage}
+          {alertMessage.alert}
         </Alert>
       )}
     </>

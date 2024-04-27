@@ -11,16 +11,11 @@ import useSignUp from "./useSignUp";
 import { AlertMessage, SignUpFormData } from "../../utils/types";
 
 type Props = {
-  setToken: (accessToken: string) => void;
-  setUserAuthenticated: (authenticated: boolean) => void;
+  authenticateUser: (token: string) => void;
   showAlert: (alertMessage: AlertMessage) => void;
 };
 
-const SignUp: React.FC<Props> = ({
-  setToken,
-  setUserAuthenticated,
-  showAlert,
-}) => {
+const SignUp: React.FC<Props> = ({ authenticateUser, showAlert }) => {
   const { postData } = usePost();
   const navigate = useNavigate();
 
@@ -41,18 +36,14 @@ const SignUp: React.FC<Props> = ({
     };
 
     post().then((res) => {
-      // if error is thrown
-      if (res && res.error) {
-        showAlert({ alert: res.error, alertType: "danger" });
-
-        // if response is returned
-      } else if (res && res.response && res.response.data) {
-        setToken(res.response.data);
-        setUserAuthenticated(true);
+      if (res.status === "error") {
+        showAlert({ alert: res.msg, alertType: "danger" });
+      } else {
+        authenticateUser(res.data);
         navigate("/", {
           replace: true,
           state: {
-            alert: res.response.msg,
+            alert: res.msg,
             alertType: "success",
           },
         });

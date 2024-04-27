@@ -1,50 +1,34 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { Row, Col, Button, Container, Accordion } from "react-bootstrap";
+import { Row } from "react-bootstrap";
 
-import api from "../../utils/api";
+// hooks
+import useFetch from "../../hooks/useFetch";
+import usePost from "../../hooks/usePost";
 
+// components
 import Title from "../../components/UI/Title";
 import TimeSeriesPlot from "../../components/Plots/TimeSeriesPlot";
-import InfoList from "../../components/UI/InfoList";
 import SimpleTable from "../../components/UI/SimpleTable";
 import PopupForm from "../../components/Forms/PopupForm";
-import InfoCard from "../../components/UI/InfoCard";
 import Loading from "../../components/UI/Loading";
+import GameLeaderboardInfo from "./GameLeaderboardInfo";
 
-import {
-  GameDetails,
-  TimeSeriesPlotData,
-  AlertMessage,
-  TopPortfolio,
-  DailyPortfolio,
-} from "../../utils/types";
+// types
+import { AlertMessage, GameLeaderboardData } from "../../utils/types";
 
 type Props = {
-  token: string | null;
   showAlert: (alertMessage: AlertMessage) => void;
 };
 
-const GameLeaderboard = ({ token, showAlert }: Props) => {
+const GameLeaderboard: React.FC<Props> = ({ showAlert }) => {
   const { id } = useParams();
-
-  const [pageTitle, setPageTitle] = useState({
-    title: "Leaderboard",
-    subtitle: "Leaderboard for the game",
-    buttonText: "Game List",
-  });
-  const [loading, setLoading] = useState(true);
-  const [gameDetails, setGameDetails] = useState<GameDetails>(
-    {} as GameDetails
+  const { fetchData, loading } = useFetch<GameLeaderboardData>();
+  const [leaderboardData, setLeaderboardData] = useState<GameLeaderboardData>(
+    {} as GameLeaderboardData
   );
-  const [dailyHistory, setDailyHistory] = useState<TimeSeriesPlotData[]>([]);
-  const [closingHistory, setClosingHistory] = useState<TimeSeriesPlotData[]>(
-    []
-  );
-  const [dailyHistoryDate, setDailyHistoryDate] = useState("");
-  const [topPortfolios, setTopPortfolios] = useState<TopPortfolio[]>([]);
-  const [dailyPortfolios, setDailyPortfolios] = useState<DailyPortfolio[]>([]);
+  const { postData } = usePost();
   const [showPopup, setShowPopup] = useState(false);
 
   const topPortfoliosColumns = [
@@ -66,39 +50,15 @@ const GameLeaderboard = ({ token, showAlert }: Props) => {
 
   const navigate = useNavigate();
 
-  // get game leaderboard
-  const getGameLeaderboard = async () => {
-    try {
-      const response = await api.get(`/game-leaderboard/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      setPageTitle({
-        title: "Leaderboard",
-        subtitle: `For ${response.data.data.gameDetails.name}`,
-        buttonText: "Game List",
-      });
-
-      setGameDetails(response.data.data.gameDetails);
-      setDailyHistory(response.data.data.performanceHistory.dailyHistory);
-      setClosingHistory(response.data.data.performanceHistory.closingHistory);
-      setDailyHistoryDate(response.data.data.dailyHistoryDate);
-      setTopPortfolios(response.data.data.topPerformers);
-      setDailyPortfolios(response.data.data.topDailyPerformers);
-
-      setLoading(false);
-    } catch (error: any) {
-      console.log(error);
-      setLoading(false);
-    }
-  };
-
+  // on page load
   useEffect(() => {
-    if (token) {
-      getGameLeaderboard();
-    }
+    fetchData(`/game-leaderboard/${id}`).then((res) => {
+      if (res.status === "error") {
+        showAlert({ alert: res.msg, alertType: "danger" });
+      } else {
+        setLeaderboardData(res.data);
+      }
+    });
   }, []);
 
   const handleGameList = () => {
@@ -106,51 +66,65 @@ const GameLeaderboard = ({ token, showAlert }: Props) => {
   };
 
   const handleJoin = () => {
-    if (gameDetails.passwordRequired) {
+    if (leaderboardData.gameDetails.passwordRequired) {
       setShowPopup(true);
     } else {
-      joinGame(gameDetails.name);
+      joinGame(leaderboardData.gameDetails.name);
     }
   };
 
   const joinGame = async (name: string, password?: string) => {
-    try {
-      const response = await api.post(
-        "/join-game",
-        {
-          gameName: name,
-          gamePassword: password,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
+    const post = async () => {
+      return await postData("/join-game", {
+        gameName: name,
+        gamePassword: password,
+      });
+    };
+
+    post().then((res) => {
+      if (res.status === "error") {
+        showAlert({ alert: res.msg, alertType: "danger" });
+      } else {
+        navigate(`/portfolio/${res.data}`, {
+          replace: true,
+          state: {
+            alert: res.msg,
+            alertType: "success",
           },
-        }
-      );
-      showAlert({ alert: response.data.msg, alertType: "success" }); // change to navigate to game portfolio?
-    } catch (error: any) {
-      showAlert({ alert: error.response.data.msg, alertType: "danger" });
-    }
+        });
+      }
+    });
   };
 
-  if (loading) {
-    return <Loading />;
+  if (loading || !leaderboardData.gameDetails) {
+    return (
+      <>
+        {/* page title */}
+        <Title
+          title="Game Leaderboard"
+          subtitle="Detailed stats for the game"
+          button="Game List"
+          onClick={handleGameList}
+        />
+        <Loading />
+      </>
+    );
   }
 
   return (
     <>
       {/* page title */}
       <Title
-        title={pageTitle.title}
-        subtitle={pageTitle.subtitle}
-        button={pageTitle.buttonText}
+        title="Game Leaderboard"
+        subtitle="Detailed stats for the game"
+        button="Game List"
         onClick={handleGameList}
       />
 
       {/* popup */}
       <PopupForm
         show={showPopup}
-        name={gameDetails.name}
+        name={leaderboardData.gameDetails.name}
         content="Please enter the password to join the game."
         submitName="Join Game"
         onClose={() => setShowPopup(false)}
@@ -158,65 +132,15 @@ const GameLeaderboard = ({ token, showAlert }: Props) => {
       />
 
       {/* game info */}
-      <Accordion className="mb-3">
-        <Accordion.Item eventKey="0">
-          <Accordion.Header>
-            <strong>Game Info</strong>
-          </Accordion.Header>
-          <Accordion.Body>
-            <Row>
-              <Col md={4} className="mb-3">
-                <InfoCard
-                  title={gameDetails.name}
-                  subtitle={`Created by: ${gameDetails.creator}`}
-                  infoList={[
-                    `Participants: ${gameDetails.participants}`,
-                    `Start Date: ${gameDetails.startDate}`,
-                    `End Date: ${gameDetails.endDate}`,
-                  ]}
-                />
-              </Col>
-              <Col md={4} className="mb-3">
-                <InfoCard
-                  title="Game Settings"
-                  infoList={[
-                    `Game Duration: ${gameDetails.gameDuration}`,
-                    `Starting Cash: ${gameDetails.startingCash}`,
-                    `Transaction Fee: ${gameDetails.transactionFee}`,
-                    `Fee Type: ${gameDetails.feeType}`,
-                  ]}
-                />
-              </Col>
-              <Col md={4} className="mb-3">
-                <InfoCard
-                  title="Game Details"
-                  infoList={[
-                    `Status: ${gameDetails.status}`,
-                    `Updated: ${gameDetails.lastUpdated}`,
-                  ]}
-                />
-                <Container className="d-flex justify-content-end mt-4">
-                  {gameDetails.status !== "Completed" &&
-                    !gameDetails.joinedGame && (
-                      <Button
-                        variant="outline-light"
-                        size="lg"
-                        onClick={handleJoin}
-                      >
-                        Join Game
-                      </Button>
-                    )}
-                </Container>
-              </Col>
-            </Row>
-          </Accordion.Body>
-        </Accordion.Item>
-      </Accordion>
+      <GameLeaderboardInfo
+        details={leaderboardData.gameDetails}
+        onJoin={handleJoin}
+      />
 
-      {gameDetails.status === "Not Started" ? (
+      {leaderboardData.gameDetails.status === "Not Started" ? (
         <div className="my-5">
           <h2 className="text-center">
-            The game will start on {gameDetails.startDate}.
+            The game will start on {leaderboardData.gameDetails.startDate}.
           </h2>
           <h5 className="text-center">
             Analytics will be available once the game starts
@@ -225,23 +149,27 @@ const GameLeaderboard = ({ token, showAlert }: Props) => {
       ) : (
         <>
           {/* overall top performers */}
+          <h2>Portfolio History</h2>
           <Row className="mb-4">
-            <TimeSeriesPlot data={closingHistory} />
+            <TimeSeriesPlot
+              timeSeriesData={leaderboardData.closingHistory}
+              title="Portfolio Values Over Time"
+            />
 
             <SimpleTable
-              tableName="Top Performers"
               headers={topPortfoliosColumns}
-              content={topPortfolios}
+              content={leaderboardData.topPortfolios}
+              tableName="Top Performers"
             />
           </Row>
 
           {/* daily top performers */}
-          {gameDetails.status === "In Progress" && (
+          {leaderboardData.gameDetails.status === "In Progress" && (
             <Row className="mb-4">
               <SimpleTable
-                tableName="Todays Top Performers"
+                tableName={`Daily Performers (${leaderboardData.dailyHistoryDate})`}
                 headers={dailyPortfoliosColumns}
-                content={dailyPortfolios}
+                content={leaderboardData.dailyPortfolios}
               />
             </Row>
           )}

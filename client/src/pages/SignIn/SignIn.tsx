@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
+// components
 import SignInForm from "./SignInForm";
 
 // hooks
@@ -10,16 +11,11 @@ import usePost from "../../hooks/usePost";
 import { AlertMessage, SignInFormData } from "../../utils/types";
 
 type Props = {
-  setToken: (accessToken: string) => void;
-  setUserAuthenticated: (authenticated: boolean) => void;
+  authenticateUser: (token: string) => void;
   showAlert: (alertMessage: AlertMessage) => void;
 };
 
-const SignIn: React.FC<Props> = ({
-  setToken,
-  setUserAuthenticated,
-  showAlert,
-}) => {
+const SignIn: React.FC<Props> = ({ authenticateUser, showAlert }) => {
   const { postData } = usePost();
   const navigate = useNavigate();
 
@@ -30,19 +26,16 @@ const SignIn: React.FC<Props> = ({
         password: formData.password,
       });
     };
-    post().then((res) => {
-      // if error is thrown
-      if (res && res.error) {
-        showAlert({ alert: res.error, alertType: "danger" });
 
-        // if response is returned
-      } else if (res && res.response && res.response.data) {
-        setToken(res.response.data);
-        setUserAuthenticated(true);
+    post().then((res) => {
+      if (res.status === "error") {
+        showAlert({ alert: res.msg, alertType: "danger" });
+      } else {
+        authenticateUser(res.data);
         navigate("/", {
           replace: true,
           state: {
-            alert: res.response.msg,
+            alert: res.msg,
             alertType: "success",
           },
         });
@@ -53,7 +46,6 @@ const SignIn: React.FC<Props> = ({
   return (
     <main className="form-login m-auto mt-5">
       <h3 className="display-6 fw-bold text-white mb-3">Sign In</h3>
-
       <SignInForm onSubmit={onSubmit} />
     </main>
   );
