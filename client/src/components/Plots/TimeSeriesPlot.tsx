@@ -1,10 +1,11 @@
+import React from "react";
 import Plot from "react-plotly.js";
 
 import { TimeSeriesPlotData } from "../../utils/types";
 
 type Props = { data: TimeSeriesPlotData[] };
 
-const TimeSeriesPlot = ({ data }: Props) => {
+const TimeSeriesPlot: React.FC<Props> = ({ data }) => {
   return (
     <Plot
       data={data.map((plotData) => ({

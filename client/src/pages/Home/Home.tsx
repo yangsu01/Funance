@@ -1,9 +1,10 @@
+import React from "react";
 import { Link } from "react-router-dom";
 
 // components
 import Title from "../../components/UI/Title";
 
-const Home = () => {
+const Home: React.FC = () => {
   const title = "Welcome to Funance";
   const subtitle = "Investing is fun!";
 

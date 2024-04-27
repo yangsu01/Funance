@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button, Modal, Form, FloatingLabel } from "react-bootstrap";
 
 type Props = {
@@ -10,14 +10,14 @@ type Props = {
   submitName: string;
 };
 
-const PopupForm = ({
+const PopupForm: React.FC<Props> = ({
   show,
   onClose,
   onSubmit,
   name,
   content,
   submitName,
-}: Props) => {
+}) => {
   const [formData, setFormData] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {

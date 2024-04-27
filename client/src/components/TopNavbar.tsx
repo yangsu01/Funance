@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import { NavLink, useNavigate } from "react-router-dom";
 
@@ -14,11 +14,11 @@ type Props = {
   setUserAuthenticated: (authenticated: boolean) => void;
 };
 
-const TopNavbar = ({
+const TopNavbar: React.FC<Props> = ({
   userAuthenticated,
   removeToken,
   setUserAuthenticated,
-}: Props) => {
+}) => {
   const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
   const isSmallScreen = useMediaQuery({ maxWidth: 767 });

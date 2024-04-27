@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const useToken = () => {
+export default function useToken () {
 
     const getToken = () => {
         const accessToken = localStorage.getItem('token');
@@ -25,5 +25,3 @@ const useToken = () => {
         removeToken
     }
 }
-
-export default useToken

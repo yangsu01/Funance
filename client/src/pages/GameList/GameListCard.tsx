@@ -1,3 +1,4 @@
+import React from "react";
 import { Link } from "react-router-dom";
 import { Card, Button } from "react-bootstrap";
 
@@ -9,7 +10,7 @@ type Props = {
   onJoin: () => void;
 };
 
-const GameListCard = ({ gameInfo, onJoin }: Props) => {
+const GameListCard: React.FC<Props> = ({ gameInfo, onJoin }) => {
   return (
     <Card>
       <Card.Header>

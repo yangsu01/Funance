@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Button,
@@ -17,16 +17,10 @@ type Props = {
   onSubmit: (formData: CreateGameFormData) => void;
 };
 
-const CreateGameForm = ({ onSubmit }: Props) => {
-  const [formData, setFormData] = useState<CreateGameFormData>({
-    name: "",
-    password: "",
-    startDate: "",
-    endDate: "",
-    startingCash: 0,
-    transactionFee: 0,
-    feeType: "",
-  });
+const CreateGameForm: React.FC<Props> = ({ onSubmit }) => {
+  const [formData, setFormData] = useState<CreateGameFormData>(
+    {} as CreateGameFormData
+  );
   const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();

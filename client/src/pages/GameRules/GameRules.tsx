@@ -1,3 +1,4 @@
+import React from "react";
 import { Link } from "react-router-dom";
 
 import Title from "../../components/UI/Title";
@@ -6,7 +7,7 @@ type Props = {
   userAuthenticated: boolean;
 };
 
-const GameRules = ({ userAuthenticated }: Props) => {
+const GameRules: React.FC<Props> = ({ userAuthenticated }) => {
   const title = "Investment Simulator";
   const subtitle = "Create a portfolio and watch it grow!";
 

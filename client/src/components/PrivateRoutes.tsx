@@ -1,10 +1,11 @@
+import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
 
 type Props = {
   userAuthenticated: boolean;
 };
 
-const PrivateRoutes = ({ userAuthenticated }: Props) => {
+const PrivateRoutes: React.FC<Props> = ({ userAuthenticated }) => {
   return userAuthenticated ? (
     <Outlet />
   ) : (
