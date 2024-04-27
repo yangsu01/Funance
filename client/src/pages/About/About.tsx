@@ -1,6 +1,8 @@
 import React from "react";
 
-const About = () => {
+type Props = {};
+
+const About: React.FC<Props> = () => {
   return <div>About</div>;
 };
 

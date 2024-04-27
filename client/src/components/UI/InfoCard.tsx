@@ -1,3 +1,4 @@
+import React from "react";
 import { Link } from "react-router-dom";
 import { Card, ListGroup } from "react-bootstrap";
 
@@ -11,7 +12,7 @@ type Props = {
   footer?: string;
 };
 
-const GameCard = ({
+const GameCard: React.FC<Props> = ({
   header,
   title,
   subtitle,
@@ -19,7 +20,7 @@ const GameCard = ({
   infoList,
   link,
   footer,
-}: Props) => {
+}) => {
   return (
     <Card>
       {header && (

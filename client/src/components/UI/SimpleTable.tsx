@@ -1,15 +1,16 @@
+import React from "react";
 import { Table } from "react-bootstrap";
 
 type Props = {
-  tableName: string;
+  tableName?: string;
   headers: string[];
   content: Record<string, string | number>[];
 };
 
-const SimpleTable = ({ tableName, content, headers }: Props) => {
+const SimpleTable: React.FC<Props> = ({ tableName, content, headers }) => {
   return (
     <>
-      <h3>{tableName}</h3>
+      {tableName && <h3>{tableName}</h3>}
       <Table responsive striped hover variant="dark">
         <thead>
           <tr key="header">

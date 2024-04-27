@@ -1,10 +1,11 @@
+import React from "react";
 import { ListGroup } from "react-bootstrap";
 
 type Props = {
   items: string[];
 };
 
-function InfoList({ items }: Props) {
+const InfoList: React.FC<Props> = ({ items }) => {
   return (
     <ListGroup>
       {items.map((item, index) => (
@@ -12,6 +13,6 @@ function InfoList({ items }: Props) {
       ))}
     </ListGroup>
   );
-}
+};
 
 export default InfoList;

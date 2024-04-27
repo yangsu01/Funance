@@ -1,3 +1,4 @@
+import React from "react";
 import { Row, Col, Button } from "react-bootstrap";
 import { useMediaQuery } from "react-responsive";
 
@@ -8,7 +9,7 @@ type Props = {
   onClick?: () => void;
 };
 
-const Title = ({ title, subtitle, button, onClick }: Props) => {
+const Title: React.FC<Props> = ({ title, subtitle, button, onClick }) => {
   const isSmallScreen = useMediaQuery({ maxWidth: 767 });
 
   return (
