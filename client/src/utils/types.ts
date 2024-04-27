@@ -72,6 +72,16 @@ export type DailyPortfolio = {
     'Portfolio Value': number;
 }
 
+// game leaderboard data
+export type GameLeaderboardData = {
+    gameDetails: GameDetails;
+    dailyHistory: TimeSeriesPlotData[];
+    closingHistory: TimeSeriesPlotData[];
+    dailyHistoryDate: string;
+    topPortfolios: TopPortfolio[];
+    dailyPortfolios: DailyPortfolio[];
+}
+
 // sign up form data
 export type SignUpFormData = {
     email: string;
@@ -83,10 +93,4 @@ export type SignUpFormData = {
 export type SignInFormData = {
     email: string;
     password: string;
-}
-
-// post response data
-export type PostResponse = {
-    msg: string;
-    data?: string;
 }
