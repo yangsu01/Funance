@@ -108,7 +108,7 @@ const TopNavbar: React.FC<Props> = ({
                   </NavDropdown.Item>
                   <NavDropdown.Item
                     as={NavLink}
-                    to="/my-portfolio"
+                    to="/portfolio"
                     className="nav-link ps-3"
                     onClick={handleToggle}
                   >
