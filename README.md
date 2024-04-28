@@ -43,7 +43,6 @@ create `.env` file and set environmental variables
 
 ```python
 DEV_DB_URI
-DEV_ENV
 SECRET_KEY
 ```
 
@@ -58,7 +57,7 @@ npm install
 create `.env` file in  folder and create environmental variables
 
 ```python
-VITE_APP_API_URL
+VITE_API_URL
 ```
 
 ## Usage
