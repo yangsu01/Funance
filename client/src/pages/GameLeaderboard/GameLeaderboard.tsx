@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { Row } from "react-bootstrap";
+import { Row, Col } from "react-bootstrap";
 
 // hooks
 import useFetch from "../../hooks/useFetch";
@@ -115,7 +115,7 @@ const GameLeaderboard: React.FC<Props> = ({ showAlert }) => {
     <>
       {/* page title */}
       <Title
-        title="Game Leaderboard"
+        title={`${leaderboardData.gameDetails.name} Leaderboard`}
         subtitle="Detailed stats for the game"
         button="Game List"
         onClick={handleGameList}
@@ -149,28 +149,38 @@ const GameLeaderboard: React.FC<Props> = ({ showAlert }) => {
       ) : (
         <>
           {/* overall top performers */}
-          <h2>Portfolio History</h2>
-          <Row className="mb-4">
-            <TimeSeriesPlot
-              timeSeriesData={leaderboardData.closingHistory}
-              title="Portfolio Values Over Time"
-            />
-
-            <SimpleTable
-              headers={topPortfoliosColumns}
-              content={leaderboardData.topPortfolios}
-              tableName="Top Performers"
-            />
+          <Row className="d-flex align-items-center mb-5">
+            <h2>Top Performing Portfolios</h2>
+            <Col lg={6}>
+              <TimeSeriesPlot
+                timeSeriesData={leaderboardData.closingHistory}
+                title="Portfolio Values Over Time"
+              />
+            </Col>
+            <Col lg={6}>
+              <SimpleTable
+                headers={topPortfoliosColumns}
+                content={leaderboardData.topPortfolios}
+              />
+            </Col>
           </Row>
 
           {/* daily top performers */}
           {leaderboardData.gameDetails.status === "In Progress" && (
-            <Row className="mb-4">
-              <SimpleTable
-                tableName={`Daily Performers (${leaderboardData.dailyHistoryDate})`}
-                headers={dailyPortfoliosColumns}
-                content={leaderboardData.dailyPortfolios}
-              />
+            <Row className="d-flex align-items-center">
+              <h2>Daily Performance ({leaderboardData.dailyHistoryDate})</h2>
+              <Col lg={6}>
+                <TimeSeriesPlot
+                  timeSeriesData={leaderboardData.dailyHistory}
+                  title="Todays performance"
+                />
+              </Col>
+              <Col lg={6}>
+                <SimpleTable
+                  headers={dailyPortfoliosColumns}
+                  content={leaderboardData.dailyPortfolios}
+                />
+              </Col>  
             </Row>
           )}
         </>
