@@ -1,3 +1,26 @@
+// sign up form data
+export type SignUpFormData = {
+    email: string;
+    username: string;
+    password1: string;
+    password2: string;
+}
+
+
+// sign in form data
+export type SignInFormData = {
+    email: string;
+    password: string;
+}
+
+
+// alert message
+export type AlertMessage = {
+    alert: string;
+    alertType: "success" | "danger" | "warning";
+}
+
+
 // create game form
 export type CreateGameFormData = {
     name: string;
@@ -9,7 +32,8 @@ export type CreateGameFormData = {
     feeType: string;
 }
 
-// game info
+
+// game info card data
 export type GameInfo = {
     gameId: number;
     name: string;
@@ -23,14 +47,9 @@ export type GameInfo = {
     passwordRequired: boolean;
 }
 
-// alert message
-export type AlertMessage = {
-    alert: string;
-    alertType: "success" | "danger" | "warning";
-}
 
-// game details
-export type GameDetails = {
+// game leaderboard data
+type GameDetails = {
     name: string
     creator: string
     participants: string
@@ -45,34 +64,26 @@ export type GameDetails = {
     gameDuration: string
     status: string
 }
-
-// closing history of a portfolio
 export type TimeSeriesPlotData = {
     x: string[];
     y: number[];
     name: string
 }
-
-// portfolio performance
-export type TopPortfolio = {
+type TopPortfolio = {
     'Rank': number | string;
     'Username': string;
-    'Portfolio Value': number;
-    'Change (%)': number;
-    'Portfolio Age (days)': number;
-    'Daily Change (%)': number;
+    'Value': number;
+    'Change': number;
+    'Age (days)': number;
+    'Daily Change': number;
 }
-
-// portfolio daily performance
-export type DailyPortfolio = {
+type DailyPortfolio = {
     'Rank': number | string;
     'Username': string;
-    'Change (%)': number;
-    'Change ($)': number;
-    'Portfolio Value': number;
+    'Change': number;
+    '% Change': number;
+    'Value': number;
 }
-
-// game leaderboard data
 export type GameLeaderboardData = {
     gameDetails: GameDetails;
     dailyHistory: TimeSeriesPlotData[];
@@ -82,15 +93,68 @@ export type GameLeaderboardData = {
     dailyPortfolios: DailyPortfolio[];
 }
 
-// sign up form data
-export type SignUpFormData = {
-    email: string;
-    username: string;
-    password1: string;
-    password2: string;
-}
 
-export type SignInFormData = {
-    email: string;
-    password: string;
+// user portfolio data
+type UserPortfolios = {
+    gameName: string;
+    portfolioId: string;
+}
+type PortfolioDetails = {
+    gameId: number;
+    gameName: string;
+    gameStatus: string;
+    startingCash: number;
+    participants: number;
+    gameStartDate: string;
+    gameEndDate: string;
+    transactionFee: number;
+    feeType: string;
+    availableCash: number;
+    portfolioValue: number;
+    change: number;
+    profit: number;
+    lastUpdated: string;
+}
+export type LinePlotData = {
+    x: string[];
+    y: number[];
+}
+export type PiePlotData = {
+    labels: string[];
+    values: number[];
+}
+type Transaction = {
+    "Ticker": string;
+    "Name": string;
+    "Type": string;
+    "Shares": number;
+    "Share Price": number;
+    "Total Value": number;
+    "Currency": string;
+    "Profit/Loss": string | number;
+    "Date (EST)": string;
+}
+type Holding = {
+    'Ticker': string,
+    'Shares Owned': number
+    'Average Price': number
+    'Current Price': number
+    'Net Change': number
+    'Total Change': number
+    '% Change': number
+    'Day Change': number
+    '% Day Change ': number
+    'Market Value': number
+    'Currency': string
+}
+export type PortfolioData = {
+    userPortfolios: UserPortfolios[];
+    portfolioDetails: PortfolioDetails;
+    closingHistory: LinePlotData;
+    dailyHistory: LinePlotData;
+    dailyHistoryDate: string;
+    holdingsBreakdown: PiePlotData;
+    sectorBreakdown: PiePlotData;
+    portfolioTransactions: Transaction[];
+    portfolioHoldings: Holding[];
 }
