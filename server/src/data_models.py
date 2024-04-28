@@ -27,7 +27,7 @@ class Game(db.Model):
     end_date = db.Column(db.Date, nullable=True)
     status = db.Column(db.String(50), nullable=False, default='Not Started') # Not Started, In Progress, Completed
     starting_cash = db.Column(db.Float, nullable=False)
-    transaction_fee = db.Column(db.Float, nullable=False)
+    transaction_fee = db.Column(db.Float, nullable=False, default=0.0)
     fee_type = db.Column(db.String(50), nullable=True, default='Flat Fee') # Flat Fee, Percentage
     last_updated = db.Column(db.DateTime(timezone=True), nullable=True)
     # one to one
