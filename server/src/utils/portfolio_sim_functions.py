@@ -403,7 +403,7 @@ def get_user_portfolios(user_id: int) -> list:
     for portfolio in portfolios:
         portfolio_list.append({
             'gameName': portfolio.parent_game.name,
-            'portfolioId': portfolio.id,
+            'portfolioId': str(portfolio.id),
         })
 
     return portfolio_list
@@ -427,14 +427,15 @@ def get_portfolio_details(portfolio_id: int) -> dict:
     last_updated = utc_to_est(portfolio.last_updated).strftime('%a, %b %d. %Y %I:%M%p') + ' EST'
 
     return {
+        'gameId': parent_game.id,
         'gameName': parent_game.name,
         'gameStatus': parent_game.status,
         'startingCash': starting_cash,
-        'numberOfParticipants': parent_game.participants,
+        'participants': parent_game.participants,
         'gameStartDate': parent_game.start_date.strftime('%Y-%m-%d'),
         'gameEndDate': parent_game.end_date.strftime('%Y-%m-%d') if parent_game.end_date is not None else 'n/a',
-        'TransactionFee': parent_game.transaction_fee,
-        'FeeType': parent_game.fee_type,
+        'transactionFee': parent_game.transaction_fee,
+        'feeType': parent_game.fee_type,
         'availableCash': portfolio.available_cash,
         'portfolioValue': current_value,
         'change': change,
@@ -490,15 +491,15 @@ def get_top_performers(game_id: int) -> list:
         if portfolio_age == 0:
             daily_change = 'n/a'
         else:
-            daily_change = round(portfolio_change/portfolio_age, 2)
+            daily_change = f'{round(portfolio_change/portfolio_age, 2)}%'
         
         top_performers.append({
             'Rank': rank,
             'Username': portfolio.portfolio_owner.username,
-            'Portfolio Value': f'${portfolio.current_value}',
-            'Change (%)': f'{portfolio_change}%',
-            'Portfolio Age (days)': portfolio_age,
-            'Daily Change (%)': f'{daily_change}%',
+            'Value': f'${portfolio.current_value}',
+            'Change': f'{portfolio_change}%',
+            'Age (days)': portfolio_age,
+            'Daily Change': f'{daily_change}',
         })
 
         prev = current_value
@@ -534,9 +535,9 @@ def get_top_daily_performers(game_id: int) -> list:
         top_performers.append({
             'Rank': rank,
             'Username': portfolio.portfolio_owner.username,
-            'Change (%)': f'{day_change_percent}%',
-            'Change ($)': f'${day_change}',
-            'Portfolio Value': f'${portfolio.current_value}'
+            '% Change': f'{day_change_percent}%',
+            'Change': f'${day_change}',
+            'Value': f'${portfolio.current_value}'
         })
 
         prev = day_change_percent
@@ -561,13 +562,14 @@ def get_portfolio_transactions(portfolio_id: int) -> list:
     for transaction in transactions:
         transaction_list.append({
             'Ticker': transaction.stock.ticker,
-            'Full Name': transaction.stock.company_name,
+            'Name': transaction.stock.company_name,
             'Type': transaction.transaction_type,
-            'Shares': transaction.number_of_shares,
+            'Share Price': transaction.number_of_shares,
             'Price': transaction.price_per_share,
-            'Total': transaction.total_value,
+            'Total Value': transaction.total_value,
             'Currency': transaction.stock.currency,
-            'Date (EST)': utc_to_est(transaction.transaction_date).strftime('%H:%M:%S %m-%d-%Y')
+            'Profit/Loss': transaction.profit_loss if transaction.profit_loss is not None else 'n/a',
+            'Date (EST)': utc_to_est(transaction.transaction_date).strftime('%H:%M %m-%d-%Y')
         })
 
     return transaction_list
@@ -602,9 +604,9 @@ def get_portfolio_holdings(portfolio_id: int) -> list:
             'Current Price': holding.stock.current_price,
             'Net Change': change,
             'Total Change': total_change,
-            'Change (%)': change_percent,
+            '% Change': change_percent,
             'Day Change': day_change,
-            'Day Change (%)': day_change_percent,
+            '% Day Change': day_change_percent,
             'Market Value': market_value,
             'Currency': holding.stock.currency
         })
@@ -780,7 +782,9 @@ def get_portfolio(user_id: int, portfolio_id: int) -> dict:
     return {
         'userPortfolios': user_portfolios,
         'portfolioDetails': portfolio_details,
-        'portfolioHistory': portfolio_history,
+        'closingHistory': portfolio_history.get('closingHistory'),
+        'dailyHistory': portfolio_history.get('dailyHistory'),
+        'dailyHistoryDate': portfolio_history.get('date'),
         'holdingsBreakdown': holdings_breakdown,
         'sectorBreakdown': sector_breakdown,
         'portfolioTransactions': portfolio_transactions,

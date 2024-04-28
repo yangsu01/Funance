@@ -139,7 +139,7 @@ def game_leaderboard(game_id: str):
     ), 200
 
 
-@portfolio_sim.route('/my-portfolio/<portfolio_id>', methods=['GET'])
+@portfolio_sim.route('/portfolio/<portfolio_id>', methods=['GET'])
 @jwt_required()
 def my_portfolio(portfolio_id: str):
     '''Get the portfolio summary for a user
