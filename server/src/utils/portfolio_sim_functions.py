@@ -425,6 +425,7 @@ def get_portfolio_details(portfolio_id: int) -> dict:
     change = round((current_value/starting_cash - 1) * 100, 2)
     profit = round(current_value - starting_cash, 2)
     last_updated = utc_to_est(portfolio.last_updated).strftime('%a, %b %d. %Y %I:%M%p') + ' EST'
+    transaction_fee = f'${round(parent_game.transaction_fee, 0)}' if parent_game.fee_type == 'Flat Fee' else f'{round(parent_game.transaction_fee * 100, 0)}%'
 
     return {
         'gameId': parent_game.id,
@@ -434,7 +435,7 @@ def get_portfolio_details(portfolio_id: int) -> dict:
         'participants': parent_game.participants,
         'gameStartDate': parent_game.start_date.strftime('%Y-%m-%d'),
         'gameEndDate': parent_game.end_date.strftime('%Y-%m-%d') if parent_game.end_date is not None else 'n/a',
-        'transactionFee': parent_game.transaction_fee,
+        'transactionFee': transaction_fee,
         'feeType': parent_game.fee_type,
         'availableCash': portfolio.available_cash,
         'portfolioValue': current_value,
