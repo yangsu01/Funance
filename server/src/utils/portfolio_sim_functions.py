@@ -428,6 +428,7 @@ def get_portfolio_details(portfolio_id: int) -> dict:
     transaction_fee = f'${round(parent_game.transaction_fee, 0)}' if parent_game.fee_type == 'Flat Fee' else f'{round(parent_game.transaction_fee * 100, 0)}%'
 
     return {
+        'portfolioId': portfolio.id,
         'gameId': parent_game.id,
         'gameName': parent_game.name,
         'gameStatus': parent_game.status,
@@ -631,7 +632,7 @@ def get_game_history(game_id) -> dict:
 
     if closing_history is not None:
         for row in closing_history:
-            data = close.get(row.portfolio_id, {'x': [], 'y': [], 'name': row.portfolio.portfolio_owner.username})
+            data = close.setdefault(row.portfolio_id, {'x': [], 'y': [], 'name': row.portfolio.portfolio_owner.username})
             data['x'].append(row.date.strftime('%Y-%m-%d'))
             data['y'].append(row.portfolio_value)
             close[row.portfolio_id] = data
@@ -644,8 +645,8 @@ def get_game_history(game_id) -> dict:
 
     if daily_history is not None:
         for row in daily_history:
-            data = day.get(row.portfolio_id, {'x': [], 'y': [], 'name': row.portfolio.portfolio_owner.username})
-            data['x'].append(utc_to_est(row.update_time).strftime('%Y-%m-%d %H:%M'))
+            data = day.setdefault(row.portfolio_id, {'x': [], 'y': [], 'name': row.portfolio.portfolio_owner.username})
+            data['x'].append(row.update_time.strftime('%Y-%m-%d %H:%M'))
             data['y'].append(row.portfolio_value)
             day[row.portfolio_id] = data
 
@@ -682,7 +683,7 @@ def get_portfolio_history(portfolio_id: int) -> dict:
 
     if daily_history is not None:
         for row in daily_history:
-            day['x'].append(utc_to_est(row.update_time).strftime('%Y-%m-%d %H:%M'))
+            day['x'].append(row.update_time.strftime('%Y-%m-%d %H:%M'))
             day['y'].append(row.portfolio_value)
 
     return {
@@ -707,8 +708,8 @@ def get_holdings_breakdown(portfolio_id: int) -> dict:
         return holding_breakdown
 
     for holding in holdings:
-        holding_breakdown.get("labels", []).append(holding.stock.ticker)
-        holding_breakdown.get("values", []).append(holding.shares_owned * holding.stock.current_price)
+        holding_breakdown.setdefault("labels", []).append(holding.stock.ticker)
+        holding_breakdown.setdefault("values", []).append(holding.shares_owned * holding.stock.current_price)
 
     return holding_breakdown
 
