@@ -100,6 +100,7 @@ export type UserPortfolios = {
     portfolioId: string;
 }
 export type PortfolioDetails = {
+    portfolioId: number;
     gameId: number;
     gameName: string;
     gameStatus: string;

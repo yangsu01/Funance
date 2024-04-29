@@ -34,10 +34,14 @@ const GameCard: React.FC<Props> = ({
           <Card.Title>
             {link ? (
               <Link to={link} className="text-white">
-                <h4>{title}</h4>
+                <h3>
+                  <strong>{title}</strong>
+                </h3>
               </Link>
             ) : (
-              <h4>{title}</h4>
+              <h3>
+                <strong>{title}</strong>
+              </h3>
             )}
           </Card.Title>
         )}
@@ -56,7 +60,7 @@ const GameCard: React.FC<Props> = ({
           </ListGroup>
         )}
       </Card.Body>
-      
+
       {footer && <Card.Footer>{footer}</Card.Footer>}
     </Card>
   );
