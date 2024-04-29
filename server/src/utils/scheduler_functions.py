@@ -63,10 +63,11 @@ def save_daily_history() -> None:
     '''
     portfolios = Portfolio.query.join(Game).filter_by(status='In Progress').all()
 
-    record_date = get_est_time().date()
+    record_time = get_est_time()
+    record_date = record_time.date()
 
     for portfolio in portfolios:
-        history = DailyHistory(portfolio_id=portfolio.id, date=record_date, portfolio_value=portfolio.current_value)
+        history = DailyHistory(portfolio_id=portfolio.id, date=record_date, portfolio_value=portfolio.current_value, update_time=record_time)
 
         db.session.add(history)
 
