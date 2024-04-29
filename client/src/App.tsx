@@ -139,8 +139,8 @@ function App() {
               />
             </Route>
             <Route path="/portfolio">
-              <Route index element={<Portfolio />} />
-              <Route path=":id" element={<Portfolio />} />
+              <Route index element={<Portfolio showAlert={showAlert} />} />
+              <Route path=":id" element={<Portfolio showAlert={showAlert} />} />
             </Route>
           </Route>
         </Routes>
