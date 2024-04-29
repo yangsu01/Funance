@@ -49,7 +49,7 @@ export type GameInfo = {
 
 
 // game leaderboard data
-type GameDetails = {
+export type GameDetails = {
     name: string
     creator: string
     participants: string
@@ -95,11 +95,11 @@ export type GameLeaderboardData = {
 
 
 // user portfolio data
-type UserPortfolios = {
+export type UserPortfolios = {
     gameName: string;
     portfolioId: string;
 }
-type PortfolioDetails = {
+export type PortfolioDetails = {
     gameId: number;
     gameName: string;
     gameStatus: string;
