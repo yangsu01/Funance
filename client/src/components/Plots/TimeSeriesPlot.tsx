@@ -10,12 +10,11 @@ import {
   LineElement,
   Title,
   Tooltip,
-  Legend,
 } from "chart.js";
 import "chartjs-adapter-moment";
 
 // types
-import { TimeSeriesPlotData } from "../../utils/types";
+import { LinePlotData } from "../../utils/types";
 
 ChartJS.register(
   TimeSeriesScale,
@@ -23,23 +22,26 @@ ChartJS.register(
   PointElement,
   LineElement,
   Title,
-  Tooltip,
-  Legend
+  Tooltip
 );
 
-type Props = { timeSeriesData: TimeSeriesPlotData[]; title: string };
+type Props = { plotData: LinePlotData; title: string };
 
-const MultiTimeSeriesPlot: React.FC<Props> = ({ timeSeriesData, title }) => {
+const MultiTimeSeriesPlot: React.FC<Props> = ({ plotData, title }) => {
   const isSmallScreen = useMediaQuery({ maxWidth: 767 });
-  const chartHeight = isSmallScreen ? 300 : 0;
+  const chartHeight = isSmallScreen ? 200 : "auto";
 
   const data = {
-    datasets: timeSeriesData.map((d) => ({
-      label: d.name,
-      data: d.x.map((value, index) => ({ x: value, y: d.y[index] })),
-      fill: false,
-      borderColor: "#" + Math.floor(Math.random() * 16777215).toString(16),
-    })),
+    datasets: [
+      {
+        data: plotData.x.map((value, index) => ({
+          x: value,
+          y: plotData.y[index],
+        })),
+        fill: false,
+        borderColor: "rgb(14, 209, 69)" as const,
+      },
+    ],
   };
 
   const options = {
@@ -47,10 +49,7 @@ const MultiTimeSeriesPlot: React.FC<Props> = ({ timeSeriesData, title }) => {
     maintainAscpetRatio: false,
     plugins: {
       legend: {
-        position: "top" as const,
-        labels: {
-          color: "white" as const,
-        },
+        display: false,
       },
       title: {
         display: true,

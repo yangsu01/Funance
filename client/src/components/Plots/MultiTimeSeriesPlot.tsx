@@ -31,7 +31,7 @@ type Props = { timeSeriesData: TimeSeriesPlotData[]; title: string };
 
 const MultiTimeSeriesPlot: React.FC<Props> = ({ timeSeriesData, title }) => {
   const isSmallScreen = useMediaQuery({ maxWidth: 767 });
-  const chartHeight = isSmallScreen ? 300 : 0;
+  const chartHeight = isSmallScreen ? 300 : 200;
 
   const data = {
     datasets: timeSeriesData.map((d) => ({
