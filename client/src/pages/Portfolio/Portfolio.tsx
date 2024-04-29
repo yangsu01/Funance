@@ -13,6 +13,7 @@ import Loading from "../../components/UI/Loading";
 import TimeSeriesPlot from "../../components/Plots/TimeSeriesPlot";
 import InfoCard from "../../components/UI/InfoCard";
 import PortfolioInfo from "./PortfolioInfo";
+import PortfolioHistoryPlots from "./PortfolioHistoryPlots";
 
 // types
 import { PortfolioData, AlertMessage } from "../../utils/types";
@@ -59,8 +60,6 @@ const Portfolio: React.FC<Props> = ({ showAlert }) => {
     );
   }
 
-  console.log(portfolioData);
-
   return (
     <>
       {/* page title */}
@@ -70,9 +69,32 @@ const Portfolio: React.FC<Props> = ({ showAlert }) => {
         button="Leaderboard"
         onClick={handleLeaderboard}
       />
-  
+
       {/* portfolio info */}
-      <PortfolioInfo data={portfolioData.portfolioDetails} portfolios={portfolioData.userPortfolios}/>
+      <PortfolioInfo
+        data={portfolioData.portfolioDetails}
+        portfolios={portfolioData.userPortfolios}
+        portfolioId={portfolioData.portfolioDetails.portfolioId}
+      />
+
+      {portfolioData.portfolioDetails.gameStatus === "Not Started" ? (
+        <div className="my-5">
+          <h2 className="text-center">
+            The game will start on{" "}
+            {portfolioData.portfolioDetails.gameStartDate}.
+          </h2>
+          <h5 className="text-center">
+            Analytics will be available once the game starts
+          </h5>
+        </div>
+      ) : (
+        <PortfolioHistoryPlots
+          closeData={portfolioData.closingHistory}
+          dailyData={portfolioData.dailyHistory}
+          gameStatus={portfolioData.portfolioDetails.gameStatus}
+          date={portfolioData.dailyHistoryDate}
+        />
+      )}
     </>
   );
 };
