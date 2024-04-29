@@ -11,6 +11,8 @@ import Title from "../../components/UI/Title";
 import SimpleTable from "../../components/UI/SimpleTable";
 import Loading from "../../components/UI/Loading";
 import TimeSeriesPlot from "../../components/Plots/TimeSeriesPlot";
+import InfoCard from "../../components/UI/InfoCard";
+import PortfolioInfo from "./PortfolioInfo";
 
 // types
 import { PortfolioData, AlertMessage } from "../../utils/types";
@@ -38,7 +40,7 @@ const Portfolio: React.FC<Props> = ({ showAlert }) => {
         setPortfolioData(res.data);
       }
     });
-  }, []);
+  }, [id]);
 
   const handleLeaderboard = () => {
     navigate(`/games/${portfolioData.portfolioDetails.gameId}`);
@@ -65,9 +67,12 @@ const Portfolio: React.FC<Props> = ({ showAlert }) => {
       <Title
         title={"My Portfolio"}
         subtitle={`For game: ${portfolioData.portfolioDetails.gameName}`}
-        button="Game Leaderboard"
+        button="Leaderboard"
         onClick={handleLeaderboard}
       />
+  
+      {/* portfolio info */}
+      <PortfolioInfo data={portfolioData.portfolioDetails} portfolios={portfolioData.userPortfolios}/>
     </>
   );
 };
