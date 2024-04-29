@@ -55,9 +55,9 @@ const GameCard: React.FC<Props> = ({
             ))}
           </ListGroup>
         )}
-
-        {footer && <Card.Footer>{footer}</Card.Footer>}
       </Card.Body>
+      
+      {footer && <Card.Footer>{footer}</Card.Footer>}
     </Card>
   );
 };
