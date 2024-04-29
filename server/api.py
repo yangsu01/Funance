@@ -92,7 +92,8 @@ scheduler.add_job(
     day_of_week='mon-fri',
     hour='9', 
     minute='30', 
-    timezone='US/Eastern'
+    timezone='US/Eastern',
+    misfire_grace_time=None
 )
 
 scheduler.add_job(
@@ -103,7 +104,8 @@ scheduler.add_job(
     hour='10-15', 
     minute='0, 30',
     second='10',
-    timezone='US/Eastern'
+    timezone='US/Eastern',
+    misfire_grace_time=None
 )
 
 scheduler.add_job(
@@ -113,7 +115,8 @@ scheduler.add_job(
     day_of_week='mon-fri',
     hour='16',
     minute='0',
-    timezone='US/Eastern'
+    timezone='US/Eastern',
+    misfire_grace_time=None
 )
 
 
