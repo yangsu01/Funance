@@ -70,3 +70,9 @@
   background-color: rgba(255, 255, 255, 0);
   color: rgb(255, 255, 255); 
 }
+
+.accordion {
+  --bs-accordion-active-bg: #00000000;
+  --bs-accordion-active-color: #f8f9fa;
+  --bs-accordion-btn-focus-box-shadow: none
+}
