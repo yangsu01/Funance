@@ -9,7 +9,7 @@ import usePost from "../../hooks/usePost";
 
 // components
 import Title from "../../components/UI/Title";
-import TimeSeriesPlot from "../../components/Plots/TimeSeriesPlot";
+import MultiTimeSeriesPlot from "../../components/Plots/MultiTimeSeriesPlot";
 import SimpleTable from "../../components/UI/SimpleTable";
 import PopupForm from "../../components/Forms/PopupForm";
 import Loading from "../../components/UI/Loading";
@@ -34,18 +34,18 @@ const GameLeaderboard: React.FC<Props> = ({ showAlert }) => {
   const topPortfoliosColumns = [
     "Rank",
     "Username",
-    "Portfolio Value",
-    "Change (%)",
-    "Portfolio Age (days)",
-    "Daily Change (%)",
+    "Value",
+    "Change",
+    "Age (days)",
+    "Daily Change",
   ];
 
   const dailyPortfoliosColumns = [
     "Rank",
     "Username",
-    "Change (%)",
-    "Change ($)",
-    "Portfolio Value",
+    "% Change",
+    "Change",
+    "Value",
   ];
 
   const navigate = useNavigate();
@@ -61,8 +61,8 @@ const GameLeaderboard: React.FC<Props> = ({ showAlert }) => {
     });
   }, []);
 
-  const handleGameList = () => {
-    navigate("/games");
+  const handleBack = () => {
+    navigate(-1);
   };
 
   const handleJoin = () => {
@@ -103,8 +103,8 @@ const GameLeaderboard: React.FC<Props> = ({ showAlert }) => {
         <Title
           title="Game Leaderboard"
           subtitle="Detailed stats for the game"
-          button="Game List"
-          onClick={handleGameList}
+          button="Back"
+          onClick={handleBack}
         />
         <Loading />
       </>
@@ -117,8 +117,8 @@ const GameLeaderboard: React.FC<Props> = ({ showAlert }) => {
       <Title
         title={`${leaderboardData.gameDetails.name} Leaderboard`}
         subtitle="Detailed stats for the game"
-        button="Game List"
-        onClick={handleGameList}
+        button="Back"
+        onClick={handleBack}
       />
 
       {/* popup */}
@@ -152,7 +152,7 @@ const GameLeaderboard: React.FC<Props> = ({ showAlert }) => {
           <Row className="d-flex align-items-center mb-5">
             <h2>Top Performing Portfolios</h2>
             <Col lg={6}>
-              <TimeSeriesPlot
+              <MultiTimeSeriesPlot
                 timeSeriesData={leaderboardData.closingHistory}
                 title="Portfolio Values Over Time"
               />
@@ -170,7 +170,7 @@ const GameLeaderboard: React.FC<Props> = ({ showAlert }) => {
             <Row className="d-flex align-items-center">
               <h2>Daily Performance ({leaderboardData.dailyHistoryDate})</h2>
               <Col lg={6}>
-                <TimeSeriesPlot
+                <MultiTimeSeriesPlot
                   timeSeriesData={leaderboardData.dailyHistory}
                   title="Todays performance"
                 />
@@ -180,7 +180,7 @@ const GameLeaderboard: React.FC<Props> = ({ showAlert }) => {
                   headers={dailyPortfoliosColumns}
                   content={leaderboardData.dailyPortfolios}
                 />
-              </Col>  
+              </Col>
             </Row>
           )}
         </>
