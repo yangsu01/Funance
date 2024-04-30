@@ -1,12 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import { NavLink, useNavigate } from "react-router-dom";
-
-// bootstrap elements
 import { Button, Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
 
-// utils
-import api from "../utils/api";
+//hooks
+import usePost from "../hooks/usePost";
 
 type Props = {
   userAuthenticated: boolean;
@@ -14,14 +12,16 @@ type Props = {
   setUserAuthenticated: (authenticated: boolean) => void;
 };
 
-const TopNavbar: React.FC<Props> = ({
+const TopNavbar = ({
   userAuthenticated,
   removeToken,
   setUserAuthenticated,
-}) => {
-  const navigate = useNavigate();
+}: Props) => {
   const [expanded, setExpanded] = useState(false);
+
   const isSmallScreen = useMediaQuery({ maxWidth: 767 });
+  const navigate = useNavigate();
+  const { postData } = usePost();
 
   const handleToggle = () => {
     if (isSmallScreen) {
@@ -29,18 +29,18 @@ const TopNavbar: React.FC<Props> = ({
     }
   };
 
-  const signOutUser = async () => {
-    // call backend api
-    try {
-      await api.post("/signout-user");
+  const handleSignOut = async () => {
+    const post = async () => {
+      return await postData("/signout-user", {});
+    };
 
-      removeToken();
-      setUserAuthenticated(false);
-
-      navigate(0);
-    } catch (error: any) {
-      console.log(error);
-    }
+    post().then((res) => {
+      if (res.status === "success") {
+        removeToken();
+        setUserAuthenticated(false);
+        navigate(0);
+      }
+    });
   };
 
   return (
@@ -122,7 +122,7 @@ const TopNavbar: React.FC<Props> = ({
             {userAuthenticated ? (
               <Button
                 variant="outline-light"
-                onClick={signOutUser}
+                onClick={handleSignOut}
                 className={`me-2 ${isSmallScreen ? "mt-2 mb-2" : ""}`}
               >
                 Sign Out
