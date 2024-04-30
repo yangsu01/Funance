@@ -17,6 +17,8 @@ import "chartjs-adapter-moment";
 // types
 import { TimeSeriesPlotData } from "../../utils/types";
 
+import { PLOT_COLORS } from "../../utils/constants";
+
 ChartJS.register(
   TimeSeriesScale,
   LinearScale,
@@ -31,14 +33,15 @@ type Props = { timeSeriesData: TimeSeriesPlotData[]; title: string };
 
 const MultiTimeSeriesPlot: React.FC<Props> = ({ timeSeriesData, title }) => {
   const isSmallScreen = useMediaQuery({ maxWidth: 767 });
-  const chartHeight = isSmallScreen ? 300 : 200;
+  const chartHeight = isSmallScreen ? 300 : "auto";
 
   const data = {
     datasets: timeSeriesData.map((d) => ({
       label: d.name,
       data: d.x.map((value, index) => ({ x: value, y: d.y[index] })),
       fill: false,
-      borderColor: "#" + Math.floor(Math.random() * 16777215).toString(16),
+      borderColor: PLOT_COLORS,
+      border: 1,
     })),
   };
 

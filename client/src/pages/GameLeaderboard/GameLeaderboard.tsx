@@ -1,22 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { Row, Col } from "react-bootstrap";
-
 // hooks
 import useFetch from "../../hooks/useFetch";
 import usePost from "../../hooks/usePost";
 
 // components
 import Title from "../../components/UI/Title";
-import MultiTimeSeriesPlot from "../../components/Plots/MultiTimeSeriesPlot";
-import SimpleTable from "../../components/UI/SimpleTable";
 import PopupForm from "../../components/Forms/PopupForm";
 import Loading from "../../components/UI/Loading";
 import GameLeaderboardInfo from "./GameLeaderboardInfo";
+import GameLeaderboardRankings from "./GameLeaderboardRankings";
+import EmptyMessage from "../../components/UI/EmptyMessage";
+import GameLeaderboardButtons from "./GameLeaderboardButtons";
 
 // types
 import { AlertMessage, GameLeaderboardData } from "../../utils/types";
+
+// constants
+import {
+  TOP_PORTFOLIO_TABLE_HEADERS,
+  DAILY_PORTFOLIOS_TABLE_HEADERS,
+} from "../../utils/constants";
 
 type Props = {
   showAlert: (alertMessage: AlertMessage) => void;
@@ -30,23 +35,6 @@ const GameLeaderboard: React.FC<Props> = ({ showAlert }) => {
   );
   const { postData } = usePost();
   const [showPopup, setShowPopup] = useState(false);
-
-  const topPortfoliosColumns = [
-    "Rank",
-    "Username",
-    "Value",
-    "Change",
-    "Age (days)",
-    "Daily Change",
-  ];
-
-  const dailyPortfoliosColumns = [
-    "Rank",
-    "Username",
-    "% Change",
-    "Change",
-    "Value",
-  ];
 
   const navigate = useNavigate();
 
@@ -131,57 +119,44 @@ const GameLeaderboard: React.FC<Props> = ({ showAlert }) => {
         onSubmit={joinGame}
       />
 
-      {/* game info */}
-      <GameLeaderboardInfo
-        details={leaderboardData.gameDetails}
+      {/* buttons */}
+      <GameLeaderboardButtons
+        portfolioId={leaderboardData.gameDetails.portfolioId}
+        gameStatus={leaderboardData.gameDetails.status}
+        joinedGame={leaderboardData.gameDetails.joinedGame}
         onJoin={handleJoin}
       />
 
+      {/* game info */}
+      <GameLeaderboardInfo details={leaderboardData.gameDetails} />
+
       {leaderboardData.gameDetails.status === "Not Started" ? (
-        <div className="my-5">
-          <h2 className="text-center">
-            The game will start on {leaderboardData.gameDetails.startDate}.
-          </h2>
-          <h5 className="text-center">
-            Analytics will be available once the game starts
-          </h5>
-        </div>
+        <EmptyMessage
+          title={`Game will start on: ${leaderboardData.gameDetails.startDate}`}
+          subtitle="Analytics will be available once the game starts."
+        />
       ) : (
         <>
           {/* overall top performers */}
-          <Row className="d-flex align-items-center mb-5">
-            <h2>Top Performing Portfolios</h2>
-            <Col lg={6}>
-              <MultiTimeSeriesPlot
-                timeSeriesData={leaderboardData.closingHistory}
-                title="Portfolio Values Over Time"
-              />
-            </Col>
-            <Col lg={6}>
-              <SimpleTable
-                headers={topPortfoliosColumns}
-                content={leaderboardData.topPortfolios}
-              />
-            </Col>
-          </Row>
+          <GameLeaderboardRankings
+            title="Top Performing Portfolios"
+            subtitle="*Updated daily when markets close"
+            plotTitle="Portfolio Values Over Time"
+            plotData={leaderboardData.closingHistory}
+            tableHeaders={TOP_PORTFOLIO_TABLE_HEADERS}
+            tableData={leaderboardData.topPortfolios}
+          />
 
           {/* daily top performers */}
           {leaderboardData.gameDetails.status === "In Progress" && (
-            <Row className="d-flex align-items-center">
-              <h2>Daily Performance ({leaderboardData.dailyHistoryDate})</h2>
-              <Col lg={6}>
-                <MultiTimeSeriesPlot
-                  timeSeriesData={leaderboardData.dailyHistory}
-                  title="Todays performance"
-                />
-              </Col>
-              <Col lg={6}>
-                <SimpleTable
-                  headers={dailyPortfoliosColumns}
-                  content={leaderboardData.dailyPortfolios}
-                />
-              </Col>
-            </Row>
+            <GameLeaderboardRankings
+              title={`Top Today (${leaderboardData.dailyHistoryDate})`}
+              subtitle="*Updated every 30 minutes during market hours"
+              plotTitle="Portfolio Values Over Time"
+              plotData={leaderboardData.dailyHistory}
+              tableHeaders={DAILY_PORTFOLIOS_TABLE_HEADERS}
+              tableData={leaderboardData.dailyPortfolios}
+            />
           )}
         </>
       )}
