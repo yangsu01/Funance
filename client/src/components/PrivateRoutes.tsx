@@ -1,22 +1,22 @@
-import React from "react";
-import { Navigate, Outlet } from "react-router-dom";
+import { useNavigate, Outlet } from "react-router-dom";
+
+//context
+import { useShowAlert } from "../contexts/AlertContext";
 
 type Props = {
   userAuthenticated: boolean;
 };
 
-const PrivateRoutes: React.FC<Props> = ({ userAuthenticated }) => {
-  return userAuthenticated ? (
-    <Outlet />
-  ) : (
-    <Navigate
-      to="/sign-in"
-      state={{
-        alert: "Please sign in to view this page",
-        alertType: "warning",
-      }}
-    />
-  );
+const PrivateRoutes = ({ userAuthenticated }: Props) => {
+  const navigate = useNavigate();
+  const showAlert = useShowAlert();
+
+  if (!userAuthenticated) {
+    showAlert("You must be logged in to access this page", "warning");
+    navigate("/sign-in");
+  }
+
+  return <Outlet />;
 };
 
 export default PrivateRoutes;

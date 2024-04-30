@@ -1,29 +1,29 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 
+// components
 import SignUpForm from "./SignUpForm";
-
 // hooks
 import usePost from "../../hooks/usePost";
 import useSignUp from "./useSignUp";
-
+// contexts
+import { useShowAlert } from "../../contexts/AlertContext";
 // types
-import { AlertMessage, SignUpFormData } from "../../utils/types";
+import { SignUpFormData } from "../../utils/types";
 
 type Props = {
   authenticateUser: (token: string) => void;
-  showAlert: (alertMessage: AlertMessage) => void;
 };
 
-const SignUp: React.FC<Props> = ({ authenticateUser, showAlert }) => {
+const SignUp = ({ authenticateUser }: Props) => {
   const { postData } = usePost();
   const navigate = useNavigate();
+  const showAlert = useShowAlert();
 
   const onSubmit = async (formData: SignUpFormData) => {
     const response = useSignUp(formData);
 
     if (response.error) {
-      showAlert({ alert: response.error, alertType: "danger" });
+      showAlert(response.error, "danger");
       return;
     }
 
@@ -37,16 +37,11 @@ const SignUp: React.FC<Props> = ({ authenticateUser, showAlert }) => {
 
     post().then((res) => {
       if (res.status === "error") {
-        showAlert({ alert: res.msg, alertType: "danger" });
+        showAlert(res.msg, "danger");
       } else {
         authenticateUser(res.data);
-        navigate("/", {
-          replace: true,
-          state: {
-            alert: res.msg,
-            alertType: "success",
-          },
-        });
+        showAlert(res.msg, "success");
+        navigate("/");
       }
     });
   };
@@ -54,7 +49,6 @@ const SignUp: React.FC<Props> = ({ authenticateUser, showAlert }) => {
   return (
     <main className="form-signup m-auto mt-5">
       <h3 className="display-6 fw-bold text-white mb-3">Sign Up</h3>
-
       <SignUpForm onSubmit={onSubmit} />
     </main>
   );

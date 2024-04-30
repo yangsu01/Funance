@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
 import { Col, Row } from "react-bootstrap";
 
 // components
@@ -8,38 +7,34 @@ import Title from "../../components/UI/Title";
 import PopupForm from "../../components/Forms/PopupForm";
 import GameCard from "./GameListCard";
 import Loading from "../../components/UI/Loading";
-
 // hooks
 import useFetch from "../../hooks/useFetch";
 import usePost from "../../hooks/usePost";
+// contexts
+import { useShowAlert } from "../../contexts/AlertContext";
+// types
+import { GameInfo } from "../../utils/types";
 
-// custom types
-import { GameInfo, AlertMessage } from "../../utils/types";
-
-type Props = {
-  showAlert: (alertMessage: AlertMessage) => void;
-};
-
-const GameList: React.FC<Props> = ({ showAlert }) => {
+const GameList = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [gameData, setGameData] = useState<GameInfo[]>([] as GameInfo[]);
   const [gameName, setGameName] = useState("");
 
+  const navigate = useNavigate();
   const { fetchData, loading } = useFetch<GameInfo[]>();
   const { postData } = usePost();
+  const showAlert = useShowAlert();
 
   // on page load
   useEffect(() => {
     fetchData("/game-list").then((res) => {
       if (res.status === "error") {
-        showAlert({ alert: res.msg, alertType: "danger" });
+        showAlert(res.msg, "danger");
       } else {
         setGameData(res.data);
       }
     });
   }, []);
-
-  const navigate = useNavigate();
 
   const handleCreateGame = () => {
     navigate("/games/create-game");
@@ -65,15 +60,10 @@ const GameList: React.FC<Props> = ({ showAlert }) => {
 
     post().then((res) => {
       if (res.status === "error") {
-        showAlert({ alert: res.msg, alertType: "danger" });
+        showAlert(res.msg, "danger");
       } else {
-        navigate(`/portfolio/${res.data}`, {
-          replace: true,
-          state: {
-            alert: res.msg,
-            alertType: "success",
-          },
-        });
+        showAlert(res.msg, "success");
+        navigate(`/portfolio/${res.data}`);
       }
     });
   };

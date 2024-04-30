@@ -1,8 +1,5 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-
-// hooks
-import useFetch from "../../hooks/useFetch";
 
 // components
 import Title from "../../components/UI/Title";
@@ -12,27 +9,27 @@ import PortfolioHistoryPlots from "./PortfolioHistoryPlots";
 import PortfolioHoldingsPlots from "./PortfolioHoldingsPlots";
 import EmptyMessage from "../../components/UI/EmptyMessage";
 import PortfolioTable from "./PortfolioTable";
-
+// hooks
+import useFetch from "../../hooks/useFetch";
+// contexts
+import { useShowAlert } from "../../contexts/AlertContext";
 // types
-import { PortfolioData, AlertMessage } from "../../utils/types";
-
+import { PortfolioData } from "../../utils/types";
 // constants
 import {
   HOLDINGS_TABLE_HEADERS,
   TRANSACTIONS_TABLE_HEADERS,
 } from "../../utils/constants";
 
-type Props = {
-  showAlert: (alertMessage: AlertMessage) => void;
-};
-
-const Portfolio: React.FC<Props> = ({ showAlert }) => {
-  let { id } = useParams();
-  const { fetchData, loading } = useFetch<PortfolioData>();
+const Portfolio = () => {
   const [portfolioData, setPortfolioData] = useState<PortfolioData>(
     {} as PortfolioData
   );
+
+  let { id } = useParams();
+  const { fetchData, loading } = useFetch<PortfolioData>();
   const navigate = useNavigate();
+  const showAlert = useShowAlert();
 
   // on page load
   useEffect(() => {
@@ -40,7 +37,7 @@ const Portfolio: React.FC<Props> = ({ showAlert }) => {
 
     fetchData(`/portfolio/${id}`).then((res) => {
       if (res.status === "error") {
-        showAlert({ alert: res.msg, alertType: "danger" });
+        showAlert(res.msg, "danger");
       } else {
         setPortfolioData(res.data);
       }
@@ -55,20 +52,19 @@ const Portfolio: React.FC<Props> = ({ showAlert }) => {
     return (
       <>
         {/* page title */}
-        <Title
-          title="Game Leaderboard"
-          subtitle="Detailed stats for the game"
-        />
+        <Title title="My Portfolio" subtitle="For the game" />
         <Loading />
       </>
     );
   }
 
+  console.log(portfolioData.portfolioHoldings);
+
   return (
     <>
       {/* page title */}
       <Title
-        title={"My Portfolio"}
+        title="My Portfolio"
         subtitle={`For game: ${portfolioData.portfolioDetails.gameName}`}
         button="Leaderboard"
         onClick={handleLeaderboard}

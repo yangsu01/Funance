@@ -1,25 +1,20 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 
 // components
 import Title from "../../components/UI/Title";
 import CreateGameForm from "./CreateGameForm";
-
 // hooks
 import usePost from "../../hooks/usePost";
 import useCreateGame from "./useCreateGame";
-
+// contexts
+import { useShowAlert } from "../../contexts/AlertContext";
 // types
-import { CreateGameFormData, AlertMessage } from "../../utils/types";
+import { CreateGameFormData } from "../../utils/types";
 
-type Props = {
-  showAlert: (alertMessage: AlertMessage) => void;
-};
-
-const CreateGame: React.FC<Props> = ({ showAlert }) => {
+const CreateGame = () => {
   const { postData } = usePost();
-
   const navigate = useNavigate();
+  const showAlert = useShowAlert();
 
   const handleGameList = () => {
     navigate("/games");
@@ -29,7 +24,7 @@ const CreateGame: React.FC<Props> = ({ showAlert }) => {
     const response = useCreateGame(formData);
 
     if (response.error) {
-      showAlert({ alert: response.error, alertType: "danger" });
+      showAlert(response.error, "danger");
       return;
     } else if (response.data) {
       postCreateGame(response.data);
@@ -51,15 +46,10 @@ const CreateGame: React.FC<Props> = ({ showAlert }) => {
 
     post().then((res) => {
       if (res.status === "error") {
-        showAlert({ alert: res.msg, alertType: "danger" });
+        showAlert(res.msg, "danger");
       } else {
-        navigate(`/portfolio/${res.data}`, {
-          replace: true,
-          state: {
-            alert: res.msg,
-            alertType: "success",
-          },
-        });
+        showAlert(res.msg, "success");
+        navigate(`/portfolio/${res.data}`);
       }
     });
   };

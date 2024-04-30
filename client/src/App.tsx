@@ -1,8 +1,5 @@
-import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
-
-// bootstrap elements
-import { Alert } from "react-bootstrap";
+import { Routes, Route } from "react-router-dom";
+import { useState } from "react";
 
 // utilities
 import useToken from "./hooks/useToken";
@@ -17,6 +14,8 @@ import GameList from "./pages/GameList/GameList";
 import CreateGame from "./pages/CreateGame/CreateGame";
 import Portfolio from "./pages/Portfolio/Portfolio";
 import GameLeaderboard from "./pages/GameLeaderboard/GameLeaderboard";
+import Buy from "./pages/Buy/Buy";
+import Sell from "./pages/Sell/Sell";
 // auth
 import SignIn from "./pages/SignIn/SignIn";
 import SignUp from "./pages/SignUp/SignUp";
@@ -26,11 +25,12 @@ import Blog from "./pages/Blog/Blog";
 
 // UI components
 import PrivateRoutes from "./components/PrivateRoutes";
+import AlertNotification from "./components/AlertNotification";
 import TopNavbar from "./components/TopNavbar";
 import Footer from "./components/Footer";
 
-//custom types
-import { AlertMessage } from "./utils/types";
+// context
+import { AlertProvider } from "./contexts/AlertContext";
 
 function App() {
   // app version
@@ -41,12 +41,6 @@ function App() {
   const [userAuthenticated, setUserAuthenticated] = useState(
     token ? true : false
   );
-  const [alertVisible, setAlertVisible] = useState(false);
-  const [alertMessage, setAlertMessage] = useState<AlertMessage>(
-    {} as AlertMessage
-  );
-  const { state } = useLocation();
-  const navigate = useNavigate();
 
   // authenticate user
   const authenticateUser = (token: string) => {
@@ -54,37 +48,17 @@ function App() {
     setUserAuthenticated(true);
   };
 
-  // alert flashing
-  const showAlert = (alertMessage: AlertMessage) => {
-    setAlertMessage(alertMessage);
-    setAlertVisible(true);
-  };
-  // auto close alert after 5 seconds
-  useEffect(() => {
-    if (alertMessage) {
-      const timer = setTimeout(() => {
-        setAlertVisible(false);
-      }, 5000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [alertMessage]);
-  // flash alert on page change if state is updated
-  useEffect(() => {
-    if (state) {
-      showAlert(state as AlertMessage);
-      navigate(location.pathname, { replace: true });
-    }
-  }, [state]);
-
   return (
-    <>
+    <AlertProvider>
       {/* navbar */}
       <TopNavbar
         userAuthenticated={userAuthenticated}
         removeToken={removeToken}
         setUserAuthenticated={setUserAuthenticated}
       />
+
+      {/* alert notification */}
+      <AlertNotification />
 
       <main className="container flex-shrink-0 content content-container my-4 w-100">
         {/* routes */}
@@ -102,21 +76,11 @@ function App() {
           {/* auth */}
           <Route
             path="/sign-in"
-            element={
-              <SignIn
-                authenticateUser={authenticateUser}
-                showAlert={showAlert}
-              />
-            }
+            element={<SignIn authenticateUser={authenticateUser} />}
           />
           <Route
             path="/sign-up"
-            element={
-              <SignUp
-                authenticateUser={authenticateUser}
-                showAlert={showAlert}
-              />
-            }
+            element={<SignUp authenticateUser={authenticateUser} />}
           />
 
           {/* portfolio simulation */}
@@ -128,19 +92,17 @@ function App() {
             element={<PrivateRoutes userAuthenticated={userAuthenticated} />}
           >
             <Route path="/games">
-              <Route index element={<GameList showAlert={showAlert} />} />
-              <Route
-                path="create-game"
-                element={<CreateGame showAlert={showAlert} />}
-              />
-              <Route
-                path=":id"
-                element={<GameLeaderboard showAlert={showAlert} />}
-              />
+              <Route index element={<GameList />} />
+              <Route path="create-game" element={<CreateGame />} />
+              <Route path=":id" element={<GameLeaderboard />} />
             </Route>
             <Route path="/portfolio">
-              <Route index element={<Portfolio showAlert={showAlert} />} />
-              <Route path=":id" element={<Portfolio showAlert={showAlert} />} />
+              <Route index element={<Portfolio />} />
+              <Route path=":id">
+                <Route index element={<Portfolio />} />
+                <Route path="buy" element={<Buy />} />
+                <Route path="sell" element={<Sell />} />
+              </Route>
             </Route>
           </Route>
         </Routes>
@@ -148,18 +110,7 @@ function App() {
 
       {/* footer */}
       <Footer version={version} />
-
-      {/* alert flashing */}
-      {alertVisible && (
-        <Alert
-          variant={alertMessage.alertType}
-          onClose={() => setAlertVisible(false)}
-          dismissible
-        >
-          {alertMessage.alert}
-        </Alert>
-      )}
-    </>
+    </AlertProvider>
   );
 }
 

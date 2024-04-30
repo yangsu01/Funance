@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 // hooks
 import useFetch from "../../hooks/useFetch";
 import usePost from "../../hooks/usePost";
-
 // components
 import Title from "../../components/UI/Title";
 import PopupForm from "../../components/Forms/PopupForm";
@@ -13,36 +12,33 @@ import GameLeaderboardInfo from "./GameLeaderboardInfo";
 import GameLeaderboardRankings from "./GameLeaderboardRankings";
 import EmptyMessage from "../../components/UI/EmptyMessage";
 import GameLeaderboardButtons from "./GameLeaderboardButtons";
-
+// contexts
+import { useShowAlert } from "../../contexts/AlertContext";
 // types
-import { AlertMessage, GameLeaderboardData } from "../../utils/types";
-
+import { GameLeaderboardData } from "../../utils/types";
 // constants
 import {
   TOP_PORTFOLIO_TABLE_HEADERS,
   DAILY_PORTFOLIOS_TABLE_HEADERS,
 } from "../../utils/constants";
 
-type Props = {
-  showAlert: (alertMessage: AlertMessage) => void;
-};
-
-const GameLeaderboard: React.FC<Props> = ({ showAlert }) => {
-  const { id } = useParams();
-  const { fetchData, loading } = useFetch<GameLeaderboardData>();
+const GameLeaderboard = () => {
   const [leaderboardData, setLeaderboardData] = useState<GameLeaderboardData>(
     {} as GameLeaderboardData
   );
-  const { postData } = usePost();
   const [showPopup, setShowPopup] = useState(false);
 
+  const { id } = useParams();
+  const { fetchData, loading } = useFetch<GameLeaderboardData>();
+  const { postData } = usePost();
   const navigate = useNavigate();
+  const showAlert = useShowAlert();
 
   // on page load
   useEffect(() => {
     fetchData(`/game-leaderboard/${id}`).then((res) => {
       if (res.status === "error") {
-        showAlert({ alert: res.msg, alertType: "danger" });
+        showAlert(res.msg, "danger");
       } else {
         setLeaderboardData(res.data);
       }
@@ -71,15 +67,10 @@ const GameLeaderboard: React.FC<Props> = ({ showAlert }) => {
 
     post().then((res) => {
       if (res.status === "error") {
-        showAlert({ alert: res.msg, alertType: "danger" });
+        showAlert(res.msg, "danger");
       } else {
-        navigate(`/portfolio/${res.data}`, {
-          replace: true,
-          state: {
-            alert: res.msg,
-            alertType: "success",
-          },
-        });
+        showAlert(res.msg, "success");
+        navigate(`/portfolio/${res.data}`);
       }
     });
   };
