@@ -8,7 +8,8 @@ from .utils.portfolio_sim_functions import (
     # modifying database data
     add_game, add_portfolio, add_stock, record_transaction,
     # getting data from database
-    get_games_list, get_game_leaderboard, get_latest_portfolio_id, get_portfolio, get_stock_id
+    get_games_list, get_game_leaderboard, get_latest_portfolio_id, get_portfolio, get_stock_id,
+    get_buy_info, get_sell_info
 
 )
 from .utils.yf_functions import get_stock_info, get_stock_news, get_stock_history
@@ -182,7 +183,7 @@ def stock_info(ticker: str):
     try:
         stock_info = get_stock_info(ticker)
         news = get_stock_news(ticker)
-        history = get_stock_history(ticker, '1y', True)
+        history = get_stock_history(ticker, '1y')
 
     except Exception as e:
         return jsonify(msg=str(e)), 400
@@ -195,6 +196,45 @@ def stock_info(ticker: str):
         },
         msg="success"
     ), 200
+
+@portfolio_sim.route('/buy-info/<portfolio_id>', methods=['GET'])
+@jwt_required()
+def buy_info(portfolio_id: str):
+    '''Gets portfolio information for buying a stock
+
+        args:
+            portfolioId (int): id of the portfolio
+    '''
+    portfolio_id = int(portfolio_id)
+
+    if check_portfolio_exists(portfolio_id, current_user.id):
+        return jsonify(
+            data=get_buy_info(portfolio_id),
+            msg="success"
+        ), 200
+    else:
+        return jsonify(msg='Portfolio does not exist!'), 404
+        
+
+@portfolio_sim.route('/sell-info/<portfolio_id>', methods=['GET'])
+@jwt_required()
+def sell_info(portfolio_id: str):
+    '''Gets portfolio information for selling a stock
+
+        args:
+            portfolioId (int): id of the portfolio
+    '''
+    portfolio_id = int(portfolio_id)
+
+    if check_portfolio_exists(portfolio_id, current_user.id):
+        return jsonify(
+            data=get_sell_info(portfolio_id),
+            msg="success"
+        ), 200
+    else:
+        return jsonify(msg='Portfolio does not exist!'), 404
+
+
 
 
 @portfolio_sim.route('/buy-stock', methods=['POST'])

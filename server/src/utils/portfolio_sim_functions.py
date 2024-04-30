@@ -465,6 +465,53 @@ def get_stock_id(ticker: str) -> int:
         return stock.id
 
 
+def get_buy_info(portfolio_id: int) -> dict:
+    '''Gets the information needed for a buy transaction
+        
+        args:
+            portfolio_id: int - database id of the portfolio
+        returns:
+            dict - dictionary of the buy transaction info
+    '''
+    portfolio = Portfolio.query.filter_by(id=portfolio_id).first()
+
+    return {
+        'gameName': portfolio.parent_game.name,
+        'availableCash': portfolio.available_cash,
+        'transactionFee': portfolio.parent_game.transaction_fee,
+        'feeType': portfolio.parent_game.fee_type,
+    }
+
+
+def get_sell_info(portfolio_id: int) -> dict:
+    '''Gets the information needed for a sell transaction
+        
+        args:
+            portfolio_id: int - database id of the portfolio
+        returns:
+            dict - dictionary of the sell transaction info
+    '''
+    portfolio = Portfolio.query.filter_by(id=portfolio_id).first()
+    holdings = portfolio.holdings
+    holdings_info = {}
+
+    if holdings is not None:
+        for holding in holdings:
+            holdings_info[holding.stock.ticker] = {
+                'sharesOwned': holding.shares_owned,
+                'averagePrice': holding.average_price
+            }
+
+    return {
+        'gameName': portfolio.parent_game.name,
+        'holdings': [holding.stock.ticker for holding in holdings],
+        'holdingsInfo': holdings_info,
+        'availableCash': portfolio.available_cash,
+        'transactionFee': portfolio.parent_game.transaction_fee,
+        'feeType': portfolio.parent_game.fee_type,
+    }
+
+
 # getting data for tables  
 def get_top_performers(game_id: int) -> list:
     '''Gets the top performing portfolios ordered
@@ -569,8 +616,8 @@ def get_portfolio_transactions(portfolio_id: int) -> list:
             'Ticker': transaction.stock.ticker,
             'Name': transaction.stock.company_name,
             'Type': transaction.transaction_type,
-            'Share Price': transaction.number_of_shares,
-            'Price': transaction.price_per_share,
+            'Shares': transaction.number_of_shares,
+            'Share Price': transaction.price_per_share,
             'Total Value': transaction.total_value,
             'Currency': transaction.stock.currency,
             'Profit/Loss': transaction.profit_loss if transaction.profit_loss is not None else 'n/a',
