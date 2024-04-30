@@ -76,3 +76,12 @@
   --bs-accordion-active-color: #f8f9fa;
   --bs-accordion-btn-focus-box-shadow: none
 }
+
+.pagination {
+  --bs-pagination-color: #ffffff;
+  --bs-pagination-bg: #00000000;
+  --pagination-hover-color: #ffffff;
+  --bs-pagination-active-border-color: #ffffff;
+  --bs-pagination-active-bg: #00000000;
+  --bs-pagination-focus-box-shadow: none;
+}
