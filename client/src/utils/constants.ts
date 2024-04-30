@@ -7,7 +7,7 @@ export const PLOT_COLORS: string[] = [
     "rgb(255, 159, 64)",
     "rgb(14, 209, 69)",
     "rgb(153, 179, 255)",
-	"rgb(255, 0, 0)",
+	  "rgb(255, 0, 0)",
     "rgb(255, 64, 0)",
     "rgb(255, 128, 0)",
     "rgb(255, 191, 0)",
@@ -60,7 +60,7 @@ export const TOP_PORTFOLIO_TABLE_HEADERS: string[] = [
     'Total Change',
     '% Change',
     'Day Change',
-    '% Day Change ',
+    '% Day Change',
     'Market Value',
     'Currency',
   ];
