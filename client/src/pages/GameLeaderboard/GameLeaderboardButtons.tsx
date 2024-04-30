@@ -1,6 +1,4 @@
-import React from "react";
 import { Link } from "react-router-dom";
-
 import { Button, ButtonGroup } from "react-bootstrap";
 
 type Props = {
@@ -10,12 +8,12 @@ type Props = {
   onJoin: () => void;
 };
 
-const GameLeaderboardButtons: React.FC<Props> = ({
+const GameLeaderboardButtons = ({
   portfolioId,
   gameStatus,
   joinedGame,
   onJoin,
-}) => {
+}: Props) => {
   return (
     <ButtonGroup size="lg" className="mb-4">
       <Link to={`/games`} className="btn btn-outline-light">

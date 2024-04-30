@@ -1,4 +1,5 @@
-import {CreateGameFormData} from "../../utils/types";
+// types
+import { CreateGameFormData } from "../../utils/types";
 
 export default function useCreateGame (formData: CreateGameFormData) {
     const startDate = new Date(formData.startDate);

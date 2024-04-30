@@ -1,6 +1,4 @@
-import React from "react";
 import { useMediaQuery } from "react-responsive";
-
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -16,7 +14,7 @@ import "chartjs-adapter-moment";
 
 // types
 import { TimeSeriesPlotData } from "../../utils/types";
-
+//constants
 import { PLOT_COLORS } from "../../utils/constants";
 
 ChartJS.register(
@@ -31,7 +29,7 @@ ChartJS.register(
 
 type Props = { timeSeriesData: TimeSeriesPlotData[]; title: string };
 
-const MultiTimeSeriesPlot: React.FC<Props> = ({ timeSeriesData, title }) => {
+const MultiTimeSeriesPlot = ({ timeSeriesData, title }: Props) => {
   const isSmallScreen = useMediaQuery({ maxWidth: 767 });
   const chartHeight = isSmallScreen ? 300 : "auto";
 

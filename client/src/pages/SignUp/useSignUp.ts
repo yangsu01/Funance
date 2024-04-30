@@ -1,4 +1,5 @@
-import { SignUpFormData} from "../../utils/types";
+// types
+import { SignUpFormData } from "../../utils/types";
 
 export default function useSignUp (formData: SignUpFormData) {
     if (formData.email.length < 3) {

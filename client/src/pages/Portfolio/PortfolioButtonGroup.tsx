@@ -1,8 +1,7 @@
-import React from "react";
 import { Link } from "react-router-dom";
-
 import { Dropdown, DropdownButton, ButtonGroup } from "react-bootstrap";
 
+// types
 import { UserPortfolios } from "../../utils/types";
 
 type Props = {
@@ -11,11 +10,11 @@ type Props = {
   gameStatus: string;
 };
 
-const PortfolioButtonGroup: React.FC<Props> = ({
+const PortfolioButtonGroup = ({
   portfolios,
   portfolioId,
   gameStatus,
-}) => {
+}: Props) => {
   return (
     <ButtonGroup size="lg" className="mb-4">
       <DropdownButton

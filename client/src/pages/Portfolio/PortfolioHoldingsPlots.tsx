@@ -1,10 +1,10 @@
-import React from "react";
 import { Row, Col } from "react-bootstrap";
 
+// components
 import PieChart from "../../components/Plots/PieChart";
 import AccordionCard from "../../components/UI/AccordionCard";
 import EmptyMessage from "../../components/UI/EmptyMessage";
-
+// types
 import { PiePlotData } from "../../utils/types";
 
 type Props = {
@@ -12,10 +12,7 @@ type Props = {
   sectorData: PiePlotData;
 };
 
-const PortfolioHoldingsPlots: React.FC<Props> = ({
-  breakdownData,
-  sectorData,
-}) => {
+const PortfolioHoldingsPlots = ({ breakdownData, sectorData }: Props) => {
   return (
     <AccordionCard header="Holdings Breakdown">
       {breakdownData.labels ? (

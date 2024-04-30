@@ -1,27 +1,32 @@
-import React from "react";
-
 import { Row, Col, Card } from "react-bootstrap";
 
+// components
 import MultiTimeSeriesPlot from "../../components/Plots/MultiTimeSeriesPlot";
 import PaginationTable from "../../components/UI/PaginationTable";
+// types
+import {
+  TimeSeriesPlotData,
+  TopPortfolio,
+  DailyPortfolio,
+} from "../../utils/types";
 
-type Props<PlotData, TableData> = {
+type Props = {
   title: string;
   subtitle: string;
   plotTitle: string;
-  plotData: PlotData;
+  plotData: TimeSeriesPlotData[];
   tableHeaders: string[];
-  tableData: TableData;
+  tableData: TopPortfolio[] | DailyPortfolio[];
 };
 
-const GameLeaderboardRankings: React.FC<Props<any, any>> = ({
+const GameLeaderboardRankings = ({
   title,
   subtitle,
   plotTitle,
   plotData,
   tableHeaders,
   tableData,
-}) => {
+}: Props) => {
   return (
     <Card className="mb-3">
       <Card.Body>

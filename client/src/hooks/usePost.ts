@@ -1,5 +1,5 @@
+// utils
 import useToken from './useToken';
-
 import api from '../utils/api'
 
 type SuccessResponse = {
@@ -14,8 +14,6 @@ type ErrorResponse = {
 }
 
 type PostResponse = SuccessResponse | ErrorResponse
-
-
 
 export default function usePost <T>() {
     const { token } = useToken()
@@ -39,6 +37,5 @@ export default function usePost <T>() {
             return responseData
         }
     }
-
     return {postData}
 }

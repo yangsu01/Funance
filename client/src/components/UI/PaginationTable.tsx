@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Table, Pagination } from "react-bootstrap";
 
 type Props = {
@@ -8,13 +8,14 @@ type Props = {
   itemsPerPage?: number;
 };
 
-const PaginationTable: React.FC<Props> = ({
+const PaginationTable = ({
   tableName,
   content,
   headers,
   itemsPerPage = 10,
-}) => {
+}: Props) => {
   const [currentPage, setCurrentPage] = useState(1);
+
   const pages = Math.ceil(content.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -26,12 +27,12 @@ const PaginationTable: React.FC<Props> = ({
 
   const handleNext = () => {
     if (currentPage === pages) return;
-    setCurrentPage(currentPage + 1);
+    setCurrentPage((page) => page + 1);
   };
 
   const handlePrev = () => {
     if (currentPage === 1) return;
-    setCurrentPage(currentPage - 1);
+    setCurrentPage((page) => page - 1);
   };
 
   return (
@@ -58,6 +59,7 @@ const PaginationTable: React.FC<Props> = ({
           ))}
         </tbody>
       </Table>
+
       {pages > 1 && (
         <div className="d-flex justify-content-end">
           <Pagination>

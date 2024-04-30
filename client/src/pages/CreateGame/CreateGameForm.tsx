@@ -17,7 +17,7 @@ type Props = {
   onSubmit: (formData: CreateGameFormData) => void;
 };
 
-const CreateGameForm: React.FC<Props> = ({ onSubmit }) => {
+const CreateGameForm = ({ onSubmit }: Props) => {
   const [formData, setFormData] = useState<CreateGameFormData>(
     {} as CreateGameFormData
   );

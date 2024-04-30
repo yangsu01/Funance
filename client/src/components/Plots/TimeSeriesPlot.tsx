@@ -1,4 +1,3 @@
-import React from "react";
 import { useMediaQuery } from "react-responsive";
 
 import { Line } from "react-chartjs-2";
@@ -27,7 +26,7 @@ ChartJS.register(
 
 type Props = { plotData: LinePlotData; title: string };
 
-const MultiTimeSeriesPlot: React.FC<Props> = ({ plotData, title }) => {
+const MultiTimeSeriesPlot = ({ plotData, title }: Props) => {
   const isSmallScreen = useMediaQuery({ maxWidth: 767 });
   const chartHeight = isSmallScreen ? 200 : "auto";
 

@@ -1,11 +1,9 @@
-import React from "react";
-
 type Props = {
   title: string;
   subtitle?: string;
 };
 
-const EmptyMessage: React.FC<Props> = ({ title, subtitle }) => {
+const EmptyMessage = ({ title, subtitle }: Props) => {
   return (
     <div className="my-5">
       <h2 className="text-center">{title}</h2>

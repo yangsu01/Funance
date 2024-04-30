@@ -1,17 +1,16 @@
-import React from "react";
-
 import { Row, Col } from "react-bootstrap";
 
-import { GameDetails } from "../../utils/types";
-
+// components
 import InfoCard from "../../components/UI/InfoCard";
 import AccordionCard from "../../components/UI/AccordionCard";
+// types
+import { GameDetails } from "../../utils/types";
 
 type Props = {
   details: GameDetails;
 };
 
-const GameLeaderboardInfo: React.FC<Props> = ({ details }) => {
+const GameLeaderboardInfo = ({ details }: Props) => {
   return (
     <AccordionCard header="Game Info">
       <Row>

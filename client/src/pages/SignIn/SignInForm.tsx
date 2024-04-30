@@ -1,14 +1,15 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Form, FloatingLabel, Button } from "react-bootstrap";
 
+// types
 import { SignInFormData } from "../../utils/types";
 
 type Props = {
   onSubmit: (formData: SignInFormData) => void;
 };
 
-const SignInForm: React.FC<Props> = ({ onSubmit }) => {
+const SignInForm = ({ onSubmit }: Props) => {
   const [formData, setFormData] = useState<SignInFormData>(
     {} as SignInFormData
   );

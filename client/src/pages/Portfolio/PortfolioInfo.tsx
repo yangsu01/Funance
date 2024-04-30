@@ -1,9 +1,9 @@
-import React from "react";
 import { Row, Col } from "react-bootstrap";
 
+// components
 import InfoCard from "../../components/UI/InfoCard";
 import PortfolioButtonGroup from "./PortfolioButtonGroup";
-
+// types
 import { PortfolioDetails, UserPortfolios } from "../../utils/types";
 
 type Props = {
@@ -12,7 +12,7 @@ type Props = {
   portfolioId: number;
 };
 
-const PortfolioInfo: React.FC<Props> = ({ data, portfolios, portfolioId }) => {
+const PortfolioInfo = ({ data, portfolios, portfolioId }: Props) => {
   return (
     <Row className="d-flex align-items-end">
       <Col md={6} className="mb-3">

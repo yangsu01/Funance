@@ -1,6 +1,7 @@
-import { useState} from 'react'
-import useToken from './useToken';
+import { useState } from 'react'
 
+// utils
+import useToken from './useToken';
 import api from '../utils/api'
 
 type SuccessResponse<T> = {
@@ -16,8 +17,9 @@ type ErrorResponse = {
 type FetchResponse<T> = SuccessResponse<T> | ErrorResponse
 
 export default function useFetch <T>() {
-    const { token } = useToken()
     const [loading, setLoading] = useState<boolean | null>(null)
+    
+    const { token } = useToken()
     let responseData: FetchResponse<T> = {status: 'error', msg: 'Failed to Load'}
 
     const fetchData = async (route: string) => {
@@ -41,6 +43,5 @@ export default function useFetch <T>() {
             return responseData
         }
     }
-
     return { fetchData, loading }
 }

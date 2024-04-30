@@ -1,8 +1,7 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import { Card, Button } from "react-bootstrap";
 
-// custom types
+// types
 import { GameInfo } from "../../utils/types";
 
 type Props = {
@@ -10,7 +9,7 @@ type Props = {
   onJoin: () => void;
 };
 
-const GameListCard: React.FC<Props> = ({ gameInfo, onJoin }) => {
+const GameListCard = ({ gameInfo, onJoin }: Props) => {
   return (
     <Card>
       <Card.Header>

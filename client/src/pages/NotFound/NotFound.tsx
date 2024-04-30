@@ -1,4 +1,4 @@
-const NotFound: React.FC = () => {
+const NotFound = () => {
   return <h1 className="mt-5">This page not exist :(</h1>;
 };
 

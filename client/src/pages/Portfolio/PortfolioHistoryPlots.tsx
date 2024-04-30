@@ -1,9 +1,9 @@
-import React from "react";
 import { Row, Col } from "react-bootstrap";
 
+// components
 import TimeSeriesPlot from "../../components/Plots/TimeSeriesPlot";
 import AccordionCard from "../../components/UI/AccordionCard";
-
+// types
 import { LinePlotData } from "../../utils/types";
 
 type Props = {
@@ -13,12 +13,12 @@ type Props = {
   date: string;
 };
 
-const PortfolioHistoryPlots: React.FC<Props> = ({
+const PortfolioHistoryPlots = ({
   closeData,
   dailyData,
   gameStatus,
   date,
-}) => {
+}: Props) => {
   const plotWidth = gameStatus === "In Progress" ? 6 : 12;
 
   return (

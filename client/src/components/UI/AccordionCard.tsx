@@ -1,5 +1,3 @@
-import React from "react";
-
 import { Accordion } from "react-bootstrap";
 
 type Props = {
@@ -8,7 +6,7 @@ type Props = {
   open?: boolean;
 };
 
-const AccordionCard: React.FC<Props> = ({ header, children, open = true }) => {
+const AccordionCard = ({ header, children, open = true }: Props) => {
   const defaultActiveKey = open ? ["0"] : [];
 
   return (

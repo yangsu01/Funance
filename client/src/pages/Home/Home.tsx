@@ -1,16 +1,12 @@
-import React from "react";
 import { Link } from "react-router-dom";
 
 // components
 import Title from "../../components/UI/Title";
 
-const Home: React.FC = () => {
-  const title = "Welcome to Funance";
-  const subtitle = "Investing is fun!";
-
+const Home = () => {
   return (
     <div className="home-container">
-      <Title title={title} subtitle={subtitle} />
+      <Title title="Welcome to Funance" subtitle="Investing is fun!" />
 
       <p className="fs-5">
         Join me on my journey of learning about everything finance, especially

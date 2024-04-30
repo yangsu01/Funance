@@ -1,11 +1,10 @@
-import React from "react";
 import { Navbar, Container, Nav } from "react-bootstrap";
 
 type Props = {
   version: string;
 };
 
-const Footer: React.FC<Props> = ({ version }) => {
+const Footer = ({ version }: Props) => {
   const githubUrl = "https://github.com/yangsu01";
   const linkedInUrl = "https://www.linkedin.com/in/yangsu01/";
   const instagramUrl = "https://www.instagram.com/soappppics/";
