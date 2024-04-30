@@ -353,7 +353,9 @@ def get_game_details(game_id: int, user_id: int) -> dict:
     '''
     game = Game.query.filter_by(id=game_id).first()
     
-    joined_game = Portfolio.query.filter_by(game_id=game.id, user_id=user_id).first() is not None
+    portfolio = Portfolio.query.filter_by(game_id=game.id, user_id=user_id).first()
+    joined_game = portfolio is not None
+    portfolio_id = portfolio.id if portfolio is not None else None
 
     transaction_fee = f'${round(game.transaction_fee, 0)}' if game.fee_type == 'Flat Fee' else f'{round(game.transaction_fee * 100, 0)}%'
 
@@ -368,6 +370,7 @@ def get_game_details(game_id: int, user_id: int) -> dict:
         'transactionFee': transaction_fee,
         'feeType': game.fee_type,
         'joinedGame': joined_game,
+        'portfolioId': portfolio_id,
         'passwordRequired': game.password is not None,
         'lastUpdated': game.last_updated.strftime('%a, %b %d. %Y %I:%M %p') + ' EST' if game.last_updated is not None else 'n/a',
         'gameDuration': f'{(game.end_date - game.start_date).days} days' if game.end_date is not None else 'Infinite'
@@ -434,7 +437,7 @@ def get_portfolio_details(portfolio_id: int) -> dict:
         'gameStatus': parent_game.status,
         'startingCash': starting_cash,
         'participants': parent_game.participants,
-        'gameStartDate': parent_game.start_date.strftime('%Y-%m-%d'),
+        'gameStartDate': parent_game.start_date.strftime("%B %d, %Y"),
         'gameEndDate': parent_game.end_date.strftime('%Y-%m-%d') if parent_game.end_date is not None else 'n/a',
         'transactionFee': transaction_fee,
         'feeType': parent_game.fee_type,
@@ -653,7 +656,7 @@ def get_game_history(game_id) -> dict:
     return {
         'closingHistory': list(close.values()),
         'dailyHistory': list(day.values()),
-        'date': market_date.strftime('%Y-%m-%d')
+        'date': market_date.strftime('%b %d, %Y')
     }
 
 
