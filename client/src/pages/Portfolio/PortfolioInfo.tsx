@@ -17,7 +17,7 @@ const PortfolioInfo: React.FC<Props> = ({ data, portfolios, portfolioId }) => {
     <Row className="d-flex align-items-end">
       <Col md={6} className="mb-3">
         <PortfolioButtonGroup
-          buttonName="Change Portfolios"
+          gameStatus={data.gameStatus}
           portfolios={portfolios}
           portfolioId={portfolioId}
         />

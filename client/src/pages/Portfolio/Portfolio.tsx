@@ -1,22 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { Row, Col } from "react-bootstrap";
-
 // hooks
 import useFetch from "../../hooks/useFetch";
 
 // components
 import Title from "../../components/UI/Title";
-import SimpleTable from "../../components/UI/SimpleTable";
 import Loading from "../../components/UI/Loading";
-import TimeSeriesPlot from "../../components/Plots/TimeSeriesPlot";
-import InfoCard from "../../components/UI/InfoCard";
 import PortfolioInfo from "./PortfolioInfo";
 import PortfolioHistoryPlots from "./PortfolioHistoryPlots";
+import PortfolioHoldingsPlots from "./PortfolioHoldingsPlots";
+import EmptyMessage from "../../components/UI/EmptyMessage";
+import PortfolioTable from "./PortfolioTable";
 
 // types
 import { PortfolioData, AlertMessage } from "../../utils/types";
+
+// constants
+import {
+  HOLDINGS_TABLE_HEADERS,
+  TRANSACTIONS_TABLE_HEADERS,
+} from "../../utils/constants";
 
 type Props = {
   showAlert: (alertMessage: AlertMessage) => void;
@@ -78,22 +82,33 @@ const Portfolio: React.FC<Props> = ({ showAlert }) => {
       />
 
       {portfolioData.portfolioDetails.gameStatus === "Not Started" ? (
-        <div className="my-5">
-          <h2 className="text-center">
-            The game will start on{" "}
-            {portfolioData.portfolioDetails.gameStartDate}.
-          </h2>
-          <h5 className="text-center">
-            Analytics will be available once the game starts
-          </h5>
-        </div>
-      ) : (
-        <PortfolioHistoryPlots
-          closeData={portfolioData.closingHistory}
-          dailyData={portfolioData.dailyHistory}
-          gameStatus={portfolioData.portfolioDetails.gameStatus}
-          date={portfolioData.dailyHistoryDate}
+        <EmptyMessage
+          title={`Game will start on: ${portfolioData.portfolioDetails.gameStartDate}`}
+          subtitle="Analytics will be available once the game starts."
         />
+      ) : (
+        <>
+          <PortfolioHistoryPlots
+            closeData={portfolioData.closingHistory}
+            dailyData={portfolioData.dailyHistory}
+            gameStatus={portfolioData.portfolioDetails.gameStatus}
+            date={portfolioData.dailyHistoryDate}
+          />
+          <PortfolioHoldingsPlots
+            breakdownData={portfolioData.holdingsBreakdown}
+            sectorData={portfolioData.sectorBreakdown}
+          />
+          <PortfolioTable
+            tableHeaders={HOLDINGS_TABLE_HEADERS}
+            tableData={portfolioData.portfolioHoldings}
+            title="Holdings"
+          />
+          <PortfolioTable
+            tableHeaders={TRANSACTIONS_TABLE_HEADERS}
+            tableData={portfolioData.portfolioTransactions}
+            title="Transactions"
+          />
+        </>
       )}
     </>
   );
