@@ -6,20 +6,11 @@ export type SignUpFormData = {
     password2: string;
 }
 
-
 // sign in form data
 export type SignInFormData = {
     email: string;
     password: string;
 }
-
-
-// alert message
-export type AlertMessage = {
-    alert: string;
-    alertType: "success" | "danger" | "warning";
-}
-
 
 // create game form
 export type CreateGameFormData = {
@@ -31,7 +22,6 @@ export type CreateGameFormData = {
     transactionFee: number;
     feeType: string;
 }
-
 
 // game info card data
 export type GameInfo = {
@@ -46,7 +36,6 @@ export type GameInfo = {
     details: string;
     passwordRequired: boolean;
 }
-
 
 // game leaderboard data
 export type GameDetails = {
@@ -70,7 +59,7 @@ export type TimeSeriesPlotData = {
     y: number[];
     name: string
 }
-type TopPortfolio = {
+export type TopPortfolio = {
     'Rank': number | string;
     'Username': string;
     'Value': number;
@@ -78,7 +67,7 @@ type TopPortfolio = {
     'Age (days)': number;
     'Daily Change': number;
 }
-type DailyPortfolio = {
+export type DailyPortfolio = {
     'Rank': number | string;
     'Username': string;
     'Change': number;
@@ -93,7 +82,6 @@ export type GameLeaderboardData = {
     topPortfolios: TopPortfolio[];
     dailyPortfolios: DailyPortfolio[];
 }
-
 
 // user portfolio data
 export type UserPortfolios = {
@@ -125,7 +113,7 @@ export type PiePlotData = {
     labels: string[];
     values: number[];
 }
-type Transaction = {
+export type Transaction = {
     "Ticker": string;
     "Name": string;
     "Type": string;
@@ -136,7 +124,7 @@ type Transaction = {
     "Profit/Loss": string | number;
     "Date (EST)": string;
 }
-type Holding = {
+export type Holding = {
     'Ticker': string,
     'Shares Owned': number
     'Average Price': number
@@ -159,4 +147,28 @@ export type PortfolioData = {
     sectorBreakdown: PiePlotData;
     portfolioTransactions: Transaction[];
     portfolioHoldings: Holding[];
+}
+
+// info needed before buy transaction
+export type BuyInfo = {
+    gameName: string;
+    availableCash: number;
+    feeType: string;
+    transactionFee: number;
+}
+
+// info needed before sell transaction
+type HoldingsInfo = {
+    [ticker: string]: {
+        averagePrice: number;
+        sharesOwned: number;
+    }
+}
+export type SellInfo = {
+    gameName: string;
+    availableCash: number;
+    feeType: string;
+    transactionFee: number;
+    holdings: string[];
+    holdingsInfo: HoldingsInfo;
 }
