@@ -63,6 +63,7 @@ export type GameDetails = {
     lastUpdated: string
     gameDuration: string
     status: string
+    portfolioId: number
 }
 export type TimeSeriesPlotData = {
     x: string[];
