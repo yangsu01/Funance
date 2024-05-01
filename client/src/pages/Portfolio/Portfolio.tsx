@@ -58,8 +58,6 @@ const Portfolio = () => {
     );
   }
 
-  console.log(portfolioData.portfolioHoldings);
-
   return (
     <>
       {/* page title */}
