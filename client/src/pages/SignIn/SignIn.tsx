@@ -6,17 +6,15 @@ import SignInForm from "./SignInForm";
 import usePost from "../../hooks/usePost";
 // contexts
 import { useShowAlert } from "../../contexts/AlertContext";
+import { useSaveAuth } from "../../contexts/AuthContext";
 // types
 import { SignInFormData } from "../../utils/types";
 
-type Props = {
-  authenticateUser: (token: string) => void;
-};
-
-const SignIn = ({ authenticateUser }: Props) => {
+const SignIn = () => {
   const { postData } = usePost();
   const navigate = useNavigate();
   const showAlert = useShowAlert();
+  const saveToken = useSaveAuth();
 
   const handleSubmit = async (formData: SignInFormData) => {
     const post = async () => {
@@ -30,7 +28,7 @@ const SignIn = ({ authenticateUser }: Props) => {
       if (res.status === "error") {
         showAlert(res.msg, "danger");
       } else {
-        authenticateUser(res.data);
+        saveToken(res.data);
         showAlert(res.msg, "success");
         navigate("/");
       }

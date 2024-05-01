@@ -1,8 +1,4 @@
 import { Routes, Route } from "react-router-dom";
-import { useState } from "react";
-
-// utilities
-import useToken from "./hooks/useToken";
 
 // general
 import NotFound from "./pages/NotFound/NotFound";
@@ -31,86 +27,70 @@ import Footer from "./components/Footer";
 
 // context
 import { AlertProvider } from "./contexts/AlertContext";
+import { AuthProvider } from "./contexts/AuthContext";
 
 function App() {
   // app version
   const version = "v1.0.0";
 
-  // access tokens
-  const { token, setToken, removeToken } = useToken();
-  const [userAuthenticated, setUserAuthenticated] = useState(
-    token ? true : false
-  );
-
-  // authenticate user
-  const authenticateUser = (token: string) => {
-    setToken(token);
-    setUserAuthenticated(true);
-  };
-
   return (
-    <AlertProvider>
-      {/* navbar */}
-      <TopNavbar
-        userAuthenticated={userAuthenticated}
-        removeToken={removeToken}
-        setUserAuthenticated={setUserAuthenticated}
-      />
+    <AuthProvider>
+      <AlertProvider>
+        <TopNavbar/>
 
-      {/* alert notification */}
-      <AlertNotification />
+        <AlertNotification />
 
-      <main className="container flex-shrink-0 content content-container my-4 w-100">
-        {/* routes */}
-        <Routes>
-          <Route path="*" element={<NotFound />} />
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
+        <main className="container flex-shrink-0 content content-container my-4 w-100">
+          <Routes>
+            <Route path="*" element={<NotFound />} />
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
 
-          {/* funance blog */}
-          <Route path="/blog">
-            <Route index element={<Blog />} />
-            <Route path=":id" element={<BlogPost />} />
-          </Route>
-
-          {/* auth */}
-          <Route
-            path="/sign-in"
-            element={<SignIn authenticateUser={authenticateUser} />}
-          />
-          <Route
-            path="/sign-up"
-            element={<SignUp authenticateUser={authenticateUser} />}
-          />
-
-          {/* portfolio simulation */}
-          <Route
-            path="/game-rules"
-            element={<GameRules userAuthenticated={userAuthenticated} />}
-          />
-          <Route
-            element={<PrivateRoutes userAuthenticated={userAuthenticated} />}
-          >
-            <Route path="/games">
-              <Route index element={<GameList />} />
-              <Route path="create-game" element={<CreateGame />} />
-              <Route path=":id" element={<GameLeaderboard />} />
+            {/* funance blog */}
+            <Route path="/blog">
+              <Route index element={<Blog />} />
+              <Route path=":id" element={<BlogPost />} />
             </Route>
-            <Route path="/portfolio">
-              <Route index element={<Portfolio />} />
-              <Route path=":id">
+
+            {/* auth */}
+            <Route
+              path="/sign-in"
+              element={<SignIn/>}
+            />
+            <Route
+              path="/sign-up"
+              element={<SignUp/>}
+            />
+
+            {/* portfolio simulation */}
+            <Route
+              path="/game-rules"
+              element={<GameRules />}
+            />
+            <Route
+              element={<PrivateRoutes />}
+            >
+              <Route path="/games">
+                <Route index element={<GameList />} />
+                <Route path="create-game" element={<CreateGame />} />
+                <Route path=":id" element={<GameLeaderboard />} />
+              </Route>
+              <Route path="/portfolio">
                 <Route index element={<Portfolio />} />
-                <Route path="buy" element={<Buy />} />
-                <Route path="sell" element={<Sell />} />
+                <Route path=":id">
+                  <Route index element={<Portfolio />} />
+                  <Route path="buy" element={<Buy />} />
+                  <Route path="sell" element={<Sell />} />
+                </Route>
               </Route>
             </Route>
-          </Route>
-        </Routes>
-      </main>
+          </Routes>
+        </main>
 
-      {/* footer */}
-      <Footer version={version} />
-    </AlertProvider>
+        <Footer version={version} />
+        
+      </AlertProvider>
+    </AuthProvider>
   );
 }
 

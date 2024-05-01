@@ -2,18 +2,15 @@ import { Link } from "react-router-dom";
 
 // components
 import Title from "../../components/UI/Title";
+// contexts
+import { useAuth } from "../../contexts/AuthContext";
 
-type Props = {
-  userAuthenticated: boolean;
-};
-
-const GameRules = ({ userAuthenticated }: Props) => {
-  const title = "Investment Simulator";
-  const subtitle = "Create a portfolio and watch it grow!";
+const GameRules = () => {
+  const { userAuthenticated } = useAuth();
 
   return (
     <>
-      <Title title={title} subtitle={subtitle} />
+      <Title title="Investment Simulator" subtitle="Create a portfolio and watch it grow!" />
       <p className="fs-5">
         Create a portfolio by creating or joining a game and start investing!
         You will be given some starting funds (depending on the specific game)

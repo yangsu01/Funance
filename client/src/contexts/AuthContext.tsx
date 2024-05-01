@@ -25,23 +25,20 @@ export function useRemoveAuth() {
 
 export function AuthProvider({ children }: Props) {
   const getToken = () => {
-    const accessToken = localStorage.getItem("token");
-    return accessToken ? accessToken : null;
+    const token = localStorage.getItem("token");
+    return token ? token : null;
   };
-
-  const [userAuthenticated, setUserAuthenticated] = useState(false);
   const [token, setToken] = useState(getToken());
+  const userAuthenticated = token ? true : false;
 
-  const saveToken = (accessToken: string) => {
-    localStorage.setItem("token", accessToken);
-    setToken(accessToken);
-    setUserAuthenticated(true);
+  const saveToken = (token: string) => {
+    localStorage.setItem("token", token);
+    setToken(token);
   };
 
   const removeToken = () => {
     localStorage.removeItem("token");
-    setToken(null);
-    setUserAuthenticated(false);
+    setToken(null); 
   };
 
   return (

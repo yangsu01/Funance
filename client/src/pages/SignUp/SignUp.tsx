@@ -7,17 +7,15 @@ import usePost from "../../hooks/usePost";
 import useSignUp from "./useSignUp";
 // contexts
 import { useShowAlert } from "../../contexts/AlertContext";
+import { useSaveAuth } from "../../contexts/AuthContext";
 // types
 import { SignUpFormData } from "../../utils/types";
 
-type Props = {
-  authenticateUser: (token: string) => void;
-};
-
-const SignUp = ({ authenticateUser }: Props) => {
+const SignUp = () => {
   const { postData } = usePost();
   const navigate = useNavigate();
   const showAlert = useShowAlert();
+  const saveToken = useSaveAuth();
 
   const onSubmit = async (formData: SignUpFormData) => {
     const response = useSignUp(formData);
@@ -39,7 +37,7 @@ const SignUp = ({ authenticateUser }: Props) => {
       if (res.status === "error") {
         showAlert(res.msg, "danger");
       } else {
-        authenticateUser(res.data);
+        saveToken(res.data);
         showAlert(res.msg, "success");
         navigate("/");
       }

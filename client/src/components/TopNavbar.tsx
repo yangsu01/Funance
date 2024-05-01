@@ -5,23 +5,17 @@ import { Button, Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
 
 //hooks
 import usePost from "../hooks/usePost";
+// contexts
+import { useAuth, useRemoveAuth } from "../contexts/AuthContext";
 
-type Props = {
-  userAuthenticated: boolean;
-  removeToken: () => void;
-  setUserAuthenticated: (authenticated: boolean) => void;
-};
-
-const TopNavbar = ({
-  userAuthenticated,
-  removeToken,
-  setUserAuthenticated,
-}: Props) => {
+const TopNavbar = () => {
   const [expanded, setExpanded] = useState(false);
 
   const isSmallScreen = useMediaQuery({ maxWidth: 767 });
   const navigate = useNavigate();
   const { postData } = usePost();
+  const { userAuthenticated } = useAuth();
+  const removeToken = useRemoveAuth();
 
   const handleToggle = () => {
     if (isSmallScreen) {
@@ -37,7 +31,6 @@ const TopNavbar = ({
     post().then((res) => {
       if (res.status === "success") {
         removeToken();
-        setUserAuthenticated(false);
         navigate(0);
       }
     });

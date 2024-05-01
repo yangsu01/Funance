@@ -1,6 +1,7 @@
 // utils
-import useToken from './useToken';
 import api from '../utils/api'
+// context
+import { useAuth } from '../contexts/AuthContext'
 
 type SuccessResponse = {
     status: "success"
@@ -16,7 +17,8 @@ type ErrorResponse = {
 type PostResponse = SuccessResponse | ErrorResponse
 
 export default function usePost <T>() {
-    const { token } = useToken()
+    const { token } = useAuth()
+    
     let responseData: PostResponse = {status: 'error', msg: 'Failed to Submit'}
 
     const postData = async (route: string, data: T) => {
