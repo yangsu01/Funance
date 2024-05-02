@@ -190,7 +190,7 @@ def stock_info(ticker: str):
 
     return jsonify(
         data={
-            'stockInfo': stock_info,
+            'tickerInfo': stock_info,
             'news': news,
             'history': history,
         },

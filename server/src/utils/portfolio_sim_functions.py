@@ -130,11 +130,11 @@ def add_stock(ticker: str, price: float) -> int:
 
         new_stock = Stock(
             ticker=ticker, 
-            company_name=stock_info.get('company_name', 'n/a'),
+            company_name=stock_info.get('companyName', 'n/a'),
             industry=stock_info.get('industry', 'n/a'),
             sector=stock_info.get('sector', 'n/a'),
             currency=stock_info.get('currency', 'n/a'),
-            previous_close=stock_info.get('previous_close', price),
+            previous_close=stock_info.get('prevClose', price),
             opening_price=stock_info.get('open', price),
             current_price=price,
             last_updated=datetime.now(timezone.utc)
@@ -427,7 +427,7 @@ def get_portfolio_details(portfolio_id: int) -> dict:
     current_value = portfolio.current_value
     change = round((current_value/starting_cash - 1) * 100, 2)
     profit = round(current_value - starting_cash, 2)
-    last_updated = utc_to_est(portfolio.last_updated).strftime('%a, %b %d. %Y %I:%M%p') + ' EST'
+    last_updated = portfolio.last_updated.strftime('%a, %b %d. %Y %I:%M%p') + ' EST'
     transaction_fee = f'${round(parent_game.transaction_fee, 0)}' if parent_game.fee_type == 'Flat Fee' else f'{round(parent_game.transaction_fee * 100, 0)}%'
 
     return {
@@ -605,7 +605,7 @@ def get_portfolio_transactions(portfolio_id: int) -> list:
         returns:
             list - list of all the transactions of the portfolio
     '''
-    transactions = Transaction.query.filter_by(portfolio_id=portfolio_id).all()
+    transactions = Transaction.query.filter_by(portfolio_id=portfolio_id).order_by(Transaction.transaction_date.desc()).all()
     transaction_list = []
 
     if transactions is None:
@@ -618,7 +618,7 @@ def get_portfolio_transactions(portfolio_id: int) -> list:
             'Type': transaction.transaction_type,
             'Shares': transaction.number_of_shares,
             'Share Price': transaction.price_per_share,
-            'Total Value': transaction.total_value,
+            'Total Value': round(transaction.total_value, 2),
             'Currency': transaction.stock.currency,
             'Profit/Loss': transaction.profit_loss if transaction.profit_loss is not None else 'n/a',
             'Date (EST)': utc_to_est(transaction.transaction_date).strftime('%H:%M %m-%d-%Y')
@@ -663,7 +663,7 @@ def get_portfolio_holdings(portfolio_id: int) -> list:
             'Currency': holding.stock.currency
         })
 
-    return holding_list
+    return sorted(holding_list, key=lambda h: h['Market Value'], reverse=True)
 
 
 # getting data for plots
