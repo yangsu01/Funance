@@ -18,16 +18,16 @@ def get_stock_info(ticker: str) -> dict:
         'price': round(float(stock_info.get('currentPrice')), 2),
         'sector': stock_info.get('sector', 'n/a'),
         'industry': stock_info.get('industry', 'n/a'),
-        'company_summary': stock_info.get('longBusinessSummary', 'n/a'),
+        'companySummary': stock_info.get('longBusinessSummary', 'n/a'),
         'currency': stock_info.get('currency', 'n/a'),
-        'company_name': stock_info.get('longName', 'n/a'),
+        'companyName': stock_info.get('longName', 'n/a'),
         'open': stock_info.get('open'),
-        'previous_close': stock_info.get('previousClose'),
-        'day_change': round(float(stock_info.get('currentPrice', 0))-float(stock_info.get('open', 1)), 2),
-        '%_day_change': round((float(stock_info.get('currentPrice', 0))/float(stock_info.get('open', 1)) - 1)*100, 2),
-        '52_week_returns': round(float(stock_info.get('52WeekChange', 0))*100, 2),
-        '52_week_high': round(float(stock_info.get('fiftyTwoWeekHigh', 0)), 2),
-        '52_week_low': round(float(stock_info.get('fiftyTwoWeekLow', 0)), 2)
+        'prevClose': stock_info.get('previousClose'),
+        'dayChange': round(float(stock_info.get('currentPrice', 0))-float(stock_info.get('open', 1)), 2),
+        '%DayChange': round((float(stock_info.get('currentPrice', 0))/float(stock_info.get('open', 1)) - 1)*100, 2),
+        '52WeekReturns': round(float(stock_info.get('52WeekChange', 0))*100, 2),
+        '52WeekHigh': round(float(stock_info.get('fiftyTwoWeekHigh', 0)), 2),
+        '52WeekLow': round(float(stock_info.get('fiftyTwoWeekLow', 0)), 2)
     }
         
 
@@ -53,8 +53,8 @@ def get_stock_history(ticker: str, period='5y', detailed=False) -> dict:
         }
     else:
         history = {
-            'date': [d.strftime('%Y-%m-%d') for d in stock.index],
-            'price': [p for p in round(stock['Close'], 2)]
+            'x': [d.strftime('%Y-%m-%d') for d in stock.index],
+            'y': [p for p in round(stock['Close'], 2)]
         }
 
     return history
