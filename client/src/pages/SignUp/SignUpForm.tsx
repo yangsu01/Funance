@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef } from "react";
 import { Form, Button, FloatingLabel } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
@@ -10,13 +10,27 @@ type Props = {
 };
 
 const SignUpForm = ({ onSubmit }: Props) => {
-  const [formData, setFormData] = useState<SignUpFormData>(
-    {} as SignUpFormData
-  );
+  const emailRef = useRef<HTMLInputElement>(null);
+  const usernameRef = useRef<HTMLInputElement>(null);
+  const password1Ref = useRef<HTMLInputElement>(null);
+  const password2Ref = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+
+    if (
+      emailRef.current &&
+      usernameRef.current &&
+      password1Ref.current &&
+      password2Ref.current
+    ) {
+      onSubmit({
+        email: emailRef.current.value,
+        username: usernameRef.current.value,
+        password1: password1Ref.current.value,
+        password2: password2Ref.current.value,
+      });
+    }
   };
 
   return (
@@ -27,9 +41,7 @@ const SignUpForm = ({ onSubmit }: Props) => {
             required
             type="email"
             placeholder="Enter email"
-            onChange={(e) =>
-              setFormData({ ...formData, email: e.target.value })
-            }
+            ref={emailRef}
           />
         </FloatingLabel>
         <FloatingLabel controlId="username" label="Username" className="mb-3">
@@ -37,9 +49,7 @@ const SignUpForm = ({ onSubmit }: Props) => {
             required
             type="text"
             placeholder="Enter username"
-            onChange={(e) =>
-              setFormData({ ...formData, username: e.target.value })
-            }
+            ref={usernameRef}
           />
         </FloatingLabel>
         <FloatingLabel controlId="password1" label="Password" className="mb-3">
@@ -47,9 +57,7 @@ const SignUpForm = ({ onSubmit }: Props) => {
             required
             type="password"
             placeholder="Enter password"
-            onChange={(e) =>
-              setFormData({ ...formData, password1: e.target.value })
-            }
+            ref={password1Ref}
           />
         </FloatingLabel>
         <FloatingLabel
@@ -61,9 +69,7 @@ const SignUpForm = ({ onSubmit }: Props) => {
             required
             type="password"
             placeholder="Confirm password"
-            onChange={(e) =>
-              setFormData({ ...formData, password2: e.target.value })
-            }
+            ref={password2Ref}
           />
         </FloatingLabel>
         <Button variant="success" type="submit" className="btn-lg w-100 mb-3">

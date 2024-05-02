@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef } from "react";
 import { Button, Modal, Form, FloatingLabel } from "react-bootstrap";
 
 type Props = {
@@ -18,11 +18,14 @@ const PopupForm = ({
   content,
   submitName,
 }: Props) => {
-  const [formData, setFormData] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(name, formData.trim());
+
+    if (!inputRef.current) return;
+
+    onSubmit(name, inputRef.current.value.trim());
     onClose();
   };
 
@@ -43,7 +46,7 @@ const PopupForm = ({
               required
               type="password"
               placeholder="Enter game password"
-              onChange={(e) => setFormData(e.target.value)}
+              ref={inputRef}
             />
           </FloatingLabel>
         </Modal.Body>

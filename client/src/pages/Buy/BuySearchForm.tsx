@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Row, Col, Form, Button } from "react-bootstrap";
+import React, { useRef } from "react";
+import { Row, Col, Form, Button, FloatingLabel } from "react-bootstrap";
 
 // components
 import InfoCard from "../../components/UI/InfoCard";
@@ -14,11 +14,13 @@ type Props = {
 };
 
 const BuySearchForm = ({ buyInfo, onSubmit }: Props) => {
-  const [ticker, setTicker] = useState("");
+  const tickerRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(ticker);
+    if (tickerRef.current) {
+      onSubmit(tickerRef.current.value);
+    }
   };
 
   console.log(buyInfo);
@@ -38,13 +40,17 @@ const BuySearchForm = ({ buyInfo, onSubmit }: Props) => {
       <Col md={6} className="mb-3">
         <CardWrapper>
           <Form onSubmit={handleSubmit}>
-            <FormFloatingLabel
-              inputLabel="Enter ticker of the stock you want to buy:"
-              label="Ticker"
-              type="text"
-              id="ticker"
-              onChange={(e) => setTicker(e.target.value)}
-            />
+            <Form.Label className="mb-3">
+              Enter ticker of the stock you want to buy:
+            </Form.Label>
+            <FloatingLabel controlId="ticker" label="Ticker" className="mb-3">
+              <Form.Control
+                required
+                type="text"
+                placeholder="Ticker"
+                ref={tickerRef}
+              />
+            </FloatingLabel>
             <div className="d-flex justify-content-end">
               <Button
                 type="submit"
