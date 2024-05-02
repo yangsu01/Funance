@@ -22,8 +22,6 @@ const BuySearchForm = ({ buyInfo, onSubmit }: Props) => {
     }
   };
 
-  console.log(buyInfo);
-
   return (
     <Row className="d-flex align-items-end">
       <Col md={6} className="mb-3">
