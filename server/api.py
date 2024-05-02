@@ -4,7 +4,7 @@ from flask_jwt_extended import JWTManager
 from flask_apscheduler import APScheduler
 
 from config import AppConfig
-from server.src.api.data_models import db, User
+from src.data_models import db, User
 from src.utils.scheduler_functions import (
     # run when markets open
     update_last_close_value, update_started_games,
@@ -15,8 +15,8 @@ from src.utils.scheduler_functions import (
 )
 
 # import blueprints
-from server.src.api.utils.auth import auth
-from server.src.api.portfolio_sim import portfolio_sim
+from src.auth import auth
+from src.portfolio_sim import portfolio_sim
 
 api = Flask(__name__)
 api.config.from_object(AppConfig)
