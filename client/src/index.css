@@ -85,3 +85,10 @@
   --bs-pagination-active-bg: #00000000;
   --bs-pagination-focus-box-shadow: none;
 }
+
+.list-group {
+  --bs-list-group-active-color: #ffffff;
+  --bs-list-group-active-bg: #00000000;
+  --bs-list-group-active-border-color: #ffffff;
+  --bs-list-group-active-text-color: #ffffff;
+}
