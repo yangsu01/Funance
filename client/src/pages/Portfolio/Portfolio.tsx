@@ -70,6 +70,7 @@ const Portfolio = () => {
 
       {/* portfolio info */}
       <PortfolioInfo
+        hasHoldings={portfolioData.portfolioHoldings.length > 0}
         data={portfolioData.portfolioDetails}
         portfolios={portfolioData.userPortfolios}
         portfolioId={portfolioData.portfolioDetails.portfolioId}

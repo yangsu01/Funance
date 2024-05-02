@@ -8,12 +8,14 @@ type Props = {
   portfolios: UserPortfolios[];
   portfolioId: number;
   gameStatus: string;
+  hasHoldings: boolean;
 };
 
 const PortfolioButtonGroup = ({
   portfolios,
   portfolioId,
   gameStatus,
+  hasHoldings,
 }: Props) => {
   return (
     <ButtonGroup size="lg" className="mb-4">
@@ -41,12 +43,14 @@ const PortfolioButtonGroup = ({
           >
             <strong>Buy</strong>
           </Link>
-          <Link
-            to={`/portfolio/${portfolioId}/sell`}
-            className="btn btn-outline-light"
-          >
-            <strong>Sell</strong>
-          </Link>
+          {hasHoldings && (
+            <Link
+              to={`/portfolio/${portfolioId}/sell`}
+              className="btn btn-outline-light"
+            >
+              <strong>Sell</strong>
+            </Link>
+          )}
         </>
       )}
     </ButtonGroup>

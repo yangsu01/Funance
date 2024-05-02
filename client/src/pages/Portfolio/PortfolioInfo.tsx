@@ -10,13 +10,20 @@ type Props = {
   data: PortfolioDetails;
   portfolios: UserPortfolios[];
   portfolioId: number;
+  hasHoldings: boolean;
 };
 
-const PortfolioInfo = ({ data, portfolios, portfolioId }: Props) => {
+const PortfolioInfo = ({
+  data,
+  portfolios,
+  portfolioId,
+  hasHoldings,
+}: Props) => {
   return (
     <Row className="d-flex align-items-end">
       <Col md={6} className="mb-3">
         <PortfolioButtonGroup
+          hasHoldings={hasHoldings}
           gameStatus={data.gameStatus}
           portfolios={portfolios}
           portfolioId={portfolioId}
