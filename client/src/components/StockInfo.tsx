@@ -1,5 +1,3 @@
-import React from "react";
-
 // components
 import InfoCard from "./UI/InfoCard";
 import InfoList from "./UI/InfoList";

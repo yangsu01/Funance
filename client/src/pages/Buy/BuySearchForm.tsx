@@ -3,7 +3,6 @@ import { Row, Col, Form, Button, FloatingLabel } from "react-bootstrap";
 
 // components
 import InfoCard from "../../components/UI/InfoCard";
-import FormFloatingLabel from "../../components/Forms/FormFloatingLabel";
 import CardWrapper from "../../components/UI/CardWrapper";
 // types
 import { BuyInfo } from "../../utils/types";
