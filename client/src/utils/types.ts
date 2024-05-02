@@ -172,3 +172,30 @@ export type SellInfo = {
     holdings: string[];
     holdingsInfo: HoldingsInfo;
 }
+
+
+// ticker info
+type StockNews = {
+    name: string;
+    url: string;
+}
+type TickerInfo = {
+    "%DayChange": number;
+    "52WeekHigh": number;
+    "52WeekLow": number;
+    "52WeekReturns": number;
+    companyName: string;
+    companySummary: string;
+    currency: string;
+    dayChange: number;
+    industry: string;
+    open: number;
+    prevClose: number;
+    price: number;
+    sector: string;
+}
+export type StockData = {
+    history: LinePlotData;
+    news: StockNews[];
+    tickerInfo: TickerInfo;
+}
