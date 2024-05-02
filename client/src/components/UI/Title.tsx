@@ -23,7 +23,12 @@ const Title = ({ title, subtitle, button, onClick }: Props) => {
           md={3}
           className={isSmallScreen ? "my-3" : "d-flex justify-content-end"}
         >
-          <Button variant="outline-light" size="lg" onClick={onClick}>
+          <Button
+            variant="outline-light"
+            size="lg"
+            style={{ minWidth: "100px" }}
+            onClick={onClick}
+          >
             {button}
           </Button>
         </Col>
