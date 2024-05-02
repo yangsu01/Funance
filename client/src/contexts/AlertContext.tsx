@@ -48,7 +48,7 @@ export function AlertProvider({ children }: Props) {
     if (alertMessage) {
       const timer = setTimeout(() => {
         setAlertVisible(false);
-      }, 5000);
+      }, 3000);
 
       return () => clearTimeout(timer);
     }
