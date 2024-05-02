@@ -36,9 +36,7 @@ function App() {
   return (
     <AuthProvider>
       <AlertProvider>
-        <TopNavbar/>
-
-        <AlertNotification />
+        <TopNavbar />
 
         <main className="container flex-shrink-0 content content-container my-4 w-100">
           <Routes>
@@ -53,23 +51,12 @@ function App() {
             </Route>
 
             {/* auth */}
-            <Route
-              path="/sign-in"
-              element={<SignIn/>}
-            />
-            <Route
-              path="/sign-up"
-              element={<SignUp/>}
-            />
+            <Route path="/sign-in" element={<SignIn />} />
+            <Route path="/sign-up" element={<SignUp />} />
 
             {/* portfolio simulation */}
-            <Route
-              path="/game-rules"
-              element={<GameRules />}
-            />
-            <Route
-              element={<PrivateRoutes />}
-            >
+            <Route path="/game-rules" element={<GameRules />} />
+            <Route element={<PrivateRoutes />}>
               <Route path="/games">
                 <Route index element={<GameList />} />
                 <Route path="create-game" element={<CreateGame />} />
@@ -87,8 +74,9 @@ function App() {
           </Routes>
         </main>
 
+        <AlertNotification />
+
         <Footer version={version} />
-        
       </AlertProvider>
     </AuthProvider>
   );
