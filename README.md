@@ -1,6 +1,7 @@
 # Funance
+Finance webapp v1
 
-Finance webapp 1.0
+https://www.funance.lol/
 
 ## Installation
 
