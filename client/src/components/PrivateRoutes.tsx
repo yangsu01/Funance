@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useNavigate, Outlet } from "react-router-dom";
 
 //context
@@ -9,12 +10,14 @@ const PrivateRoutes = () => {
   const showAlert = useShowAlert();
   const { userAuthenticated } = useAuth();
 
-  if (!userAuthenticated) {
-    showAlert("You must be logged in to access this page", "warning");
-    navigate("/sign-in");
-  }
+  useEffect(() => {
+    if (!userAuthenticated) {
+      showAlert("You must be logged in to access this page", "warning");
+      navigate("/sign-in");
+    }
+  }, []);
 
-  return <Outlet />;
+  return <>{userAuthenticated && <Outlet />}</>;
 };
 
 export default PrivateRoutes;
