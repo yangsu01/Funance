@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime
 
 from ..data_models import db, Portfolio, Holding, Transaction, DailyHistory, ClosingHistory, Game, Stock
 from .time_functions import get_est_time, check_market_closed, get_market_date, utc_to_est
@@ -36,7 +36,8 @@ def add_game(creator_id: int, name: str, password: str, start_date: datetime, en
         starting_cash=starting_cash, 
         transaction_fee=transaction_fee, 
         fee_type=fee_type, 
-        creator_id=creator_id
+        creator_id=creator_id,
+        creation_date=get_est_time()
     )
 
     db.session.add(new_game)
@@ -67,8 +68,9 @@ def add_portfolio(game_id: int, user_id: int) -> int:
             game_id=game_id,
             available_cash=starting_cash,
             current_value=starting_cash, 
-            last_updated=datetime.now(timezone.utc), 
-            last_close_value=starting_cash
+            last_updated=get_est_time(), 
+            last_close_value=starting_cash,
+            creation_date=get_est_time()
         )
 
         db.session.add(portfolio)
@@ -84,7 +86,8 @@ def add_portfolio(game_id: int, user_id: int) -> int:
         daily_history = DailyHistory(
             portfolio_id=portfolio.id,
             date=get_est_time().date(),
-            portfolio_value=starting_cash
+            portfolio_value=starting_cash,
+            update_time=get_est_time()
         )
         
         db.session.add(daily_history)
@@ -120,7 +123,7 @@ def add_stock(ticker: str, price: float) -> int:
     if stock is not None:
         id = stock.id
         stock.current_price = price
-        stock.last_updated = datetime.now(timezone.utc)
+        stock.last_updated = get_est_time()
 
         db.session.commit()
 
@@ -137,7 +140,7 @@ def add_stock(ticker: str, price: float) -> int:
             previous_close=stock_info.get('prevClose', price),
             opening_price=stock_info.get('open', price),
             current_price=price,
-            last_updated=datetime.now(timezone.utc)
+            last_updated=get_est_time()
         )
         db.session.add(new_stock)
         db.session.commit()
@@ -169,6 +172,7 @@ def add_transaction(portfolio_id: int, stock_id: int, transaction_type: str, num
         profit_loss = None
 
     transaction = Transaction(
+        transaction_date=get_est_time(),
         portfolio_id=portfolio_id, 
         stock_id=stock_id, 
         transaction_type=transaction_type, 
@@ -620,8 +624,8 @@ def get_portfolio_transactions(portfolio_id: int) -> list:
             'Share Price': transaction.price_per_share,
             'Total Value': round(transaction.total_value, 2),
             'Currency': transaction.stock.currency,
-            'Profit/Loss': transaction.profit_loss if transaction.profit_loss is not None else 'n/a',
-            'Date (EST)': utc_to_est(transaction.transaction_date).strftime('%H:%M %m-%d-%Y')
+            'Profit/Loss': round(transaction.profit_loss, 2) if transaction.profit_loss is not None else 'n/a',
+            'Date (EST)': transaction.transaction_date.strftime('%H:%M %m-%d-%Y')
         })
 
     return transaction_list

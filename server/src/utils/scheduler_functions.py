@@ -1,6 +1,6 @@
 import yfinance as yf
 
-from ..data_models import db, Stock, DailyHistory, ClosingHistory, Portfolio, Game, Transaction, Holding
+from ..data_models import db, Stock, DailyHistory, ClosingHistory, Portfolio, Game
 from .portfolio_sim_functions import get_est_time
 
 
@@ -67,7 +67,12 @@ def save_daily_history() -> None:
     record_date = record_time.date()
 
     for portfolio in portfolios:
-        history = DailyHistory(portfolio_id=portfolio.id, date=record_date, portfolio_value=portfolio.current_value, update_time=record_time)
+        history = DailyHistory(
+            portfolio_id=portfolio.id, 
+            date=record_date, 
+            portfolio_value=portfolio.current_value, 
+            update_time=record_time
+        )
 
         db.session.add(history)
 

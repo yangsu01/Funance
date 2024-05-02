@@ -21,7 +21,7 @@ class Game(db.Model):
 
     name = db.Column(db.String(100), nullable=False, unique=True)
     password = db.Column(db.String(100), nullable=True)
-    creation_date = db.Column(db.DateTime(timezone=True), nullable=False, default=datetime.now(timezone.utc))
+    creation_date = db.Column(db.DateTime(timezone=True), nullable=False)
     participants = db.Column(db.Integer, nullable=False)
     start_date = db.Column(db.Date, nullable=False)
     end_date = db.Column(db.Date, nullable=True)
@@ -67,7 +67,7 @@ class Portfolio(db.Model):
     game_id = db.Column(db.Integer, db.ForeignKey('game.id'), nullable=False)
 
     available_cash = db.Column(db.Float, nullable=False)
-    creation_date = db.Column(db.DateTime(timezone=True), nullable=False, default=datetime.now(timezone.utc))
+    creation_date = db.Column(db.DateTime(timezone=True), nullable=False)
     current_value = db.Column(db.Float, nullable=False)
     last_updated = db.Column(db.DateTime(timezone=True), nullable=False)
     last_close_value = db.Column(db.Float, nullable=False)
@@ -111,7 +111,7 @@ class Transaction(db.Model):
     portfolio_id = db.Column(db.Integer, db.ForeignKey('portfolio.id'), nullable=False)
     stock_id = db.Column(db.Integer, db.ForeignKey('stock.id'), nullable=False)
 
-    transaction_date = db.Column(db.DateTime(timezone=True), nullable=False, default=datetime.now(timezone.utc))
+    transaction_date = db.Column(db.DateTime(timezone=True), nullable=False)
     transaction_type = db.Column(db.String(10), nullable=False) # buy, sell
     number_of_shares = db.Column(db.Integer, nullable=False)
     price_per_share = db.Column(db.Float, nullable=False)
@@ -132,7 +132,7 @@ class DailyHistory(db.Model):
     portfolio_id = db.Column(db.Integer, db.ForeignKey('portfolio.id'), nullable=False)
 
     date = db.Column(db.Date, nullable=False)
-    update_time = db.Column(db.DateTime(timezone=True), nullable=False, default=datetime.now(timezone.utc))
+    update_time = db.Column(db.DateTime(timezone=True), nullable=False)
     portfolio_value = db.Column(db.Float, nullable=False)
 
 
@@ -142,5 +142,5 @@ class Blog(db.Model):
     title = db.Column(db.String(255), nullable=False)
     description = db.Column(db.String(255), nullable=False)
     content = db.Column(db.Text, nullable=False)
-    creation_date = db.Column(db.Date, nullable=False, default=datetime.now(timezone.utc))
+    creation_date = db.Column(db.Date, nullable=False)
     updated_date = db.Column(db.Date, nullable=False)
