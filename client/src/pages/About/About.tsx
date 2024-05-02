@@ -1,8 +1,4 @@
-import React from "react";
-
-type Props = {};
-
-const About: React.FC<Props> = () => {
+const About = () => {
   return <div>About</div>;
 };
 
