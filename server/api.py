@@ -1,13 +1,10 @@
-import os
-from dotenv import load_dotenv
-
 from flask import Flask
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_apscheduler import APScheduler
 
 from config import AppConfig
-from src.data_models import db, User
+from server.src.api.data_models import db, User
 from src.utils.scheduler_functions import (
     # run when markets open
     update_last_close_value, update_started_games,
@@ -18,8 +15,8 @@ from src.utils.scheduler_functions import (
 )
 
 # import blueprints
-from src.auth import auth
-from src.portfolio_sim import portfolio_sim
+from server.src.api.utils.auth import auth
+from server.src.api.portfolio_sim import portfolio_sim
 
 api = Flask(__name__)
 api.config.from_object(AppConfig)
@@ -36,7 +33,7 @@ def user_identity_lookup(user):
     return user.id
 
 @jwt.user_lookup_loader
-def user_lookup_callback(_jwt_header, jwt_data):
+def user_lookup_callback(_, jwt_data):
     identity = jwt_data["sub"]
     return User.query.filter_by(id=identity).first()
     
@@ -54,8 +51,6 @@ scheduler = APScheduler()
 scheduler.init_app(api)
 scheduler.start()
 
-#TODO delete in production
-from src.utils.time_functions import get_est_time
 # define jobs
 def run_periodically():
     with api.app_context():
@@ -64,14 +59,10 @@ def run_periodically():
         save_game_update_time()
         save_daily_history()
 
-        print(f'periodic process completed at {get_est_time()} EST')
-
 def run_at_open():
     with api.app_context():
         update_last_close_value()
         update_started_games()
-
-        print(f'open process completed at {get_est_time()} EST')
 
         run_periodically()
         
@@ -81,8 +72,6 @@ def run_at_close():
 
         save_closing_history()
         update_completed_games()
-
-        print(f'end process completed at {get_est_time()} EST')
 
 # add jobs
 scheduler.add_job(
@@ -121,8 +110,7 @@ scheduler.add_job(
 
 
 if __name__ == '__main__':
-    load_dotenv()
     with api.app_context():
         db.create_all()
 
-    api.run(debug=False, port=os.getenv('PORT', default=5000))
+    api.run(debug=False, port=5000)
