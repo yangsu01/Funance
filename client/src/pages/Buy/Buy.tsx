@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 // components
-import SearchForm from "./SearchForm";
+import BuySearchForm from "./BuySearchForm";
 import BuyForm from "./BuyForm";
 import Title from "../../components/UI/Title";
 import Loading from "../../components/UI/Loading";
@@ -86,7 +86,7 @@ const Buy = () => {
         {/* page title */}
         <Title
           title="Buy Stock"
-          subtitle={`For the game`}
+          subtitle={`For Game`}
           button="Back"
           onClick={handleBack}
         />
@@ -106,7 +106,7 @@ const Buy = () => {
       />
 
       {/* buy form */}
-      <SearchForm buyInfo={buyInfoRef.current} onSubmit={handleSearch} />
+      <BuySearchForm buyInfo={buyInfoRef.current} onSubmit={handleSearch} />
 
       {/* stock data */}
       {stockSearched || loadingStockData ? (

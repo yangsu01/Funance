@@ -38,19 +38,21 @@ const BuyForm = ({ info, currentPrice, ticker, onSubmit }: Props) => {
   }
 
   const handleValues = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = parseInt(e.target.value);
-    value ? value : (value = 0);
+    let numShares = parseInt(e.target.value);
+    numShares ? numShares : (numShares = 0);
 
-    setShares(value);
+    setShares(numShares);
     if (info.feeType === "Flat Fee") {
-      setTotalCost(roundNumber(value * currentPrice + info.transactionFee, 2));
+      setTotalCost(
+        roundNumber(numShares * currentPrice + info.transactionFee, 2)
+      );
       setTransactionFee(info.transactionFee);
     } else {
       setTotalCost(
-        roundNumber(value * currentPrice * (1 + info.transactionFee), 2)
+        roundNumber(numShares * currentPrice * (1 + info.transactionFee), 2)
       );
       setTransactionFee(
-        roundNumber(value * currentPrice * info.transactionFee, 2)
+        roundNumber(numShares * currentPrice * info.transactionFee, 2)
       );
     }
   };
@@ -72,8 +74,7 @@ const BuyForm = ({ info, currentPrice, ticker, onSubmit }: Props) => {
         </h4>
 
         <h5>
-          You can afford: <strong>{maxSharesRef.current}</strong> shares, How
-          many do you want to buy?
+          You can afford: <strong>{maxSharesRef.current}</strong> shares
         </h5>
 
         <div style={{ maxWidth: "300px", margin: "auto" }} className="my-3">
@@ -89,9 +90,10 @@ const BuyForm = ({ info, currentPrice, ticker, onSubmit }: Props) => {
         </div>
 
         <h4>
-          Total Cost: <strong>${totalCost}</strong> (Transaction Fee: $
-          {transactionFee})
+          Total Cost: <strong>${totalCost}</strong>
         </h4>
+
+        <h5>(Plus Transaction Fee: ${transactionFee})</h5>
       </Form>
     </CardWrapper>
   );
