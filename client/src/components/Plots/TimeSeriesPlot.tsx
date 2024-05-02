@@ -5,7 +5,6 @@ import {
   Chart as ChartJS,
   TimeSeriesScale,
   LinearScale,
-  PointElement,
   LineElement,
   Title,
   Tooltip,
@@ -15,18 +14,11 @@ import "chartjs-adapter-moment";
 // types
 import { LinePlotData } from "../../utils/types";
 
-ChartJS.register(
-  TimeSeriesScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip
-);
+ChartJS.register(TimeSeriesScale, LinearScale, LineElement, Title, Tooltip);
 
 type Props = { plotData: LinePlotData; title: string };
 
-const MultiTimeSeriesPlot = ({ plotData, title }: Props) => {
+const TimeSeriesPlot = ({ plotData, title }: Props) => {
   const isSmallScreen = useMediaQuery({ maxWidth: 767 });
   const chartHeight = isSmallScreen ? 200 : "auto";
 
@@ -39,6 +31,7 @@ const MultiTimeSeriesPlot = ({ plotData, title }: Props) => {
         })),
         fill: false,
         borderColor: "rgb(14, 209, 69)" as const,
+        radius: 0,
       },
     ],
   };
@@ -81,4 +74,4 @@ const MultiTimeSeriesPlot = ({ plotData, title }: Props) => {
   return <Line data={data} options={options} height={chartHeight} />;
 };
 
-export default MultiTimeSeriesPlot;
+export default TimeSeriesPlot;
