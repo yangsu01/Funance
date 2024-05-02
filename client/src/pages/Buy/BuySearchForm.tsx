@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Row, Col, Form, Button } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
 
 // components
 import InfoCard from "../../components/UI/InfoCard";
@@ -14,15 +13,15 @@ type Props = {
   onSubmit: (ticker: string) => void;
 };
 
-const SearchForm = ({ buyInfo, onSubmit }: Props) => {
+const BuySearchForm = ({ buyInfo, onSubmit }: Props) => {
   const [ticker, setTicker] = useState("");
-
-  const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(ticker);
   };
+
+  console.log(buyInfo);
 
   return (
     <Row className="d-flex align-items-end">
@@ -46,18 +45,13 @@ const SearchForm = ({ buyInfo, onSubmit }: Props) => {
               id="ticker"
               onChange={(e) => setTicker(e.target.value)}
             />
-            <div className="d-flex justify-content-between">
+            <div className="d-flex justify-content-end">
               <Button
-                variant="outline-light"
+                type="submit"
+                variant="success"
                 size="lg"
-                onClick={() => {
-                  navigate(-1);
-                }}
-                className="me-2"
+                style={{ minWidth: "100px" }}
               >
-                Cancel
-              </Button>
-              <Button type="submit" variant="success" size="lg">
                 Search
               </Button>
             </div>
@@ -68,4 +62,4 @@ const SearchForm = ({ buyInfo, onSubmit }: Props) => {
   );
 };
 
-export default SearchForm;
+export default BuySearchForm;
