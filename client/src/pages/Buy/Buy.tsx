@@ -47,7 +47,7 @@ const Buy = () => {
   };
 
   const handleSearch = (ticker: string) => {
-    if (ticker.toUpperCase() === searchedTicker) return;
+    if (ticker.toUpperCase().trim() === searchedTicker) return;
 
     fetchStockData(`/stock-info/${ticker}`).then((res) => {
       if (res.status === "error") {
@@ -59,7 +59,7 @@ const Buy = () => {
       }
     });
 
-    setSearchedTicker(ticker.toUpperCase());
+    setSearchedTicker(ticker.toUpperCase().trim());
   };
 
   const handleBuy = (shares: number, price: number, ticker: string) => {
