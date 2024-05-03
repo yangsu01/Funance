@@ -48,8 +48,6 @@ const BlogPost = () => {
     );
   }
 
-  console.log(blogPostData);
-
   return (
     <>
       <Title
@@ -59,22 +57,24 @@ const BlogPost = () => {
         onClick={() => navigate(-1)}
       />
 
-      <Row>
-        <Col md={8}>
+      <Row className="d-flex justify-content-center">
+        <Col md={7}>
           <div
             dangerouslySetInnerHTML={{
               __html: blogPostData.blogData.content,
             }}
           ></div>
         </Col>
-        <Col md={4}>
+        <Col md={3}>
           <Card>
-            <Card.Header className="text-center">Other Blog Posts</Card.Header>
+            <Card.Header className="text-center">
+              <h4>Other Blog Posts</h4>
+            </Card.Header>
             <Card.Body>
               {blogPostData.blogCatalog.map((post) => (
                 <div key={post.fileName}>
                   <Link to={`/blog/${post.fileName}`} className="text-white">
-                    <h5>{post.title}</h5>
+                    <h5 className="mx-3">{post.title}</h5>
                   </Link>
                 </div>
               ))}
