@@ -14,6 +14,10 @@ type Props = {
 
 const BuySearchForm = ({ buyInfo, onSubmit }: Props) => {
   const tickerRef = useRef<HTMLInputElement>(null);
+  const transactionFee =
+    buyInfo.feeType === "Flat Fee"
+      ? `$${buyInfo.transactionFee}`
+      : `${buyInfo.transactionFee * 100}%`;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,7 +34,7 @@ const BuySearchForm = ({ buyInfo, onSubmit }: Props) => {
           infoList={[
             `Available Cash: $${buyInfo.availableCash}`,
             `Fee Type: ${buyInfo.feeType}`,
-            `Fee Per Transaction: ${buyInfo.transactionFee * 100}%`,
+            `Fee Per Transaction: ${transactionFee}`,
           ]}
         />
       </Col>
