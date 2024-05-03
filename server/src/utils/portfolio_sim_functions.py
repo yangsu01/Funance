@@ -376,7 +376,7 @@ def get_game_details(game_id: int, user_id: int) -> dict:
         'joinedGame': joined_game,
         'portfolioId': portfolio_id,
         'passwordRequired': game.password is not None,
-        'lastUpdated': game.last_updated.strftime('%a, %b %d. %Y %I:%M %p') + ' EST' if game.last_updated is not None else 'n/a',
+        'lastUpdated': utc_to_est(game.last_updated).strftime('%a, %b %d. %Y %I:%M %p') + ' EST' if game.last_updated is not None else 'n/a',
         'gameDuration': f'{(game.end_date - game.start_date).days} days' if game.end_date is not None else 'Infinite'
     }
 
@@ -431,7 +431,7 @@ def get_portfolio_details(portfolio_id: int) -> dict:
     current_value = portfolio.current_value
     change = round((current_value/starting_cash - 1) * 100, 2)
     profit = round(current_value - starting_cash, 2)
-    last_updated = portfolio.last_updated.strftime('%a, %b %d. %Y %I:%M%p') + ' EST'
+    last_updated = utc_to_est(portfolio.last_updated).strftime('%a, %b %d. %Y %I:%M%p') + ' EST'
     transaction_fee = f'${round(parent_game.transaction_fee, 0)}' if parent_game.fee_type == 'Flat Fee' else f'{round(parent_game.transaction_fee * 100, 0)}%'
 
     return {
@@ -625,7 +625,7 @@ def get_portfolio_transactions(portfolio_id: int) -> list:
             'Total Value': round(transaction.total_value, 2),
             'Currency': transaction.stock.currency,
             'Profit/Loss': round(transaction.profit_loss, 2) if transaction.profit_loss is not None else 'n/a',
-            'Date (EST)': transaction.transaction_date.strftime('%H:%M %m-%d-%Y')
+            'Date (EST)': utc_to_est(transaction.transaction_date).strftime('%H:%M %m-%d-%Y')
         })
 
     return transaction_list
@@ -700,7 +700,7 @@ def get_game_history(game_id) -> dict:
     if daily_history is not None:
         for row in daily_history:
             data = day.setdefault(row.portfolio_id, {'x': [], 'y': [], 'name': row.portfolio.portfolio_owner.username})
-            data['x'].append(row.update_time.strftime('%Y-%m-%d %H:%M'))
+            data['x'].append(utc_to_est(row.update_time).strftime('%Y-%m-%d %H:%M'))
             data['y'].append(row.portfolio_value)
             day[row.portfolio_id] = data
 
@@ -737,7 +737,7 @@ def get_portfolio_history(portfolio_id: int) -> dict:
 
     if daily_history is not None:
         for row in daily_history:
-            day['x'].append(row.update_time.strftime('%Y-%m-%d %H:%M'))
+            day['x'].append(utc_to_est(row.update_time).strftime('%Y-%m-%d %H:%M'))
             day['y'].append(row.portfolio_value)
 
     return {

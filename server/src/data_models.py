@@ -9,7 +9,7 @@ class User(db.Model):
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
     username = db.Column(db.String(100), unique=True, nullable=False)
-    creation_date = db.Column(db.DateTime(timezone=True), nullable=False, default=datetime.now(timezone.utc))
+    creation_date = db.Column(db.DateTime(timezone=True), nullable=False)
     # one to many
     portfolios = db.relationship('Portfolio', backref='portfolio_owner', uselist=False, cascade='all, delete-orphan')
     created_games = db.relationship('Game', backref='game_creator', lazy=True)
