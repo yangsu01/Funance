@@ -199,3 +199,28 @@ export type StockData = {
     news: StockNews[];
     tickerInfo: TickerInfo;
 }
+
+// blog catalog
+export type BlogCard = {
+    date: string;
+    description: string;
+    fileName: string;
+    title: string;
+}
+
+// blog post
+export type BlogInfo = {
+    fileName: string;
+    title: string;
+}
+export type BlogData = {
+    content: string;
+    creationDate: string;
+    description: string;
+    fileName: string;
+    title: string;
+}
+export type BlogPostData = {
+    blogCatalog: BlogInfo[];
+    blogData: BlogData;
+}

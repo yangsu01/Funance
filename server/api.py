@@ -17,6 +17,7 @@ from src.utils.scheduler_functions import (
 # import blueprints
 from src.auth import auth
 from src.portfolio_sim import portfolio_sim
+from src.blog import blog
 
 api = Flask(__name__)
 api.config.from_object(AppConfig)
@@ -44,6 +45,7 @@ db.init_app(api)
 #register blueprints
 api.register_blueprint(auth, url_prefix='/api')
 api.register_blueprint(portfolio_sim, url_prefix='/api')
+api.register_blueprint(blog, url_prefix='/api')
 
 
 # initiate scheduler

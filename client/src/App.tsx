@@ -47,7 +47,7 @@ function App() {
             {/* funance blog */}
             <Route path="/blog">
               <Route index element={<Blog />} />
-              <Route path=":id" element={<BlogPost />} />
+              <Route path=":blogTitle" element={<BlogPost />} />
             </Route>
 
             {/* auth */}
