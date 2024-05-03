@@ -17,7 +17,7 @@ const About = () => {
               </strong>
             </h3>
             <p className="fs-5">
-              Funance was created beacuse I'm unemployed and have nothing better
+              Funance was created because I'm unemployed and have nothing better
               to do. The original intent was to create a simple portfolio
               simulator to play with some friends. But then I realized people
               aren't nearly as interested as I thought they would be in
@@ -34,11 +34,11 @@ const About = () => {
             <p className="fs-5">
               Originally, Funance was a simple Flask app. It was a bit tedious
               but pretty easy to implement. I then realized there would be
-              issues with scalability. So I decided to use a more modern setup.
-              How much work could it be? I gave myself a weekend to learn React
-              and a few more days to re-implement everything. Mistakes were
-              made. I ended up rewriting both the frontend and backend from
-              scratch. But hey, at least the UI is a lot better now... right?
+              scalability issues. So I decided to use a more modern setup. How
+              much work could it be? I gave myself a weekend to learn React and
+              a few more days to re-implement everything. Mistakes were made. I
+              ended up rewriting both the frontend and backend from scratch. But
+              hey, at least the UI is a lot better now... right?
             </p>
           </Col>
           <Col md={2}>
@@ -64,7 +64,7 @@ const About = () => {
             </h3>
             <p className="fs-5">
               I am a (somewhat) recent grad from university. After working for a
-              few months as a full stack developer, I realized I had no idea
+              few months as a full-stack developer, I realized I had no idea
               what I wanted from my career. I studied engineering for 6 years
               but ended up doing something completely different right out of
               school. So now I'm taking a break to figure things out.
@@ -76,7 +76,7 @@ const About = () => {
                   <strong>Photography:</strong> I like taking pics. Currently, I
                   mainly use my trusty Ricoh GRIII for everyday photos but I
                   also have a Canon M50 (its supposed to be for video but I use
-                  it for photos...) with a few lenses which I use on trips or
+                  it for photos...) with a few lenses that I use on trips or
                   other special occasions. Check out some of my photos at{" "}
                   <a
                     href="https://www.instagram.com/soappppics/"
@@ -103,11 +103,11 @@ const About = () => {
                 </li>
                 <li>
                   <strong>Travel:</strong> Ever since I went to Denmark for an
-                  exchange semester, I've been hooked on travelling. During my
+                  exchange semester, I've been hooked on traveling. During my
                   time in Europe, I visited 11 countries (mostly solo, top 3
                   cities?... [Lisbon, Athens, Budapest] ). In the last year, I
-                  also went to New York, Montreal, and Portland. Travel pics
-                  could be found at{" "}
+                  also went to New York, Montreal, and Portland. Travel pics can
+                  be found at{" "}
                   <a
                     href="https://www.instagram.com/soappppics/"
                     target="_blank"
