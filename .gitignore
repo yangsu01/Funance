@@ -187,3 +187,7 @@ dist-ssr
 
 # testing files
 test.ipynb
+
+# blogs
+blogs/
+save_blog.py
