@@ -5,13 +5,12 @@ import { Col, Row, Card } from "react-bootstrap";
 // components
 import Title from "../../components/UI/Title";
 import Loading from "../../components/UI/Loading";
-import InfoCard from "../../components/UI/InfoCard";
 // hooks
 import useFetch from "../../hooks/useFetch";
 // contexts
 import { useShowAlert } from "../../contexts/AlertContext";
 // types
-import { BlogInfo, BlogData, BlogPostData } from "../../utils/types";
+import { BlogPostData } from "../../utils/types";
 
 const BlogPost = () => {
   const [blogPostData, setBlogPostData] = useState<BlogPostData>(
@@ -22,7 +21,6 @@ const BlogPost = () => {
   const navigate = useNavigate();
   const { fetchData, loading } = useFetch<BlogPostData>();
   const showAlert = useShowAlert();
-  const parser = new DOMParser();
 
   // on page load
   useEffect(() => {
