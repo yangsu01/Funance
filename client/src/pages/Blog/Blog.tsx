@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { Col, Row } from "react-bootstrap";
 
 // components
@@ -16,7 +15,6 @@ import { BlogCard } from "../../utils/types";
 const Blog = () => {
   const [blogCard, setBlogCard] = useState<BlogCard[]>([] as BlogCard[]);
 
-  const navigate = useNavigate();
   const { fetchData, loading } = useFetch<BlogCard[]>();
   const showAlert = useShowAlert();
 
@@ -35,12 +33,7 @@ const Blog = () => {
     return (
       <>
         {/* page title */}
-        <Title
-          title="Funance Blog"
-          subtitle="Weekly Blog Posts!"
-          button="Back"
-          onClick={() => navigate(-1)}
-        />
+        <Title title="Funance Blog" subtitle="Weekly Blog Posts!" />
         <Loading />
       </>
     );
@@ -49,16 +42,11 @@ const Blog = () => {
   return (
     <>
       {/* page title */}
-      <Title
-        title="Funance Blog"
-        subtitle="Weekly Blog Posts!"
-        button="Back"
-        onClick={() => navigate(-1)}
-      />
+      <Title title="Funance Blog" subtitle="Weekly Blog Posts!" />
 
-      <Row md={3}>
+      <Row>
         {blogCard.map((blog, index) => (
-          <Col key={index} className="mb-4">
+          <Col key={index} md={4} className="mb-4">
             <InfoCard
               footer={`Updated: ${blog.date}`}
               title={blog.title}
