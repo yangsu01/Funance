@@ -30,7 +30,7 @@ const SignIn = () => {
       } else {
         saveToken(res.data);
         showAlert(res.msg, "success");
-        navigate("/");
+        navigate("/", { replace: true });
       }
     });
   };
