@@ -18,12 +18,14 @@ const PortfolioButtonGroup = ({
   hasHoldings,
 }: Props) => {
   return (
-    <ButtonGroup size="lg" className="mb-4">
+    <>
       <DropdownButton
         as={ButtonGroup}
         id="portfolio-selector"
         title="Change Portfolio"
         variant="outline-light"
+        size="lg"
+        className="mb-4 me-3"
       >
         {portfolios.map((portfolio) => (
           <Dropdown.Item
@@ -35,25 +37,27 @@ const PortfolioButtonGroup = ({
           </Dropdown.Item>
         ))}
       </DropdownButton>
-      {gameStatus === "In Progress" && (
-        <>
-          <Link
-            to={`/portfolio/${portfolioId}/buy`}
-            className="btn btn-outline-light"
-          >
-            <strong>Buy</strong>
-          </Link>
-          {hasHoldings && (
+      <ButtonGroup size="lg" className="mb-4">
+        {gameStatus === "In Progress" && (
+          <>
             <Link
-              to={`/portfolio/${portfolioId}/sell`}
+              to={`/portfolio/${portfolioId}/buy`}
               className="btn btn-outline-light"
             >
-              <strong>Sell</strong>
+              <strong>Buy</strong>
             </Link>
-          )}
-        </>
-      )}
-    </ButtonGroup>
+            {hasHoldings && (
+              <Link
+                to={`/portfolio/${portfolioId}/sell`}
+                className="btn btn-outline-light"
+              >
+                <strong>Sell</strong>
+              </Link>
+            )}
+          </>
+        )}
+      </ButtonGroup>
+    </>
   );
 };
 
