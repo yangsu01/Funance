@@ -63,6 +63,7 @@ const BlogPost = () => {
             dangerouslySetInnerHTML={{
               __html: blogPostData.blogData.content,
             }}
+            className="mb-4"
           ></div>
         </Col>
         <Col md={3}>
@@ -73,8 +74,8 @@ const BlogPost = () => {
             <Card.Body>
               {blogPostData.blogCatalog.map((post) => (
                 <div key={post.fileName}>
-                  <Link to={`/blog/${post.fileName}`} className="text-white">
-                    <h5 className="mx-3">{post.title}</h5>
+                  <Link to={`/blog/${post.fileName}`} className="link">
+                    <h5 className="mb-3">{post.title}</h5>
                   </Link>
                 </div>
               ))}
