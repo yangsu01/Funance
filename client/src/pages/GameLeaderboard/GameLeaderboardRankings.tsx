@@ -1,4 +1,4 @@
-import { Row, Col, Card } from "react-bootstrap";
+import { Card } from "react-bootstrap";
 
 // components
 import MultiTimeSeriesPlot from "../../components/Plots/MultiTimeSeriesPlot";
