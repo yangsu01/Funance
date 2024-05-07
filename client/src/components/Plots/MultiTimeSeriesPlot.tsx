@@ -40,6 +40,7 @@ const MultiTimeSeriesPlot = ({ timeSeriesData, title }: Props) => {
       fill: false,
       borderColor: PLOT_COLORS,
       border: 1,
+      radius: 0,
     })),
   };
 
