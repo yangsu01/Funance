@@ -11,8 +11,23 @@ type Props = {
 };
 
 const GameLeaderboardInfo = ({ details }: Props) => {
+  let daysLeft = details.gameDuration;
+
+  if (details.status === "In Progress" && details.endDate !== "n/a") {
+    const endDate = new Date(details.endDate);
+    const today = new Date();
+    const diffTime = endDate.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    daysLeft = diffDays.toString() + " days";
+  } else if (details.status === "Completed") {
+    daysLeft = "0";
+  }
+
   return (
-    <AccordionCard header="Game Info">
+    <AccordionCard
+      header="Game Info"
+      open={details.status === "Not Started" ? true : false}
+    >
       <Row>
         <Col md={4} className="mb-3">
           <InfoCard
@@ -40,7 +55,7 @@ const GameLeaderboardInfo = ({ details }: Props) => {
           <InfoCard
             title="Game Details"
             infoList={[
-              `Game Duration: ${details.gameDuration}`,
+              `Time Left: ${daysLeft}`,
               `Current Status: ${details.status}`,
               `Last Updated: ${details.lastUpdated}`,
             ]}

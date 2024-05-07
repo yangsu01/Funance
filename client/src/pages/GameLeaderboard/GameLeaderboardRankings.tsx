@@ -36,14 +36,12 @@ const GameLeaderboardRankings = ({
         <Card.Subtitle>
           <small className="text-muted">{subtitle}</small>
         </Card.Subtitle>
-        <Row className="d-flex align-items-center">
-          <Col lg={6}>
-            <MultiTimeSeriesPlot timeSeriesData={plotData} title={plotTitle} />
-          </Col>
-          <Col lg={6}>
-            <PaginationTable headers={tableHeaders} content={tableData} />
-          </Col>
-        </Row>
+        <MultiTimeSeriesPlot timeSeriesData={plotData} title={plotTitle} />
+        <PaginationTable
+          headers={tableHeaders}
+          content={tableData}
+          itemsPerPage={5}
+        />
       </Card.Body>
     </Card>
   );
