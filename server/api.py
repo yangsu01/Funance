@@ -15,9 +15,9 @@ from src.utils.scheduler_functions import (
 )
 
 # import blueprints
-from src.auth import auth
-from src.portfolio_sim import portfolio_sim
-from src.blog import blog
+from src.routes.auth import auth
+from src.routes.portfolio_sim import portfolio_sim
+from src.routes.blog import blog
 
 api = Flask(__name__)
 api.config.from_object(AppConfig)

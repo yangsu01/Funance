@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, current_user
 from datetime import datetime
 
-from .utils.portfolio_sim_functions import (
+from ..utils.portfolio_sim_functions import (
     # validation
     check_game_exists, check_game_name_exists, check_game_password, check_portfolio_exists,
     # modifying database data
@@ -12,7 +12,7 @@ from .utils.portfolio_sim_functions import (
     get_buy_info, get_sell_info
 
 )
-from .utils.yf_functions import get_stock_info, get_stock_news, get_stock_history
+from ..utils.yf_functions import get_stock_info, get_stock_news, get_stock_history
 
 
 portfolio_sim = Blueprint('portfolio_sim', __name__)
