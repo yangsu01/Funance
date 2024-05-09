@@ -2,7 +2,6 @@ from flask import Blueprint, jsonify
 from markdown import markdown
 
 from ..data_models import db, Blog
-from ..utils.time_functions import utc_to_est
 
 blog = Blueprint('blog', __name__)
 
