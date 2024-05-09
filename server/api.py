@@ -5,7 +5,7 @@ from flask_apscheduler import APScheduler
 
 from config import AppConfig
 from src.data_models import db, User
-from src.utils.scheduler_functions import (
+from src.utils.scheduler import (
     # run when markets open
     update_last_close_value, update_started_games,
     # run periodically when markets are open
