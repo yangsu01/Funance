@@ -15,7 +15,7 @@ type Props = {
   info: BuyInfo;
   currentPrice: number;
   ticker: string;
-  onSubmit: (shares: number, price: number, ticker: string) => void;
+  onSubmit: (shares: number) => void;
 };
 
 const BuyForm = ({ info, currentPrice, ticker, onSubmit }: Props) => {
@@ -63,7 +63,7 @@ const BuyForm = ({ info, currentPrice, ticker, onSubmit }: Props) => {
       showAlert("Cannot afford this transaction!", "danger");
       return;
     }
-    onSubmit(shares, currentPrice, ticker);
+    onSubmit(shares);
   };
 
   return (

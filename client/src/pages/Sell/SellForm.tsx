@@ -15,7 +15,7 @@ type Props = {
   info: SellInfo;
   currentPrice: number;
   ticker: string;
-  onSubmit: (shares: number, price: number, ticker: string) => void;
+  onSubmit: (shares: number) => void;
 };
 
 const SellForm = ({ info, currentPrice, ticker, onSubmit }: Props) => {
@@ -61,7 +61,7 @@ const SellForm = ({ info, currentPrice, ticker, onSubmit }: Props) => {
       showAlert(`You cannot sell ${shares} shares!`, "danger");
       return;
     }
-    onSubmit(shares, currentPrice, ticker);
+    onSubmit(shares);
   };
 
   return (

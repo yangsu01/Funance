@@ -62,12 +62,11 @@ const Buy = () => {
     setSearchedTicker(ticker.toUpperCase().trim());
   };
 
-  const handleBuy = (shares: number, price: number, ticker: string) => {
+  const handleBuy = (shares: number) => {
     const body = {
       portfolioId: id,
-      ticker: ticker,
+      stockId: stockDataRef.current.stockId,
       shares: shares,
-      price: price,
     };
 
     postData(`/buy-stock`, body).then((res) => {

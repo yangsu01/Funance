@@ -61,12 +61,11 @@ const Sell = () => {
     setSelectedTicker(ticker.toUpperCase());
   };
 
-  const handleSell = (shares: number, price: number, ticker: string) => {
+  const handleSell = (shares: number) => {
     const body = {
       portfolioId: id,
-      ticker: ticker,
+      stockId: stockDataRef.current.stockId,
       shares: shares,
-      price: price,
     };
 
     postData(`/sell-stock`, body).then((res) => {

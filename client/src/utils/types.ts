@@ -198,6 +198,7 @@ export type StockData = {
     history: LinePlotData;
     news: StockNews[];
     tickerInfo: TickerInfo;
+    stockId: number;
 }
 
 // blog catalog
