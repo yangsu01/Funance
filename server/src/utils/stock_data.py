@@ -2,13 +2,17 @@ import yfinance as yf
 
 
 def get_stock_info(ticker: str) -> dict:
-    '''Gets detailed stock information from yfinance
+    """ Gets the stock information for a given ticker
 
-        args:
-            ticker: str - stock ticker
-        returns:
-            dict - stock information
-    '''
+    Args:
+        ticker (str): ticker of the stock
+
+    Raises:
+        Exception: ticker not found
+
+    Returns:
+        dict: dictionary of stock information
+    """
     stock_info = yf.Ticker(ticker).info
     
     if 'currentPrice' not in stock_info:
@@ -32,15 +36,16 @@ def get_stock_info(ticker: str) -> dict:
         
 
 def get_stock_history(ticker: str, period='5y', detailed=False) -> dict:
-    '''Gets the historical price of a stock
+    """ Gets the stock history for a given ticker
 
-        args:
-            ticker: str - stock ticker
-            period: str - time period for the historical data
-            detailed: bool - whether to included detailed data: open, high, low, close
-        returns:
-            dict - dictionary of the historical price of a stock
-    '''
+    Args:
+        ticker (str): ticker of the stock
+        period (str, optional): time period for history. Defaults to '5y'.
+        detailed (bool, optional): whether want detailed history. Defaults to False.
+
+    Returns:
+        dict: dictionary of stock history
+    """
     stock = yf.Ticker(ticker).history(period=period).dropna()
 
     if detailed:
@@ -61,13 +66,14 @@ def get_stock_history(ticker: str, period='5y', detailed=False) -> dict:
 
 
 def get_stock_news(ticker: str) -> list:
-    '''Gets the related news articles for a stock
-    
-        args:
-            ticker: str - stock ticker
-        returns:
-            list - news articles for the stock
-    '''
+    """ Gets the latest news articles for a given stock
+
+    Args:
+        ticker (str): ticker of the stock
+
+    Returns:
+        list: list of news articles and links
+    """
     news = yf.Ticker(ticker).news
     articles = []
 

@@ -1,7 +1,7 @@
 import yfinance as yf
 
 from ..data_models import db, Stock, DailyHistory, ClosingHistory, Portfolio, Game
-from .portfolio_sim_functions import get_est_time
+from .time import get_est_time
 
 
 # run periodically when markets are open
