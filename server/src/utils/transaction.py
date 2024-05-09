@@ -3,16 +3,16 @@ from .time import get_est_time
 
 
 # updating database
-def add_stock(stock_info: dict) -> int:
+def add_stock(stock_info: dict, ticker: str) -> int:
     """ Adds a stock to the database
 
     Args:
         stock_info (dict): info about the stock
+        ticker (str): ticker of the stock
 
     Returns:
         int: id of the stock
     """
-    ticker = stock_info.get('ticker')
     price = stock_info.get('price')
     
     stock = Stock.query.filter_by(ticker=ticker).first()
@@ -46,11 +46,12 @@ def add_stock(stock_info: dict) -> int:
     return id
 
 
-def record_transaction(portfolio_id: int, stock_id: str, transaction_type: str, shares: int) -> None:
+def record_transaction(portfolio_id: int, user_id: int, stock_id: str, transaction_type: str, shares: int) -> None:
     """ Records a transaction in the database and updates the portfolio
 
     Args:
         portfolio_id (int): id of portfolio
+        user_id (int): id of user
         stock_id (str): id of stock
         transaction_type (str): type of transaction (buy or sell)
         shares (int): number of shares
@@ -60,7 +61,7 @@ def record_transaction(portfolio_id: int, stock_id: str, transaction_type: str, 
         Exception: if stock does not exist
         ValueError: if insufficient funds
     """
-    portfolio = Portfolio.query.filter_by(id=portfolio_id).first()
+    portfolio = Portfolio.query.filter_by(id=portfolio_id, user_id=user_id).first()
     stock = Stock.query.filter_by(id=stock_id).first()
 
     if portfolio is None:
@@ -83,11 +84,12 @@ def record_transaction(portfolio_id: int, stock_id: str, transaction_type: str, 
     if transaction_value > cash:
         raise ValueError('Insufficient funds')
     
-    portfolio.available_cash = round(portfolio.available_cash - transaction_value, 2)
-    db.session.commit()
-    
     add_transaction(portfolio_id, stock_id, transaction_type, shares, price) # add transaction to database
     update_holding(portfolio_id, stock_id, shares, price, transaction_type) # update holding in database
+    
+    # update portfolio cash
+    portfolio.available_cash = round(portfolio.available_cash - transaction_value, 2)
+    db.session.commit()
     
     
 def add_transaction(portfolio_id: int, stock_id: int, transaction_type: str, shares: int, price: float) -> None:
@@ -215,7 +217,7 @@ def get_sell_info(portfolio_id: int, user_id: int) -> dict:
     Returns:
         dict: dictionary of portfolio information
     """
-    portfolio = Portfolio.query.filter_by(id=portfolio_id).first()
+    portfolio = Portfolio.query.filter_by(id=portfolio_id, user_id=user_id).first()
     
     if portfolio is None:
         raise Exception('Portfolio does not exist')

@@ -163,7 +163,7 @@ def stock_info(ticker: str):
         history = get_stock_history(ticker, '1y')
         
         # add stock to database
-        _ = add_stock(ticker, stock_info['price'])
+        stock_id = add_stock(stock_info, ticker)
 
     except Exception as e:
         return jsonify(msg=str(e)), 400
@@ -173,6 +173,7 @@ def stock_info(ticker: str):
             'tickerInfo': stock_info,
             'news': news,
             'history': history,
+            'stockId': stock_id
         },
         msg="success"
     ), 200
@@ -235,7 +236,7 @@ def buy_stock():
     shares = request.json.get('shares', None)
 
     try:
-        record_transaction(portfolio_id, stock_id, 'buy', shares)
+        record_transaction(portfolio_id, current_user.id, stock_id, 'buy', shares)
 
     except Exception as e:
         return jsonify(msg=str(e)), 400
@@ -258,7 +259,7 @@ def sell_stock():
     shares = request.json.get('shares', None)
 
     try:
-        record_transaction(portfolio_id, stock_id, 'sell', shares)
+        record_transaction(portfolio_id, current_user.id, stock_id, 'sell', shares)
 
     except Exception as e:
         return jsonify(msg=str(e)), 400

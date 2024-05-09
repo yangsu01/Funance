@@ -134,6 +134,8 @@ def get_portfolio_history(portfolio_id: int) -> dict:
     Returns:
         dict: dicionary of the closing price history and todays history
     """
+    market_date = get_market_date(get_est_time()) # last date the market was open
+        
     daily_history = DailyHistory.query.filter_by(portfolio_id=portfolio_id, date=market_date).order_by(DailyHistory.update_time.desc()).all()
     closing_history = ClosingHistory.query.filter_by(portfolio_id=portfolio_id).order_by(ClosingHistory.date.desc()).all()
     
@@ -146,8 +148,6 @@ def get_portfolio_history(portfolio_id: int) -> dict:
             close['y'].append(row.portfolio_value)
 
     # todays performance history
-    market_date = get_market_date(get_est_time()) # last date the market was open
-
     day = {'x': [], 'y': []}
 
     if daily_history is not None:
