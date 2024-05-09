@@ -82,7 +82,7 @@ def record_transaction(portfolio_id: int, user_id: int, stock_id: str, transacti
         transaction_value += abs(transaction_value) * fee
         
     if transaction_value > cash:
-        raise ValueError('Insufficient funds')
+        raise ValueError('Insufficient funds. Prices may have changed. Please refresh the page.')
     
     add_transaction(portfolio_id, stock_id, transaction_type, shares, price) # add transaction to database
     update_holding(portfolio_id, stock_id, shares, price, transaction_type) # update holding in database
