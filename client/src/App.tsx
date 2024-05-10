@@ -31,7 +31,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 
 function App() {
   // app version
-  const version = "v1.1.0";
+  const version = "v1.1.1";
 
   return (
     <AuthProvider>
@@ -56,12 +56,17 @@ function App() {
 
             {/* portfolio simulation */}
             <Route path="/game-rules" element={<GameRules />} />
-            <Route element={<PrivateRoutes />}>
-              <Route path="/games">
-                <Route index element={<GameList />} />
+
+            <Route path="/games">
+              <Route index element={<GameList />} />
+              <Route element={<PrivateRoutes />}>
                 <Route path="create-game" element={<CreateGame />} />
-                <Route path=":id" element={<GameLeaderboard />} />
               </Route>
+              <Route path=":id" element={<GameLeaderboard />} />
+            </Route>
+
+            {/* private routes */}
+            <Route element={<PrivateRoutes />}>
               <Route path="/portfolio">
                 <Route index element={<Portfolio />} />
                 <Route path=":id">

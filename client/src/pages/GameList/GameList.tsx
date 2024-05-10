@@ -12,6 +12,7 @@ import useFetch from "../../hooks/useFetch";
 import usePost from "../../hooks/usePost";
 // contexts
 import { useShowAlert } from "../../contexts/AlertContext";
+import { useAuth } from "../../contexts/AuthContext";
 // types
 import { GameInfo } from "../../utils/types";
 
@@ -23,6 +24,7 @@ const GameList = () => {
   const navigate = useNavigate();
   const { fetchData, loading } = useFetch<GameInfo[]>();
   const { postData } = usePost();
+  const { userAuthenticated } = useAuth();
   const showAlert = useShowAlert();
 
   // on page load
@@ -86,12 +88,16 @@ const GameList = () => {
   return (
     <>
       {/* page title */}
-      <Title
-        title="Game List"
-        subtitle="Complete list of all games!"
-        button="Create Game"
-        onClick={handleCreateGame}
-      />
+      {userAuthenticated ? (
+        <Title
+          title="Game List"
+          subtitle="Complete list of all games!"
+          button="Create Game"
+          onClick={handleCreateGame}
+        />
+      ) : (
+        <Title title="Game List" subtitle="Login to join a game!" />
+      )}
 
       {/* popup */}
       <PopupForm
@@ -107,12 +113,16 @@ const GameList = () => {
       <Row xs={1} md={2} className="g-4">
         {gameData.map((game, index) => (
           <Col key={index}>
-            <GameCard
-              gameInfo={game}
-              onJoin={() => {
-                handleJoin(game.passwordRequired, game.name);
-              }}
-            />
+            {userAuthenticated ? (
+              <GameCard
+                gameInfo={game}
+                onJoin={() => {
+                  handleJoin(game.passwordRequired, game.name);
+                }}
+              />
+            ) : (
+              <GameCard gameInfo={game} />
+            )}
           </Col>
         ))}
       </Row>

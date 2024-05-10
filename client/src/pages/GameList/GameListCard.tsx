@@ -6,7 +6,7 @@ import { GameInfo } from "../../utils/types";
 
 type Props = {
   gameInfo: GameInfo;
-  onJoin: () => void;
+  onJoin?: () => void;
 };
 
 const GameListCard = ({ gameInfo, onJoin }: Props) => {
@@ -38,18 +38,23 @@ const GameListCard = ({ gameInfo, onJoin }: Props) => {
           <strong>Details:</strong> {""}
           {gameInfo.details}
         </Card.Text>
-        {gameInfo.joinedGame ? (
-          <Button variant="outline-light" disabled>
-            You already joined this game!
-          </Button>
-        ) : gameInfo.status === "Completed" ? (
-          <Button variant="outline-light" disabled>
-            Game already ended!
-          </Button>
-        ) : (
-          <Button variant="outline-light" onClick={onJoin}>
-            Join Game
-          </Button>
+
+        {onJoin && (
+          <>
+            {gameInfo.joinedGame ? (
+              <Button variant="outline-light" disabled>
+                You already joined this game!
+              </Button>
+            ) : gameInfo.status === "Completed" ? (
+              <Button variant="outline-light" disabled>
+                Game already ended!
+              </Button>
+            ) : (
+              <Button variant="outline-light" onClick={onJoin}>
+                Join Game
+              </Button>
+            )}
+          </>
         )}
       </Card.Body>
     </Card>

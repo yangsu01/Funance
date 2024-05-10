@@ -80,17 +80,17 @@ const TopNavbar = () => {
               >
                 Game Rules
               </NavDropdown.Item>
+              <NavDropdown.Item
+                as={NavLink}
+                to="/games"
+                className="nav-link ps-3"
+                onClick={handleToggle}
+              >
+                Game List
+              </NavDropdown.Item>
               {userAuthenticated && (
                 <>
                   <NavDropdown.Divider />
-                  <NavDropdown.Item
-                    as={NavLink}
-                    to="/games"
-                    className="nav-link ps-3"
-                    onClick={handleToggle}
-                  >
-                    Game List
-                  </NavDropdown.Item>
                   <NavDropdown.Item
                     as={NavLink}
                     to="/games/create-game"

@@ -33,8 +33,7 @@ const Home = () => {
         <Link to="/games" className="text-white">
           Game List
         </Link>{" "}
-        for the full list of games (you will need to be signed in to view this
-        page).
+        for the full list of games.
       </p>
     </div>
   );
