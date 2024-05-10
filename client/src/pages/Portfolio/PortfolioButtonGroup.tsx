@@ -32,6 +32,7 @@ const PortfolioButtonGroup = ({
             as={Link}
             to={`/portfolio/${portfolio.portfolioId}`}
             key={portfolio.portfolioId}
+            active={portfolioId.toString() === portfolio.portfolioId}
           >
             {portfolio.gameName}
           </Dropdown.Item>

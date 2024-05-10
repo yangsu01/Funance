@@ -71,6 +71,10 @@
   color: rgb(255, 255, 255); 
 }
 
+.dropdown-item {
+  --bs-dropdown-link-color: #a5a5a5;
+}
+
 .accordion {
   --bs-accordion-active-bg: #00000000;
   --bs-accordion-active-color: #f8f9fa;
