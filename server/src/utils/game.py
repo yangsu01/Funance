@@ -93,11 +93,11 @@ def add_portfolio(game_id: int, user_id: int, password: str) -> int:
 
 
 # getting data 
-def get_games_list(user_id: int) -> list:
+def get_games_list(user_id=None) -> list:
     """ Gets a list of all games
 
     Args:
-        user_id (int): id of the user
+        user_id (int, optional): id of the user
 
     Returns:
         list: list of dictionaries containing game details
@@ -106,7 +106,10 @@ def get_games_list(user_id: int) -> list:
     game_list = []
 
     for game in games:
-        joined_game = Portfolio.query.filter_by(game_id=game.id, user_id=user_id).first() is not None
+        if user_id is not None:
+            joined_game = Portfolio.query.filter_by(game_id=game.id, user_id=user_id).first() is not None
+        else:
+            joined_game = False
 
         transaction_fee = f'flat fee of ${round(game.transaction_fee)}' if game.fee_type == 'Flat Fee' else f'{round(game.transaction_fee * 100)}% fee'
 
@@ -128,12 +131,12 @@ def get_games_list(user_id: int) -> list:
     return game_list
 
 
-def get_game_leaderboard(game_id: int, user_id: int) -> dict:
+def get_game_leaderboard(game_id: int, user_id=None) -> dict:
     """ Gets the leaderboard details of a game
 
     Args:
         game_id (int): id of the game
-        user_id (int): id of the user
+        user_id (int, optional): id of the user
 
     Returns:
         dict: dictionary of the game leaderboard details
@@ -153,12 +156,12 @@ def get_game_leaderboard(game_id: int, user_id: int) -> dict:
     }
     
     
-def get_game_details(game_id: int, user_id: int) -> dict:
+def get_game_details(game_id: int, user_id=None) -> dict:
     """ Gets the details of a game
 
     Args:
         game_id (int): id of the game
-        user_id (int): id of the user
+        user_id (int, optional): id of the user
         
     Raises:
         Exception: game not found
@@ -168,7 +171,11 @@ def get_game_details(game_id: int, user_id: int) -> dict:
     """
 
     game = Game.query.filter_by(id=game_id).first()
-    portfolio = Portfolio.query.filter_by(game_id=game.id, user_id=user_id).first()
+    
+    if user_id is not None:
+        portfolio = Portfolio.query.filter_by(game_id=game.id, user_id=user_id).first()
+    else:
+        portfolio = None
     
     if game is None:
         raise Exception('Game not found')

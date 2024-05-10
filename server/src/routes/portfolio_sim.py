@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required, current_user
+from flask_jwt_extended import jwt_required, current_user, get_jwt_identity
 from datetime import datetime
 
 from src.utils.game import add_game, add_portfolio, get_games_list, get_game_leaderboard
@@ -87,11 +87,19 @@ def join_game():
 
 
 @portfolio_sim.route('/game-list', methods=['GET'])
-@jwt_required()
+@jwt_required(optional=True)
 def game_list():
     '''Get a summary list of all created games
     '''
-    data = get_games_list(current_user.id)
+    try:
+        if get_jwt_identity():
+            user_id = get_jwt_identity()
+            data = get_games_list(user_id)
+        else:
+            data = get_games_list()
+        
+    except Exception as e:
+        return jsonify(msg=str(e)), 400
 
     return jsonify(
         data=data,
@@ -100,7 +108,7 @@ def game_list():
 
 
 @portfolio_sim.route('/game-leaderboard/<game_id>', methods=['GET'])
-@jwt_required()
+@jwt_required(optional=True)
 def game_leaderboard(game_id: str):
     '''Get the leaderboard summary for a game
 
@@ -110,7 +118,13 @@ def game_leaderboard(game_id: str):
     game_id = int(game_id)
 
     try:
-        data=get_game_leaderboard(game_id, current_user.id)
+        if get_jwt_identity():
+            user_id = get_jwt_identity()
+            data = get_game_leaderboard(game_id, user_id)
+        else:
+            data = get_game_leaderboard(game_id)
+            
+        
 
     except Exception as e:
         return jsonify(msg=str(e)), 400
