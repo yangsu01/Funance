@@ -7,6 +7,7 @@ import Title from "../../components/UI/Title";
 import PopupForm from "../../components/Forms/PopupForm";
 import GameCard from "./GameListCard";
 import Loading from "../../components/UI/Loading";
+import GameListOptions from "./GameListOptions";
 // hooks
 import useFetch from "../../hooks/useFetch";
 import usePost from "../../hooks/usePost";
@@ -14,12 +15,20 @@ import usePost from "../../hooks/usePost";
 import { useShowAlert } from "../../contexts/AlertContext";
 import { useAuth } from "../../contexts/AuthContext";
 // types
-import { GameInfo } from "../../utils/types";
+import {
+  GameInfo,
+  GameSortOptions,
+  GameFilterOptions,
+} from "../../utils/types";
 
 const GameList = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [gameData, setGameData] = useState<GameInfo[]>([] as GameInfo[]);
   const [gameName, setGameName] = useState("");
+  const [filteredGames, setFilteredGames] = useState<GameInfo[]>(
+    [] as GameInfo[]
+  );
+  // const [search, setSearch] = useState("");
 
   const navigate = useNavigate();
   const { fetchData, loading } = useFetch<GameInfo[]>();
@@ -34,6 +43,7 @@ const GameList = () => {
         showAlert(res.msg, "danger");
       } else {
         setGameData(res.data);
+        setFilteredGames(res.data);
       }
     });
   }, []);
@@ -68,6 +78,58 @@ const GameList = () => {
         navigate(`/portfolio/${res.data}`);
       }
     });
+  };
+
+  const handleSearch = (search: string) => {
+    const filtered = gameData.filter((game) => {
+      return game.name.toLowerCase().includes(search.toLowerCase());
+    });
+
+    setFilteredGames(filtered);
+  };
+
+  const handleFilter = (filter: GameFilterOptions) => {
+    const filtered = gameData.filter((game) => {
+      switch (filter) {
+        case "All":
+          return game;
+        case "Not Started":
+          return game.status === "Not Started";
+        case "In Progress":
+          return game.status === "In Progress";
+        case "Completed":
+          return game.status === "Completed";
+        case "Public":
+          return game.passwordRequired === false;
+        case "Private":
+          return game.passwordRequired === true;
+        case "Not Joined":
+          return game.joinedGame === false;
+        default:
+          return game;
+      }
+    });
+
+    setFilteredGames(filtered);
+  };
+
+  const handleSort = (sort: GameSortOptions) => {
+    const sorted = [...filteredGames].sort((a, b) => {
+      switch (sort) {
+        case "Participants":
+          return b.participants - a.participants;
+        case "Start Date":
+          return (
+            new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+          );
+        case "Alphabetical":
+          return a.name.localeCompare(b.name);
+        default:
+          return 0;
+      }
+    });
+
+    setFilteredGames(sorted);
   };
 
   if (loading || !gameData) {
@@ -109,9 +171,15 @@ const GameList = () => {
         onSubmit={joinGame}
       />
 
+      <GameListOptions
+        onSearch={handleSearch}
+        onFilter={handleFilter}
+        onSort={handleSort}
+      />
+
       {/* list of all games */}
       <Row xs={1} md={2} className="g-4">
-        {gameData.map((game, index) => (
+        {filteredGames.map((game, index) => (
           <Col key={index}>
             {userAuthenticated ? (
               <GameCard

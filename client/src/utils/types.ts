@@ -225,3 +225,9 @@ export type BlogPostData = {
     blogCatalog: BlogInfo[];
     blogData: BlogData;
 }
+
+// games sort options
+export type GameSortOptions = "Participants" | "Start Date" | "Alphabetical";
+
+// games filter options
+export type GameFilterOptions = "All" | "Not Started" | "In Progress" | "Completed" | "Public" | "Private" | "Not Joined";
