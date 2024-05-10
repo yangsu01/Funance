@@ -190,4 +190,5 @@ test.ipynb
 
 # blogs
 blogs/
+admin.py
 save_blog.py
