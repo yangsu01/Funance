@@ -69,14 +69,14 @@ def join_game():
     '''Join an existing game
 
         args:
-            gameId (str): id of the game
+            name (str): name of the game
             gamePassword (str): password for the game (optional)
     '''
-    game_id = request.json.get('gameId', None)
+    name = request.json.get('gameName', None)
     password = request.json.get('gamePassword', None)
 
     try:
-        portfolio_id = add_portfolio(game_id, current_user.id, password)
+        portfolio_id = add_portfolio(name, current_user.id, password)
     except Exception as e:
         return jsonify(msg=str(e)), 400
 

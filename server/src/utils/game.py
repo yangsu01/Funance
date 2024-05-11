@@ -44,11 +44,11 @@ def add_game(creator_id: int, name: str, password: str, start_date: datetime, en
     return new_game.id
 
 
-def add_portfolio(game_id: int, user_id: int, password: str) -> int:
+def add_portfolio(name: str, user_id: int, password: str) -> int:
     """ Creates a new portfolio for a user in a game. Raises an exception if the user has already joined the game.
 
     Args:
-        game_id (int): id of the game
+        name (str): id of the game
         user_id (int): id of the user
         password (str): optional password of the game
 
@@ -59,8 +59,8 @@ def add_portfolio(game_id: int, user_id: int, password: str) -> int:
     Returns:
         int: database id of the user's portfolio
     """
-    game = Game.query.filter_by(id=game_id).first()
-    portfolio_exists = Portfolio.query.filter_by(user_id=user_id, game_id=game_id).first()
+    game = Game.query.filter_by(name=name).first()
+    portfolio_exists = Portfolio.query.filter_by(user_id=user_id, game_id=game.id).first()
     
     starting_cash = game.starting_cash
     game_password = game.password
@@ -74,7 +74,7 @@ def add_portfolio(game_id: int, user_id: int, password: str) -> int:
         # create new portfolio
         portfolio = Portfolio(
             user_id=user_id,
-            game_id=game_id,
+            game_id=game.id,
             available_cash=starting_cash,
             current_value=starting_cash,
             last_updated=get_est_time(),
@@ -84,7 +84,6 @@ def add_portfolio(game_id: int, user_id: int, password: str) -> int:
         db.session.add(portfolio)
     
         # update game number of participants
-        game = Game.query.filter_by(id=game_id).first()
         game.participants += 1
 
         db.session.commit()
