@@ -38,7 +38,10 @@ def create_game():
     
     try:
         transaction_fee = transaction_fee/100 if fee_type == 'Percentage' else transaction_fee
-        fee_type = 'Flat Fee' if fee_type == "" else fee_type
+        transaction_fee = 0 if transaction_fee is None else transaction_fee
+        
+        fee_type = 'Flat Fee' if fee_type is None else fee_type
+        fee_type = 'Flat Fee' if fee_type == '' else fee_type
         
         game_id = add_game(
             creator_id,

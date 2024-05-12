@@ -23,6 +23,8 @@ def add_game(creator_id: int, name: str, password: str, start_date: datetime, en
     """
     
     validate_game(name, password, start_date, end_date, starting_cash, transaction_fee, fee_type)
+    
+    status = 'In Progress' if get_est_time().date() == start_date else 'Not Started'
 
     new_game = Game(
         name=name, 
@@ -30,7 +32,7 @@ def add_game(creator_id: int, name: str, password: str, start_date: datetime, en
         participants=0,
         start_date=start_date, 
         end_date=end_date, 
-        status='Not Started',
+        status=status,
         starting_cash=starting_cash, 
         transaction_fee=transaction_fee, 
         fee_type=fee_type, 
@@ -44,11 +46,11 @@ def add_game(creator_id: int, name: str, password: str, start_date: datetime, en
     return new_game.id
 
 
-def add_portfolio(name: str, user_id: int, password: str) -> int:
+def add_portfolio(game_id: IndentationError, user_id: int, password: str) -> int:
     """ Creates a new portfolio for a user in a game. Raises an exception if the user has already joined the game.
 
     Args:
-        name (str): id of the game
+        game_id (int): id of the game
         user_id (int): id of the user
         password (str): optional password of the game
 
@@ -59,8 +61,8 @@ def add_portfolio(name: str, user_id: int, password: str) -> int:
     Returns:
         int: database id of the user's portfolio
     """
-    game = Game.query.filter_by(name=name).first()
-    portfolio_exists = Portfolio.query.filter_by(user_id=user_id, game_id=game.id).first()
+    game = Game.query.filter_by(id=game_id).first()
+    portfolio_exists = Portfolio.query.filter_by(user_id=user_id, game_id=game_id).first()
     
     starting_cash = game.starting_cash
     game_password = game.password
@@ -348,6 +350,8 @@ def validate_game(name: str, password: str, start_date: datetime, end_date: date
         ValueError: fee type not Flat Fee or Percentage
     """
     game = Game.query.filter_by(name=name).first()
+    
+    print(transaction_fee, fee_type)
     
     if game is not None:
         raise ValueError('Game name already taken')
