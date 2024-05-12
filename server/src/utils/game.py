@@ -351,8 +351,6 @@ def validate_game(name: str, password: str, start_date: datetime, end_date: date
     """
     game = Game.query.filter_by(name=name).first()
     
-    print(transaction_fee, fee_type)
-    
     if game is not None:
         raise ValueError('Game name already taken')
     if len(name) > 100:

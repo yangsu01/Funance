@@ -57,7 +57,6 @@ def create_game():
         portfolio_id = add_portfolio(game_id, creator_id, password)
 
     except Exception as e:
-        print (str(e))
         return jsonify(msg=str(e)), 400
 
     return jsonify(
