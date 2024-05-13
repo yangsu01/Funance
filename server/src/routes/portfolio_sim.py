@@ -43,7 +43,7 @@ def create_game():
         fee_type = 'Flat Fee' if fee_type is None else fee_type
         fee_type = 'Flat Fee' if fee_type == '' else fee_type
         
-        game_id = add_game(
+        _ = add_game(
             creator_id,
             name,
             password,
@@ -54,7 +54,7 @@ def create_game():
             fee_type
         )
 
-        portfolio_id = add_portfolio(game_id, creator_id, password)
+        portfolio_id = add_portfolio(name, creator_id, password)
 
     except Exception as e:
         return jsonify(msg=str(e)), 400

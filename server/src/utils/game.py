@@ -46,23 +46,28 @@ def add_game(creator_id: int, name: str, password: str, start_date: datetime, en
     return new_game.id
 
 
-def add_portfolio(game_id: IndentationError, user_id: int, password: str) -> int:
+def add_portfolio(name: str, user_id: int, password: str) -> int:
     """ Creates a new portfolio for a user in a game. Raises an exception if the user has already joined the game.
 
     Args:
-        game_id (int): id of the game
+        name (str): name of the game
         user_id (int): id of the user
         password (str): optional password of the game
 
     Raises:
+        Exception: game not found
         Exception: incorrect password
         Exception: user already joined game
 
     Returns:
         int: database id of the user's portfolio
     """
-    game = Game.query.filter_by(id=game_id).first()
-    portfolio_exists = Portfolio.query.filter_by(user_id=user_id, game_id=game_id).first()
+    game = Game.query.filter_by(name=name).first()
+    
+    if game is None:
+        raise Exception('Game not found')
+    
+    portfolio_exists = Portfolio.query.filter_by(user_id=user_id, game_id=game.id).first()
     
     starting_cash = game.starting_cash
     game_password = game.password
