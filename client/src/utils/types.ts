@@ -231,3 +231,10 @@ export type GameSortOptions = "Participants" | "Start Date" | "Alphabetical";
 
 // games filter options
 export type GameFilterOptions = "All" | "Not Started" | "In Progress" | "Completed" | "Public" | "Private" | "Not Joined";
+
+// time series plot data for line chart labels
+export type LineChartLabel  = {
+    title: string;
+    xLabel: string;
+    yLabel: string;
+}

@@ -13,7 +13,7 @@ import {
 import "chartjs-adapter-moment";
 
 // types
-import { TimeSeriesPlotData } from "../../utils/types";
+import { LineChartLabel, TimeSeriesPlotData } from "../../utils/types";
 //constants
 import { PLOT_COLORS } from "../../utils/constants";
 
@@ -27,14 +27,20 @@ ChartJS.register(
   Legend
 );
 
-type Props = { timeSeriesData: TimeSeriesPlotData[]; title: string };
+type Props = {
+  plotData: TimeSeriesPlotData[];
+  label: LineChartLabel;
+};
 
-const MultiTimeSeriesPlot = ({ timeSeriesData, title }: Props) => {
+const MultiTimeSeriesPlot = ({
+  plotData,
+  label: { title, xLabel, yLabel },
+}: Props) => {
   const isSmallScreen = useMediaQuery({ maxWidth: 767 });
   const chartHeight = isSmallScreen ? 400 : "auto";
 
   const data = {
-    datasets: timeSeriesData.map((d) => ({
+    datasets: plotData.map((d) => ({
       label: d.name,
       data: d.x.map((value, index) => ({ x: value, y: d.y[index] })),
       fill: false,
@@ -64,7 +70,7 @@ const MultiTimeSeriesPlot = ({ timeSeriesData, title }: Props) => {
       x: {
         title: {
           display: true,
-          text: "Time",
+          text: xLabel,
           color: "white" as const,
         },
         type: "timeseries" as const,
@@ -73,7 +79,7 @@ const MultiTimeSeriesPlot = ({ timeSeriesData, title }: Props) => {
       y: {
         title: {
           display: true,
-          text: "Value ($)",
+          text: yLabel,
           color: "white" as const,
         },
         type: "linear" as const,

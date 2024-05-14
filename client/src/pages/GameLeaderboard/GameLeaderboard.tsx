@@ -132,7 +132,11 @@ const GameLeaderboard = () => {
           <GameLeaderboardRankings
             title="Top Performing Portfolios"
             subtitle="*Updated daily when markets close"
-            plotTitle="Portfolio Values Over Time"
+            chartLabel={{
+              title: "Portfolio Value Over Time",
+              xLabel: "Date",
+              yLabel: "Portfolio Value ($)",
+            }}
             plotData={leaderboardData.closingHistory}
             tableHeaders={TOP_PORTFOLIO_TABLE_HEADERS}
             tableData={leaderboardData.topPortfolios}
@@ -141,9 +145,13 @@ const GameLeaderboard = () => {
           {/* daily top performers */}
           {leaderboardData.gameDetails.status === "In Progress" && (
             <GameLeaderboardRankings
-              title={`Top Today (${leaderboardData.dailyHistoryDate})`}
+              title={`Top Growers (${leaderboardData.dailyHistoryDate})`}
               subtitle="*Updated every 30 minutes during market hours"
-              plotTitle="Portfolio Values Over Time"
+              chartLabel={{
+                title: "Todays Portfolio Growth",
+                xLabel: "Time",
+                yLabel: "Growth (%)",
+              }}
               plotData={leaderboardData.dailyHistory}
               tableHeaders={DAILY_PORTFOLIOS_TABLE_HEADERS}
               tableData={leaderboardData.dailyPortfolios}

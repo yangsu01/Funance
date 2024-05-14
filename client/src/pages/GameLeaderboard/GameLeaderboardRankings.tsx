@@ -8,12 +8,13 @@ import {
   TimeSeriesPlotData,
   TopPortfolio,
   DailyPortfolio,
+  LineChartLabel,
 } from "../../utils/types";
 
 type Props = {
   title: string;
   subtitle: string;
-  plotTitle: string;
+  chartLabel: LineChartLabel;
   plotData: TimeSeriesPlotData[];
   tableHeaders: string[];
   tableData: TopPortfolio[] | DailyPortfolio[];
@@ -22,7 +23,7 @@ type Props = {
 const GameLeaderboardRankings = ({
   title,
   subtitle,
-  plotTitle,
+  chartLabel,
   plotData,
   tableHeaders,
   tableData,
@@ -36,7 +37,7 @@ const GameLeaderboardRankings = ({
         <Card.Subtitle>
           <small className="text-muted">{subtitle}</small>
         </Card.Subtitle>
-        <MultiTimeSeriesPlot timeSeriesData={plotData} title={plotTitle} />
+        <MultiTimeSeriesPlot plotData={plotData} label={chartLabel} />
         <PaginationTable
           headers={tableHeaders}
           content={tableData}

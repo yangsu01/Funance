@@ -320,9 +320,10 @@ def get_game_history(game_id: int) -> dict:
 
     if daily_history is not None:
         for row in daily_history:
+            daily_growth = (row.portfolio_value/row.portfolio.last_close_value - 1) * 100
             data = day.setdefault(row.portfolio_id, {'x': [], 'y': [], 'name': row.portfolio.portfolio_owner.username})
             data['x'].append(utc_to_est(row.update_time).strftime('%Y-%m-%d %H:%M'))
-            data['y'].append(row.portfolio_value)
+            data['y'].append(daily_growth)
             day[row.portfolio_id] = data
 
     return {
