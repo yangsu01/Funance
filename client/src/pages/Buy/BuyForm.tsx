@@ -43,16 +43,14 @@ const BuyForm = ({ info, currentPrice, ticker, onSubmit }: Props) => {
 
     setShares(numShares);
     if (info.feeType === "Flat Fee") {
-      setTotalCost(
-        roundNumber(numShares * currentPrice + info.transactionFee, 2)
-      );
+      setTotalCost(roundNumber(numShares * currentPrice + info.transactionFee));
       setTransactionFee(info.transactionFee);
     } else {
       setTotalCost(
-        roundNumber(numShares * currentPrice * (1 + info.transactionFee), 2)
+        roundNumber(numShares * currentPrice * (1 + info.transactionFee))
       );
       setTransactionFee(
-        roundNumber(numShares * currentPrice * info.transactionFee, 2)
+        roundNumber(numShares * currentPrice * info.transactionFee)
       );
     }
   };

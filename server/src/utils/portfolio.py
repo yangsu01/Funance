@@ -1,5 +1,6 @@
 from src.data_models import Portfolio, Holding, Transaction, DailyHistory, ClosingHistory
 from .time import get_est_time, get_market_date, utc_to_est
+from .math_functions import round_number
 
 
 # getting data
@@ -72,13 +73,13 @@ def get_portfolio_details(portfolio_id: int, user_id: int) -> dict:
         raise Exception('Portfolio does not exist!')
     
     parent_game = portfolio.parent_game
-    transaction_fee = f'${round(parent_game.transaction_fee, 0)}' if parent_game.fee_type == 'Flat Fee' else f'{round(parent_game.transaction_fee * 100, 0)}%'
+    transaction_fee = f'${round_number(parent_game.transaction_fee)}' if parent_game.fee_type == 'Flat Fee' else f'{round_number(parent_game.transaction_fee * 100)}%'
     starting_cash = parent_game.starting_cash
     start_date = parent_game.start_date.strftime("%B %d, %Y")
     end_date = parent_game.end_date.strftime('%Y-%m-%d') if parent_game.end_date is not None else 'n/a',
     current_value = portfolio.current_value
-    change = round((current_value/starting_cash - 1) * 100, 2)
-    profit = round(current_value - starting_cash, 2)
+    change = round_number((current_value/starting_cash - 1) * 100)
+    profit = round_number(current_value - starting_cash)
     last_updated = utc_to_est(portfolio.last_updated).strftime('%a, %b %d. %Y %I:%M%p') + ' EST'
    
 
@@ -222,8 +223,8 @@ def get_portfolio_transactions(portfolio_id: int) -> list:
 
     if transactions is not None:
         for transaction in transactions:
-            total_value = round(transaction.total_value, 2)
-            profit_loss = round(transaction.profit_loss, 2) if transaction.profit_loss is not None else 'n/a'
+            total_value = round_number(transaction.total_value)
+            profit_loss = round_number(transaction.profit_loss) if transaction.profit_loss is not None else 'n/a'
             date = utc_to_est(transaction.transaction_date).strftime('%H:%M %m-%d-%Y')
             
             transaction_list.append({
@@ -254,12 +255,12 @@ def get_portfolio_holdings(portfolio_id: int) -> list:
 
     if holdings is not None:
         for holding in holdings:
-            day_change = round(holding.stock.current_price - holding.stock.opening_price, 2)
-            day_change_percent = round(day_change/holding.stock.opening_price * 100, 2)
-            change = round(holding.stock.current_price - holding.average_price, 2)
-            change_percent = round(change/holding.average_price * 100, 2)
-            total_change = round(change * holding.shares_owned, 2)
-            market_value = round(holding.shares_owned * holding.stock.current_price, 2)
+            day_change = round_number(holding.stock.current_price - holding.stock.opening_price)
+            day_change_percent = round_number(day_change/holding.stock.opening_price * 100, 2)
+            change = round_number(holding.stock.current_price - holding.average_price)
+            change_percent = round_number(change/holding.average_price * 100, 2)
+            total_change = round_number(change * holding.shares_owned)
+            market_value = round_number(holding.shares_owned * holding.stock.current_price)
 
             holding_list.append({
                 'Ticker': holding.stock.ticker,

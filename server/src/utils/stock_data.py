@@ -1,5 +1,7 @@
 import yfinance as yf
 
+from .math_functions import round_number
+
 
 def get_stock_info(ticker: str) -> dict:
     """ Gets the stock information for a given ticker
@@ -19,7 +21,7 @@ def get_stock_info(ticker: str) -> dict:
         raise Exception('cannot find ticker')
     else:
         return {
-        'price': round(float(stock_info.get('currentPrice')), 2),
+        'price': round_number(float(stock_info.get('currentPrice'))),
         'sector': stock_info.get('sector', 'n/a'),
         'industry': stock_info.get('industry', 'n/a'),
         'companySummary': stock_info.get('longBusinessSummary', 'n/a'),
@@ -27,11 +29,11 @@ def get_stock_info(ticker: str) -> dict:
         'companyName': stock_info.get('longName', 'n/a'),
         'open': stock_info.get('open'),
         'prevClose': stock_info.get('previousClose'),
-        'dayChange': round(float(stock_info.get('currentPrice', 0))-float(stock_info.get('open', 1)), 2),
-        '%DayChange': round((float(stock_info.get('currentPrice', 0))/float(stock_info.get('open', 1)) - 1)*100, 2),
-        '52WeekReturns': round(float(stock_info.get('52WeekChange', 0))*100, 2),
-        '52WeekHigh': round(float(stock_info.get('fiftyTwoWeekHigh', 0)), 2),
-        '52WeekLow': round(float(stock_info.get('fiftyTwoWeekLow', 0)), 2)
+        'dayChange': round_number(float(stock_info.get('currentPrice', 0))-float(stock_info.get('open', 1))),
+        '%DayChange': round_number((float(stock_info.get('currentPrice', 0))/float(stock_info.get('open', 1)) - 1)*100),
+        '52WeekReturns': round_number(float(stock_info.get('52WeekChange', 0))*100),
+        '52WeekHigh': round_number(float(stock_info.get('fiftyTwoWeekHigh', 0))),
+        '52WeekLow': round_number(float(stock_info.get('fiftyTwoWeekLow', 0)))
     }
         
 

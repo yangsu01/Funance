@@ -36,8 +36,7 @@ const SellForm = ({ info, currentPrice, ticker, onSubmit }: Props) => {
     if (info.feeType === "Flat Fee") {
       setTotalProfit(
         roundNumber(
-          numShares * (currentPrice - averagePrice) - info.transactionFee,
-          2
+          numShares * (currentPrice - averagePrice) - info.transactionFee
         )
       );
       setTransactionFee(info.transactionFee);
@@ -45,12 +44,11 @@ const SellForm = ({ info, currentPrice, ticker, onSubmit }: Props) => {
       setTotalProfit(
         roundNumber(
           numShares *
-            (currentPrice - averagePrice - currentPrice * info.transactionFee),
-          2
+            (currentPrice - averagePrice - currentPrice * info.transactionFee)
         )
       );
       setTransactionFee(
-        roundNumber(numShares * currentPrice * info.transactionFee, 2)
+        roundNumber(numShares * currentPrice * info.transactionFee)
       );
     }
   };

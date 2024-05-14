@@ -2,6 +2,7 @@ from datetime import datetime
 
 from src.data_models import db, Portfolio, DailyHistory, ClosingHistory, Game
 from .time import get_est_time, get_market_date, utc_to_est
+from .math_functions import round_number
 
 
 # updating database
@@ -117,9 +118,9 @@ def get_games_list(user_id=None) -> list:
         else:
             joined_game = False
 
-        transaction_fee = f'flat fee of ${round(game.transaction_fee)}' if game.fee_type == 'Flat Fee' else f'{round(game.transaction_fee * 100)}% fee'
+        transaction_fee = f'flat fee of ${round_number(game.transaction_fee)}' if game.fee_type == 'Flat Fee' else f'{round_number(game.transaction_fee * 100)}% fee'
 
-        game_details = f'${round(game.starting_cash)} starting cash, with {transaction_fee} per transaction. {"No password required." if game.password is None else "Password required."}'
+        game_details = f'${round_number(game.starting_cash)} starting cash, with {transaction_fee} per transaction. {"No password required." if game.password is None else "Password required."}'
 
         game_list.append({
             'gameId': game.id,
@@ -188,10 +189,10 @@ def get_game_details(game_id: int, user_id=None) -> dict:
     
     start_date = game.start_date.strftime("%B %d, %Y")
     end_date = game.end_date.strftime("%B %d, %Y") if game.end_date is not None else 'n/a'
-    starting_cash = f'${round(game.starting_cash)}'
+    starting_cash = f'${round_number(game.starting_cash)}'
     joined_game = portfolio is not None
     portfolio_id = portfolio.id if portfolio is not None else None
-    transaction_fee = f'${round(game.transaction_fee, 0)}' if game.fee_type == 'Flat Fee' else f'{round(game.transaction_fee * 100, 0)}%'
+    transaction_fee = f'${round_number(game.transaction_fee, 0)}' if game.fee_type == 'Flat Fee' else f'{round_number(game.transaction_fee * 100, 0)}%'
     password_required = game.password is not None
     last_updated = utc_to_est(game.last_updated).strftime('%a, %b %d. %Y %I:%M %p') + ' EST' if game.last_updated is not None else 'n/a'
     game_duration = f'{(game.end_date - game.start_date).days} days' if game.end_date is not None else 'Infinite'
@@ -235,10 +236,10 @@ def get_top_performers(game_id: int) -> list:
         count += 1
         
         current_value = portfolio.current_value
-        portfolio_change =  round((current_value/starting_cash - 1) * 100, 2)
+        portfolio_change =  round_number((current_value/starting_cash - 1) * 100, 2)
         portfolio_age = (get_est_time() - utc_to_est(portfolio.creation_date)).days
         rank = count if current_value != prev else '-'
-        daily_change = f'{round(portfolio_change/portfolio_age, 2)}%' if portfolio_age != 0 else 'n/a'
+        daily_change = f'{round_number(portfolio_change/portfolio_age)}%' if portfolio_age != 0 else 'n/a'
         
         top_performers.append({
             'Rank': rank,
@@ -274,8 +275,8 @@ def get_top_daily_performers(game_id: int) -> list:
     for portfolio in ranked_portfolios:
         count += 1
         
-        day_change =  round(portfolio.current_value - portfolio.last_close_value, 2)
-        day_change_percent = round(day_change/portfolio.last_close_value*100, 2)
+        day_change =  round_number(portfolio.current_value - portfolio.last_close_value)
+        day_change_percent = round_number(day_change/portfolio.last_close_value*100, 2)
         rank = count if day_change_percent != prev else '-'
 
         top_performers.append({

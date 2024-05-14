@@ -1,6 +1,6 @@
 from src.data_models import db, Portfolio, Holding, Transaction, Stock
 from .time import get_est_time
-
+from .math_functions import round_number
 
 # updating database
 def add_stock(stock_info: dict, ticker: str) -> int:
@@ -88,7 +88,7 @@ def record_transaction(portfolio_id: int, user_id: int, stock_id: str, transacti
     update_holding(portfolio_id, stock_id, shares, price, transaction_type) # update holding in database
     
     # update portfolio cash
-    portfolio.available_cash = round(portfolio.available_cash - transaction_value, 2)
+    portfolio.available_cash = round_number(portfolio.available_cash - transaction_value, 2)
     db.session.commit()
     
     
@@ -162,7 +162,7 @@ def update_holding(portfolio_id: int, stock_id: int, shares: int, price: float, 
         
     # if buy transaction, update average price and shares owned
     elif transaction_type == 'buy':
-        holding.average_price = round((holding.average_price*holding.shares_owned + price*shares) / (holding.shares_owned + shares), 2)
+        holding.average_price = round_number((holding.average_price*holding.shares_owned + price*shares) / (holding.shares_owned + shares), 2)
         holding.shares_owned += shares
 
     # if sell transaction, update shares owned or delete holding if all shares sold
