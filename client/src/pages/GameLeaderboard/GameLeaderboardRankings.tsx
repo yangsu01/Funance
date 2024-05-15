@@ -1,4 +1,5 @@
-import { Card } from "react-bootstrap";
+import { useState } from "react";
+import { Card, Dropdown, Row, Col } from "react-bootstrap";
 
 // components
 import MultiTimeSeriesPlot from "../../components/Plots/MultiTimeSeriesPlot";
@@ -9,6 +10,7 @@ import {
   TopPortfolio,
   DailyPortfolio,
   LineChartLabel,
+  LeaderboardFilterOptions,
 } from "../../utils/types";
 
 type Props = {
@@ -18,6 +20,7 @@ type Props = {
   plotData: TimeSeriesPlotData[];
   tableHeaders: string[];
   tableData: TopPortfolio[] | DailyPortfolio[];
+  onFilter: (filter: LeaderboardFilterOptions) => void;
 };
 
 const GameLeaderboardRankings = ({
@@ -27,16 +30,58 @@ const GameLeaderboardRankings = ({
   plotData,
   tableHeaders,
   tableData,
+  onFilter,
 }: Props) => {
+  const [selectedFilter, setSelectedFilter] = useState("Top 5");
+
+  const handleFilter = (filter: LeaderboardFilterOptions) => {
+    setSelectedFilter(filter);
+    onFilter(filter);
+  };
+
   return (
     <Card className="mb-3">
       <Card.Body>
-        <Card.Title>
-          <h2>{title}</h2>
-        </Card.Title>
-        <Card.Subtitle>
-          <small className="text-muted">{subtitle}</small>
-        </Card.Subtitle>
+        <Row>
+          <Col md={8} className="mb-3">
+            <Card.Title>
+              <h2>{title}</h2>
+            </Card.Title>
+            <Card.Subtitle>
+              <small className="text-muted">{subtitle}</small>
+            </Card.Subtitle>
+          </Col>
+          <Col md={4} className="d-flex justify-content-end mb-3">
+            <Dropdown
+              onSelect={(eventKey) =>
+                handleFilter(eventKey as LeaderboardFilterOptions)
+              }
+            >
+              <Dropdown.Toggle variant="outline-light" id="dropdown-basic">
+                Filter: {selectedFilter} Portfolios
+              </Dropdown.Toggle>
+
+              <Dropdown.Menu>
+                <Dropdown.Item
+                  eventKey="Top 5"
+                  active={selectedFilter === "Top 5"}
+                >
+                  Top 5
+                </Dropdown.Item>
+                <Dropdown.Item
+                  eventKey="Bottom 5"
+                  active={selectedFilter === "Buttom 5"}
+                >
+                  Bottom 5
+                </Dropdown.Item>
+                <Dropdown.Item eventKey="All" active={selectedFilter === "All"}>
+                  All
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+          </Col>
+        </Row>
+
         <MultiTimeSeriesPlot plotData={plotData} label={chartLabel} />
         <PaginationTable
           headers={tableHeaders}

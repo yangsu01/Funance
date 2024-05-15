@@ -238,3 +238,6 @@ export type LineChartLabel  = {
     xLabel: string;
     yLabel: string;
 }
+
+// leaderboard plots filter options
+export type LeaderboardFilterOptions = "All" | "Top 5" | "Bottom 5";

@@ -15,7 +15,11 @@ import GameLeaderboardButtons from "./GameLeaderboardButtons";
 // contexts
 import { useShowAlert } from "../../contexts/AlertContext";
 // types
-import { GameLeaderboardData } from "../../utils/types";
+import {
+  GameLeaderboardData,
+  TimeSeriesPlotData,
+  LeaderboardFilterOptions,
+} from "../../utils/types";
 // constants
 import {
   TOP_PORTFOLIO_TABLE_HEADERS,
@@ -26,6 +30,14 @@ const GameLeaderboard = () => {
   const [leaderboardData, setLeaderboardData] = useState<GameLeaderboardData>(
     {} as GameLeaderboardData
   );
+  const [filteredClose, setFilteredClose] = useState<TimeSeriesPlotData[]>(
+    [] as TimeSeriesPlotData[]
+  );
+  const [filteredDaily, setFilteredDaily] = useState<TimeSeriesPlotData[]>(
+    [] as TimeSeriesPlotData[]
+  );
+  const [topCloseUsers, setTopCloseUsers] = useState<string[]>([]);
+  const [topDailyUsers, setTopDailyUsers] = useState<string[]>([]);
   const [showPopup, setShowPopup] = useState(false);
 
   const { id } = useParams();
@@ -41,6 +53,27 @@ const GameLeaderboard = () => {
         showAlert(res.msg, "danger");
       } else {
         setLeaderboardData(res.data);
+
+        const topClose = res.data.topPortfolios.map((data) => {
+          return data.Username;
+        });
+        const topDaily = res.data.dailyPortfolios.map((data) => {
+          return data.Username;
+        });
+
+        setTopCloseUsers(topClose);
+        setTopDailyUsers(topDaily);
+
+        // initiate filtered data
+        const filteredClose = res.data.closingHistory.filter((data) => {
+          return topClose.slice(0, 5).includes(data.name);
+        });
+        setFilteredClose(filteredClose);
+
+        const filteredDaily = res.data.dailyHistory.filter((data) => {
+          return topDaily.slice(0, 5).includes(data.name);
+        });
+        setFilteredDaily(filteredDaily);
       }
     });
   }, []);
@@ -73,6 +106,50 @@ const GameLeaderboard = () => {
         navigate(`/portfolio/${res.data}`);
       }
     });
+  };
+
+  const handleCloseFilter = (filter: LeaderboardFilterOptions) => {
+    switch (filter) {
+      case "Top 5":
+        const topFilter = leaderboardData.closingHistory.filter((data) => {
+          return topCloseUsers.slice(0, 5).includes(data.name);
+        });
+        setFilteredClose(topFilter);
+        break;
+
+      case "Bottom 5":
+        const bottomFilter = leaderboardData.closingHistory.filter((data) => {
+          return topCloseUsers.slice(-5).includes(data.name);
+        });
+        setFilteredClose(bottomFilter);
+        break;
+
+      default:
+        setFilteredClose(leaderboardData.closingHistory);
+        break;
+    }
+  };
+
+  const handleDailyFilter = (filter: LeaderboardFilterOptions) => {
+    switch (filter) {
+      case "Top 5":
+        const topFilter = leaderboardData.dailyHistory.filter((data) => {
+          return topDailyUsers.slice(0, 5).includes(data.name);
+        });
+        setFilteredDaily(topFilter);
+        break;
+
+      case "Bottom 5":
+        const bottomFilter = leaderboardData.dailyHistory.filter((data) => {
+          return topDailyUsers.slice(-5).includes(data.name);
+        });
+        setFilteredDaily(bottomFilter);
+        break;
+
+      default:
+        setFilteredDaily(leaderboardData.dailyHistory);
+        break;
+    }
   };
 
   if (loading || !leaderboardData.gameDetails) {
@@ -137,9 +214,10 @@ const GameLeaderboard = () => {
               xLabel: "Date",
               yLabel: "Portfolio Value ($)",
             }}
-            plotData={leaderboardData.closingHistory}
+            plotData={filteredClose}
             tableHeaders={TOP_PORTFOLIO_TABLE_HEADERS}
             tableData={leaderboardData.topPortfolios}
+            onFilter={handleCloseFilter}
           />
 
           {/* daily top performers */}
@@ -152,9 +230,10 @@ const GameLeaderboard = () => {
                 xLabel: "Time",
                 yLabel: "Growth (%)",
               }}
-              plotData={leaderboardData.dailyHistory}
+              plotData={filteredDaily}
               tableHeaders={DAILY_PORTFOLIOS_TABLE_HEADERS}
               tableData={leaderboardData.dailyPortfolios}
+              onFilter={handleDailyFilter}
             />
           )}
         </>
