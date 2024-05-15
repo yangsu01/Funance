@@ -12,13 +12,21 @@ import {
 import "chartjs-adapter-moment";
 
 // types
-import { LinePlotData } from "../../utils/types";
+import { LinePlotData, LineChartLabel } from "../../utils/types";
 
 ChartJS.register(TimeSeriesScale, LinearScale, LineElement, Title, Tooltip);
 
-type Props = { plotData: LinePlotData; title: string };
+type Props = {
+  plotData: LinePlotData;
+  label: LineChartLabel;
+  radius?: number;
+};
 
-const TimeSeriesPlot = ({ plotData, title }: Props) => {
+const TimeSeriesPlot = ({
+  plotData,
+  label: { title, xLabel, yLabel },
+  radius = 0,
+}: Props) => {
   const isSmallScreen = useMediaQuery({ maxWidth: 767 });
   const chartHeight = isSmallScreen ? 200 : "auto";
 
@@ -31,7 +39,7 @@ const TimeSeriesPlot = ({ plotData, title }: Props) => {
         })),
         fill: false,
         borderColor: "rgb(14, 209, 69)" as const,
-        radius: 0,
+        radius: radius,
       },
     ],
   };
@@ -53,7 +61,7 @@ const TimeSeriesPlot = ({ plotData, title }: Props) => {
       x: {
         title: {
           display: true,
-          text: "Time",
+          text: xLabel,
           color: "white" as const,
         },
         type: "timeseries" as const,
@@ -62,7 +70,7 @@ const TimeSeriesPlot = ({ plotData, title }: Props) => {
       y: {
         title: {
           display: true,
-          text: "Value ($)",
+          text: yLabel,
           color: "white" as const,
         },
         type: "linear" as const,
