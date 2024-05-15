@@ -71,58 +71,58 @@ const About = () => {
             </p>
             <p className="fs-5">
               Outside of work, my hobbies include (in case anyone asked...)
-              <ul className="fs-5">
-                <li>
-                  <strong>Photography:</strong> I like taking pics. Currently, I
-                  mainly use my trusty Ricoh GRIII for everyday photos but I
-                  also have a Canon M50 (its supposed to be for video but I use
-                  it for photos...) with a few lenses that I use on trips or
-                  other special occasions. Check out some of my photos at{" "}
-                  <a
-                    href="https://www.instagram.com/soappppics/"
-                    target="_blank"
-                    className="link"
-                  >
-                    <i>@soappppics</i>
-                  </a>
-                </li>
-                <li>
-                  <strong>Board Games:</strong> Started a few years ago when I
-                  decided to get Catan (the classic entry board game). And the
-                  next thing I know, I have a collection of over 30 games (REAL
-                  games, not frauds like Monopoly). Currently, my favorite game
-                  is{" "}
-                  <a
-                    href="https://boardgamegeek.com/boardgame/118/modern-art"
-                    target="_blank"
-                    className="link"
-                  >
-                    <i>Modern Art</i>
-                  </a>{" "}
-                  (My favorite game is often the most recent game I get...)
-                </li>
-                <li>
-                  <strong>Travel:</strong> Ever since I went to Denmark for an
-                  exchange semester, I've been hooked on traveling. During my
-                  time in Europe, I visited 11 countries (mostly solo, top 3
-                  cities?... [Lisbon, Athens, Budapest] ). In the last year, I
-                  also went to New York, Montreal, and Portland. Travel pics can
-                  be found at{" "}
-                  <a
-                    href="https://www.instagram.com/soappppics/"
-                    target="_blank"
-                    className="link"
-                  >
-                    <i>@soappppics</i>
-                  </a>{" "}
-                  :)
-                </li>
-                <li>
-                  <strong>Working Out:</strong> Yea I gym 💪, how could you
-                  tell?
-                </li>
-              </ul>
-              If you want to contact me for some reason, pls reach out at{" "}
+            </p>
+            <ul className="fs-5">
+              <li>
+                <strong>Photography:</strong> I like taking pics. Currently, I
+                mainly use my trusty Ricoh GRIII for everyday photos but I also
+                have a Canon M50 (its supposed to be for video but I use it for
+                photos...) with a few lenses that I use on trips or other
+                special occasions. Check out some of my photos at{" "}
+                <a
+                  href="https://www.instagram.com/soappppics/"
+                  target="_blank"
+                  className="link"
+                >
+                  <i>@soappppics</i>
+                </a>
+              </li>
+              <li>
+                <strong>Board Games:</strong> Started a few years ago when I
+                decided to get Catan (the classic entry board game). And the
+                next thing I know, I have a collection of over 30 games (REAL
+                games, not frauds like Monopoly). Currently, my favorite game is{" "}
+                <a
+                  href="https://boardgamegeek.com/boardgame/118/modern-art"
+                  target="_blank"
+                  className="link"
+                >
+                  <i>Modern Art</i>
+                </a>{" "}
+                (My favorite game is often the most recent game I get...)
+              </li>
+              <li>
+                <strong>Travel:</strong> Ever since I went to Denmark for an
+                exchange semester, I've been hooked on traveling. During my time
+                in Europe, I visited 11 countries (mostly solo, top 3 cities?...
+                [Lisbon, Athens, Budapest] ). In the last year, I also went to
+                New York, Montreal, and Portland. Travel pics can be found at{" "}
+                <a
+                  href="https://www.instagram.com/soappppics/"
+                  target="_blank"
+                  className="link"
+                >
+                  <i>@soappppics</i>
+                </a>{" "}
+                :)
+              </li>
+              <li>
+                <strong>Working Out:</strong> Yea I gym 💪, how could you tell?
+              </li>
+            </ul>
+
+            <p className="fs-5">
+              If you want to contact me for any reason, pls reach out at{" "}
               <a href="mailto:ssgc1101@gmail.com" className="link">
                 <i>ssgc1101@gmail.com</i>
               </a>
