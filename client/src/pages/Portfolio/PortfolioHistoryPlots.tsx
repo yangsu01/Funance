@@ -31,6 +31,7 @@ const PortfolioHistoryPlots = ({
               title: "Historical Portfolio Value",
               xLabel: "Date",
               yLabel: "Value ($)",
+              xUnit: "day",
             }}
           />
           <small className="text-muted">
@@ -46,6 +47,7 @@ const PortfolioHistoryPlots = ({
                 title: `%Growth for ${date}`,
                 xLabel: "Time",
                 yLabel: "Change (%)",
+                xUnit: "minute",
               }}
               radius={4}
             />

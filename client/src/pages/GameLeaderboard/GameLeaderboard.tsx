@@ -213,6 +213,7 @@ const GameLeaderboard = () => {
               title: "Portfolio Value Over Time",
               xLabel: "Date",
               yLabel: "Portfolio Value ($)",
+              xUnit: "day",
             }}
             plotData={filteredClose}
             tableHeaders={TOP_PORTFOLIO_TABLE_HEADERS}
@@ -229,6 +230,7 @@ const GameLeaderboard = () => {
                 title: "Todays Portfolio Growth",
                 xLabel: "Time",
                 yLabel: "Growth (%)",
+                xUnit: "minute",
               }}
               plotData={filteredDaily}
               tableHeaders={DAILY_PORTFOLIOS_TABLE_HEADERS}

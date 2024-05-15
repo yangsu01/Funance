@@ -32,6 +32,7 @@ const StockInfo = ({ data, ticker }: Props) => {
             title: `${ticker} Performance (1yr)`,
             xLabel: "Date",
             yLabel: "Price ($)",
+            xUnit: "day",
           }}
         />
         <InfoList

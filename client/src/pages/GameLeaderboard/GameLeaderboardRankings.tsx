@@ -42,7 +42,7 @@ const GameLeaderboardRankings = ({
   return (
     <Card className="mb-3">
       <Card.Body>
-        <Row>
+        <Row className="d-flex align-items-center">
           <Col md={8} className="mb-3">
             <Card.Title>
               <h2>{title}</h2>

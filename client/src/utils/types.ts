@@ -237,6 +237,7 @@ export type LineChartLabel  = {
     title: string;
     xLabel: string;
     yLabel: string;
+    xUnit?: "minute" | "hour" | "day" | "week" | "month" | "year";
 }
 
 // leaderboard plots filter options
