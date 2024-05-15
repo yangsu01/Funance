@@ -153,8 +153,9 @@ def get_portfolio_history(portfolio_id: int) -> dict:
 
     if daily_history is not None:
         for row in daily_history:
+            daily_growth = (row.portfolio_value/row.portfolio.last_close_value - 1) * 100
             day['x'].append(utc_to_est(row.update_time).strftime('%Y-%m-%d %H:%M'))
-            day['y'].append(row.portfolio_value)
+            day['y'].append(daily_growth)
 
     return {
         'closingHistory': close,
