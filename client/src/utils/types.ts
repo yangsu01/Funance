@@ -1,3 +1,5 @@
+import { Document } from "@contentful/rich-text-types";
+
 // sign up form data
 export type SignUpFormData = {
     email: string;
@@ -201,31 +203,6 @@ export type StockData = {
     stockId: number;
 }
 
-// blog catalog
-export type BlogCard = {
-    date: string;
-    description: string;
-    fileName: string;
-    title: string;
-}
-
-// blog post
-export type BlogInfo = {
-    fileName: string;
-    title: string;
-}
-export type BlogData = {
-    content: string;
-    creationDate: string;
-    description: string;
-    fileName: string;
-    title: string;
-}
-export type BlogPostData = {
-    blogCatalog: BlogInfo[];
-    blogData: BlogData;
-}
-
 // games sort options
 export type GameSortOptions = "Participants" | "Start Date" | "Alphabetical";
 
@@ -237,4 +214,59 @@ export type LineChartLabel  = {
     title: string;
     xLabel: string;
     yLabel: string;
+}
+
+// blog catalog data
+export type BlogItem = {
+    sys: {
+        id: string;
+        publishedAt: string;
+        firstPublishedAt: string;
+    };
+    route: string;
+    title: string;
+    description: string;
+}
+
+export type BlogListData = {
+    funanceBlogPostCollection: {
+        items: BlogItem[];
+    };
+}
+
+// blog post data
+export type BlogLinks = {
+    assets: {
+        block: {
+            sys: {
+                id: string;
+            };
+            url: string;
+            title: string;
+            width: number;
+            height: number;
+            description: string;
+        }[];
+    };
+}
+
+export type BlogData = {
+    title: string;
+    sys: {
+        publishedAt: string;
+        firstPublishedAt: string;
+    };
+    description: string;
+    body: {
+        json: Document;
+        links: BlogLinks;
+    };
+}
+
+export type BlogPostData = {
+    funanceBlogPost: BlogData;
+
+    funanceBlogPostCollection: {
+        items: BlogItem[];
+    };
 }

@@ -5,40 +5,82 @@ import { Col, Row, Card } from "react-bootstrap";
 // components
 import Title from "../../components/UI/Title";
 import Loading from "../../components/UI/Loading";
+import BlogPostParser from "./BlogPostParser";
 // hooks
-import useFetch from "../../hooks/useFetch";
+import useGraphQL from "../../hooks/useGraphQL";
 // contexts
 import { useShowAlert } from "../../contexts/AlertContext";
+
 // types
-import { BlogPostData } from "../../utils/types";
+import { BlogPostData, BlogData, BlogItem } from "../../utils/types";
 
 const BlogPost = () => {
-  const [blogPostData, setBlogPostData] = useState<BlogPostData>(
-    {} as BlogPostData
-  );
+  const [blogPost, setBlogPost] = useState<BlogData | null>(null);
+  const [relatedBlogs, setRelatedBlogs] = useState<BlogItem[] | null>(null);
 
-  let { blogTitle } = useParams();
+  let { blogId, blogTitle } = useParams();
   const navigate = useNavigate();
-  const { fetchData, loading } = useFetch<BlogPostData>();
   const showAlert = useShowAlert();
+  const { loading, fetchContent } = useGraphQL<BlogPostData>();
+
+  const query = `{
+    funanceBlogPost(id: "${blogId}") {
+      title
+      sys {
+        publishedAt
+        firstPublishedAt
+      }
+      description
+      body {
+        json
+        links {
+          assets {
+            block {
+              sys {
+                id
+              }
+              url
+              title
+              width
+              height
+              description
+            }
+          }
+        }
+      }
+    }
+    funanceBlogPostCollection {
+      items {
+        sys {
+          id
+          publishedAt
+          firstPublishedAt
+        }
+        route
+        title
+        description
+      }
+    }
+  }`;
 
   // on page load
   useEffect(() => {
-    fetchData(`/blog/${blogTitle}`).then((res) => {
+    fetchContent(query).then((res) => {
       if (res.status === "error") {
         showAlert(res.msg, "danger");
       } else {
-        setBlogPostData(res.data);
+        setBlogPost(res.data.funanceBlogPost);
+        setRelatedBlogs(res.data.funanceBlogPostCollection.items);
       }
     });
-  }, [blogTitle]);
+  }, [blogId]);
 
-  if (loading || !blogPostData.blogData) {
+  if (loading || !blogPost || !relatedBlogs) {
     return (
       <>
         {/* page title */}
         <Title
-          title="Funance Blog"
+          title={blogTitle ? blogTitle : "Funance Blog"}
           subtitle="Weekly Blog Posts!"
           button="Back"
           onClick={() => navigate(-1)}
@@ -51,34 +93,39 @@ const BlogPost = () => {
   return (
     <>
       <Title
-        title={blogPostData.blogData.title}
-        subtitle={`Created on: ${blogPostData.blogData.creationDate}`}
+        title={blogPost.title}
+        subtitle={`Created on: ${blogPost.sys.publishedAt.split("T")[0]}`}
         button="Back"
         onClick={() => navigate(-1)}
       />
 
       <Row className="d-flex justify-content-center">
         <Col md={7}>
-          <div
-            dangerouslySetInnerHTML={{
-              __html: blogPostData.blogData.content,
-            }}
-            className="mb-4"
-          ></div>
+          <BlogPostParser
+            content={blogPost.body.json}
+            links={blogPost.body.links}
+          />
         </Col>
+
         <Col md={3}>
           <Card>
             <Card.Header className="text-center">
               <h4>Other Blog Posts</h4>
             </Card.Header>
             <Card.Body>
-              {blogPostData.blogCatalog.map((post) => (
-                <div key={post.fileName}>
-                  <Link to={`/blog/${post.fileName}`} className="link">
-                    <h5 className="mb-3">{post.title}</h5>
-                  </Link>
-                </div>
-              ))}
+              {relatedBlogs.map(
+                (post) =>
+                  post.route !== blogTitle && (
+                    <div key={post.route}>
+                      <Link
+                        to={`/blog/${post.sys.id}/${post.route}`}
+                        className="link"
+                      >
+                        <h5 className="mb-3">{post.title}</h5>
+                      </Link>
+                    </div>
+                  )
+              )}
             </Card.Body>
           </Card>
         </Col>
