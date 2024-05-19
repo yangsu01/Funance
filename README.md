@@ -1,4 +1,5 @@
 # Funance
+
 Finance webapp v1
 
 https://www.funance.lol/
@@ -55,10 +56,13 @@ Install dependencies in `client` folder
 npm install
 ```
 
-create `.env` file in  folder and create environmental variables
+create `.env` file in folder and create environmental variables
 
 ```python
 VITE_API_URL
+VITE_CONTENTFUL_SPACE_ID
+VITE_CONTENTFUL_ACCESS_TOKEN
+VITE_CONTENTFUL_API_URL
 ```
 
 ## Usage
