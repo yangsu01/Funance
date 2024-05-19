@@ -10,9 +10,10 @@ import BlogPostParser from "./BlogPostParser";
 import useGraphQL from "../../hooks/useGraphQL";
 // contexts
 import { useShowAlert } from "../../contexts/AlertContext";
-
 // types
 import { BlogPostData, BlogData, BlogItem } from "../../utils/types";
+// utils
+import formatDatetime from "../../utils/formatDatetime";
 
 const BlogPost = () => {
   const [blogPost, setBlogPost] = useState<BlogData | null>(null);
@@ -82,8 +83,6 @@ const BlogPost = () => {
         <Title
           title={blogTitle ? blogTitle : "Funance Blog"}
           subtitle="Weekly Blog Posts!"
-          button="Back"
-          onClick={() => navigate(-1)}
         />
         <Loading />
       </>
@@ -94,13 +93,11 @@ const BlogPost = () => {
     <>
       <Title
         title={blogPost.title}
-        subtitle={`Created on: ${blogPost.sys.publishedAt.split("T")[0]}`}
-        button="Back"
-        onClick={() => navigate(-1)}
+        subtitle={`Updated: ${formatDatetime(blogPost.sys.publishedAt)}`}
       />
 
       <Row className="d-flex justify-content-center">
-        <Col md={7}>
+        <Col md={9}>
           <BlogPostParser
             content={blogPost.body.json}
             links={blogPost.body.links}

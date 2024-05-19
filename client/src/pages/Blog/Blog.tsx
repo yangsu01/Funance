@@ -11,6 +11,8 @@ import useGraphQL from "../../hooks/useGraphQL";
 import { useShowAlert } from "../../contexts/AlertContext";
 // types
 import { BlogItem, BlogListData } from "../../utils/types";
+// utils
+import formatDatetime from "../../utils/formatDatetime";
 
 const Blog = () => {
   const [blogCatalog, setBlogCatalog] = useState<BlogItem[] | null>(null);
@@ -19,7 +21,7 @@ const Blog = () => {
   const { loading, fetchContent } = useGraphQL<BlogListData>();
 
   const query = `{
-    funanceBlogPostCollection {
+    funanceBlogPostCollection (order: sys_firstPublishedAt_DESC) {
       items {
         sys {
           id
@@ -63,7 +65,9 @@ const Blog = () => {
         {blogCatalog.map((blog, index) => (
           <Col key={index} md={4} className="mb-4">
             <InfoCard
-              footer={`Updated: ${blog.sys.firstPublishedAt.split("T")[0]}`}
+              footer={`Uploaded On: ${formatDatetime(
+                blog.sys.firstPublishedAt
+              )}`}
               title={blog.title}
               text={blog.description}
               link={`/blog/${blog.sys.id}/${blog.route}`}
