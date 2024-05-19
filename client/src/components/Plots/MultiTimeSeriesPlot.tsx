@@ -34,7 +34,7 @@ type Props = {
 
 const MultiTimeSeriesPlot = ({
   plotData,
-  label: { title, xLabel, yLabel },
+  label: { title, xLabel, yLabel, xUnit = "day" },
 }: Props) => {
   const isSmallScreen = useMediaQuery({ maxWidth: 767 });
   const chartHeight = isSmallScreen ? 400 : "auto";
@@ -75,6 +75,9 @@ const MultiTimeSeriesPlot = ({
         },
         type: "timeseries" as const,
         ticks: { color: "white" as const },
+        time: {
+          unit: xUnit,
+        },
       },
       y: {
         title: {

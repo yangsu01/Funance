@@ -214,7 +214,11 @@ export type LineChartLabel  = {
     title: string;
     xLabel: string;
     yLabel: string;
+    xUnit?: "minute" | "hour" | "day" | "week" | "month" | "year";
 }
+
+// leaderboard plots filter options
+export type LeaderboardFilterOptions = "All" | "Top 5" | "Bottom 5";
 
 // blog catalog data
 export type BlogItem = {

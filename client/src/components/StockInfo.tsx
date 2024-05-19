@@ -28,7 +28,12 @@ const StockInfo = ({ data, ticker }: Props) => {
       <AccordionCard header={`${ticker} Performance`} open={false}>
         <TimeSeriesPlot
           plotData={data.history}
-          title="Historical Prices (1y)"
+          label={{
+            title: `${ticker} Performance (1yr)`,
+            xLabel: "Date",
+            yLabel: "Price ($)",
+            xUnit: "day",
+          }}
         />
         <InfoList
           items={[

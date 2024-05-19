@@ -25,7 +25,15 @@ const PortfolioHistoryPlots = ({
     <AccordionCard header="Performance Plots">
       <Row>
         <Col md={plotWidth} className="mb-4">
-          <TimeSeriesPlot plotData={closeData} title="Portfolio History" />
+          <TimeSeriesPlot
+            plotData={closeData}
+            label={{
+              title: "Historical Portfolio Value",
+              xLabel: "Date",
+              yLabel: "Value ($)",
+              xUnit: "day",
+            }}
+          />
           <small className="text-muted">
             *Updated daily when markets close
           </small>
@@ -35,7 +43,13 @@ const PortfolioHistoryPlots = ({
           <Col md={plotWidth} className="mb-4">
             <TimeSeriesPlot
               plotData={dailyData}
-              title={`Performance for ${date}`}
+              label={{
+                title: `%Growth for ${date}`,
+                xLabel: "Time",
+                yLabel: "Change (%)",
+                xUnit: "minute",
+              }}
+              radius={4}
             />
             <small className="text-muted">
               *Updated every 30 minutes during market hours
