@@ -97,11 +97,6 @@
   --bs-list-group-active-text-color: #ffffff;
 }
 
-.fs-5 {
-  text-align: justify;
-  text-justify: inter-word;
-}
-
 .link {
   color: #ffffff;
   text-decoration: none;
