@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams, Link } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { Col, Row, Card } from "react-bootstrap";
 
 // components
@@ -20,7 +20,6 @@ const BlogPost = () => {
   const [relatedBlogs, setRelatedBlogs] = useState<BlogItem[] | null>(null);
 
   let { blogId, blogTitle } = useParams();
-  const navigate = useNavigate();
   const showAlert = useShowAlert();
   const { loading, fetchContent } = useGraphQL<BlogPostData>();
 
