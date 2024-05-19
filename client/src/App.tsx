@@ -31,7 +31,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 
 function App() {
   // app version
-  const version = "v1.1.1";
+  const version = "v1.2.0";
 
   return (
     <AuthProvider>
@@ -47,7 +47,7 @@ function App() {
             {/* funance blog */}
             <Route path="/blog">
               <Route index element={<Blog />} />
-              <Route path=":blogTitle" element={<BlogPost />} />
+              <Route path=":blogId/:blogTitle" element={<BlogPost />} />
             </Route>
 
             {/* auth */}
