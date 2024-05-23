@@ -53,9 +53,11 @@ const BlogPostParser = ({ content, links }: Props) => {
 
         // rendering table
         [BLOCKS.TABLE]: (_: Node, children: React.ReactNode) => (
-          <table className="table table-striped responsive">
-            <tbody>{children}</tbody>
-          </table>
+          <div className="table-responsive">
+            <table className="table table-striped table-sm table-bordered">
+              <tbody>{children}</tbody>
+            </table>
+          </div>
         ),
         [BLOCKS.TABLE_ROW]: (_: Node, children: React.ReactNode) => (
           <tr>{children}</tr>
