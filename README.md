@@ -67,7 +67,7 @@ VITE_CONTENTFUL_API_URL
 
 ## Usage
 
-Run the server and client folders seperately
+Run the server and client folders separately
 
 In the server folder, run `api.py` to initiate flask backend
 
