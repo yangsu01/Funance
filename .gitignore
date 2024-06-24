@@ -188,7 +188,5 @@ dist-ssr
 # testing files
 test.ipynb
 
-# blogs
-blogs/
+# admin features
 admin.py
-save_blog.py
