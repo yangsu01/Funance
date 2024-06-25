@@ -152,3 +152,12 @@ def update_started_games() -> None:
             game.status = 'In Progress'
 
     db.session.commit()
+    
+
+def drop_prev_day_data() -> None:
+    '''Deletes all daily history data before today
+    '''
+    date = get_est_time().date()
+    DailyHistory.query.filter(DailyHistory.date < date).delete()
+
+    db.session.commit()

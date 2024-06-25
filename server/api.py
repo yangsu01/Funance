@@ -8,7 +8,7 @@ from config import AppConfig
 from src.data_models import db, User
 from src.utils.scheduler import (
     # run when markets open
-    update_last_close_value, update_started_games,
+    update_last_close_value, update_started_games, drop_prev_day_data,
     # run periodically when markets are open
     update_stock_prices, update_portfolio_value, save_game_update_time, save_daily_history,
     # run at end of trading day
@@ -66,6 +66,7 @@ def run_at_open():
     with api.app_context():
         update_last_close_value()
         update_started_games()
+        drop_prev_day_data()
 
         run_periodically()
         
