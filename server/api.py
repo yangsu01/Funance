@@ -2,6 +2,7 @@ from flask import Flask
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_apscheduler import APScheduler
+from flask_migrate import Migrate
 
 from config import AppConfig
 from src.data_models import db, User
@@ -23,6 +24,8 @@ api.config.from_object(AppConfig)
 
 CORS(api, supports_credentials=True)
 
+# database migrations
+migrate = Migrate(api, db)
 
 # server side authentication
 jwt = JWTManager(api)
