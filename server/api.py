@@ -2,6 +2,7 @@ from flask import Flask
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_apscheduler import APScheduler
+from flask_migrate import Migrate
 
 from config import AppConfig
 from src.data_models import db, User
@@ -17,13 +18,14 @@ from src.utils.scheduler import (
 # import blueprints
 from src.routes.auth import auth
 from src.routes.portfolio_sim import portfolio_sim
-from src.routes.blog import blog
 
 api = Flask(__name__)
 api.config.from_object(AppConfig)
 
 CORS(api, supports_credentials=True)
 
+# database migrations
+migrate = Migrate(api, db)
 
 # server side authentication
 jwt = JWTManager(api)
@@ -45,7 +47,6 @@ db.init_app(api)
 #register blueprints
 api.register_blueprint(auth, url_prefix='/api')
 api.register_blueprint(portfolio_sim, url_prefix='/api')
-api.register_blueprint(blog, url_prefix='/api')
 
 
 # initiate scheduler
