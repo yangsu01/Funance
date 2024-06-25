@@ -104,26 +104,28 @@ const BlogPost = () => {
         </Col>
 
         <Col md={3}>
-          <Card>
-            <Card.Header className="text-center">
-              <h4>Other Blog Posts</h4>
-            </Card.Header>
-            <Card.Body>
-              {relatedBlogs.map(
-                (post) =>
-                  post.route !== blogTitle && (
-                    <div key={post.route}>
-                      <Link
-                        to={`/blog/${post.sys.id}/${post.route}`}
-                        className="link"
-                      >
-                        <h5 className="mb-3">{post.title}</h5>
-                      </Link>
-                    </div>
-                  )
-              )}
-            </Card.Body>
-          </Card>
+          <div className="sticky-card">
+            <Card>
+              <Card.Header className="text-center">
+                <h4>Other Blog Posts</h4>
+              </Card.Header>
+              <Card.Body>
+                {relatedBlogs.map(
+                  (post) =>
+                    post.route !== blogTitle && (
+                      <div key={post.route}>
+                        <Link
+                          to={`/blog/${post.sys.id}/${post.route}`}
+                          className="link"
+                        >
+                          <h5 className="mb-3">- {post.title}</h5>
+                        </Link>
+                      </div>
+                    )
+                )}
+              </Card.Body>
+            </Card>
+          </div>
         </Col>
       </Row>
     </>

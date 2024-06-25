@@ -101,3 +101,14 @@
   color: #ffffff;
   text-decoration: none;
 }
+
+.equation {
+  height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.sticky-card{
+  position: sticky;
+  top: 100px;
+}

@@ -41,29 +41,50 @@ const BlogPostParser = ({ content, links }: Props) => {
             <img
               src={asset.url}
               alt={asset.title}
-              className="img-fluid center"
+              className="img-fluid rounded mx-auto d-block"
             />
           );
         },
 
         // rendering text
         [BLOCKS.PARAGRAPH]: (_: Node, children: React.ReactNode) => {
+          const childrenArray = React.Children.toArray(children);
+
+          if (
+            childrenArray.length > 0 &&
+            String(childrenArray[0]).startsWith("$$")
+          ) {
+            return <p className="fs-5 equation">{children}</p>;
+          }
           return <p className="fs-5">{children}</p>;
         },
 
         // rendering table
         [BLOCKS.TABLE]: (_: Node, children: React.ReactNode) => (
           <div className="table-responsive">
-            <table className="table table-striped table-sm table-bordered">
+            <table className="table table-striped table-sm">
               <tbody>{children}</tbody>
             </table>
           </div>
         ),
-        [BLOCKS.TABLE_ROW]: (_: Node, children: React.ReactNode) => (
-          <tr>{children}</tr>
-        ),
+        // table row
+        [BLOCKS.TABLE_ROW]: (_: Node, children: React.ReactNode) => {
+          const childrenArray = React.Children.toArray(children);
+          if (
+            React.isValidElement(childrenArray[0]) &&
+            childrenArray[0].type === "thead"
+          ) {
+            return <thead>{children}</thead>;
+          }
+          return <tr>{children}</tr>;
+        },
+        // table header cell
+        [BLOCKS.TABLE_HEADER_CELL]: (_: Node, children: React.ReactNode) => {
+          return <th className="p-3">{children}</th>;
+        },
+        // table cell
         [BLOCKS.TABLE_CELL]: (_: Node, children: React.ReactNode) => (
-          <td>{children}</td>
+          <td className="ps-3">{children}</td>
         ),
       },
     };
