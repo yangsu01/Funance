@@ -67,15 +67,15 @@ VITE_CONTENTFUL_API_URL
 
 ## Usage
 
-Run the server and client folders separately
+Run the server and client separately
 
-In the server folder, run `api.py` to initiate flask backend
+In the server folder, run the Flask app
 
 ```properties
-python src/app.py
+flask --app api run --debug
 ```
 
-In the client folder run the React app
+In the client folder, run the React app
 
 ```properties
 npm run dev
