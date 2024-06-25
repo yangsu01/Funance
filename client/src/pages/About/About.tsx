@@ -25,20 +25,21 @@ const About = () => {
             </p>
 
             <p className="fs-5">
-              I have always been interested in finance and investing but always
-              procrastinated when it came to actually working on a project
-              relating to it. So this was the perfect opportunity to learn more
-              about quantitative finance and record <i>my journey</i>.
+              I have always been interested in finance and investing but
+              procrastinated when it came to actually working on an actual
+              project. So this was the perfect opportunity to learn more about
+              quantitative finance and record <i>my journey</i>.
             </p>
 
             <p className="fs-5">
               Originally, Funance was a simple Flask app. It was a bit tedious
               but pretty easy to implement. I then realized there would be
               scalability issues. So I decided to use a more modern setup. How
-              much work could it be? I gave myself a weekend to learn React and
-              a few more days to re-implement everything. Mistakes were made. I
-              ended up rewriting both the frontend and backend from scratch. But
-              hey, at least the UI is a lot better now... right?
+              much work could it be? I gave myself a weekend to learn the
+              frameworks and a few more days to re-implement everything.
+              Mistakes were made. I ended up rewriting both the frontend and
+              backend from scratch. But hey, at least the UI is a lot better
+              now... right?
             </p>
           </Col>
           <Col md={2}>
@@ -63,11 +64,12 @@ const About = () => {
               </strong>
             </h3>
             <p className="fs-5">
-              I am a (somewhat) recent grad from university. After working for a
-              few months as a full-stack developer, I realized I had no idea
-              what I wanted from my career. I studied engineering for 6 years
-              but ended up doing something completely different right out of
-              school. So now I'm taking a break to figure things out.
+              I am a (somewhat) recent grad from university. After working a few
+              months as a full-stack developer, I realized I had no idea what I
+              wanted from my career. I studied engineering for 6 years but ended
+              up doing something completely different right out of school. So
+              now I'm taking a break to figure things out. Yup, 6 years of
+              engineering school just to be unemployed...
             </p>
             <p className="fs-5">
               Outside of work, my hobbies include (in case anyone asked...)
@@ -89,9 +91,9 @@ const About = () => {
               </li>
               <li>
                 <strong>Board Games:</strong> Started a few years ago when I
-                decided to get Catan (the classic entry board game). And the
-                next thing I know, I have a collection of over 30 games (REAL
-                games, not frauds like Monopoly). Currently, my favorite game is{" "}
+                decided to get Catan (the classic gateway board game). The next
+                thing I know, I have a collection of over 30 games (REAL games,
+                not frauds like Monopoly). Currently, my favorite game is{" "}
                 <a
                   href="https://boardgamegeek.com/boardgame/118/modern-art"
                   target="_blank"

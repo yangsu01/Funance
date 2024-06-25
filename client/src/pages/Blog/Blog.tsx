@@ -50,7 +50,10 @@ const Blog = () => {
     return (
       <>
         {/* page title */}
-        <Title title="Funance Blog" subtitle="Weekly Blog Posts!" />
+        <Title
+          title="Funance Blog"
+          subtitle="Weekly Posts on Quantitative Finance!"
+        />
         <Loading />
       </>
     );
@@ -59,7 +62,10 @@ const Blog = () => {
   return (
     <>
       {/* page title */}
-      <Title title="Funance Blog" subtitle="Weekly Blog Posts!" />
+      <Title
+        title="Funance Blog"
+        subtitle="Weekly Posts on Quantitative Finance!"
+      />
 
       <Row>
         {blogCatalog.map((blog, index) => (
