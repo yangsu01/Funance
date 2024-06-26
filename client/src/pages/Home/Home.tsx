@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 
 // components
 import Title from "../../components/UI/Title";
+import SubscribeLink from "../../components/SubscribeLink";
 
 const Home = () => {
   return (
@@ -33,20 +34,8 @@ const Home = () => {
       </p>
 
       <p className="fs-5">
-        <i>
-          This just in: you can now{" "}
-          <a
-            href="https://funance.ck.page/746330640c"
-            target="_blank"
-            className="link"
-          >
-            <u>
-              <strong>Subscribe</strong>
-            </u>
-          </a>{" "}
-          to Funance Blog (for FREE) and be the first to know when a new post is
-          uploaded!
-        </i>
+        This just in: you can now <SubscribeLink /> to Funance Blog (for FREE)
+        and be the first to know when a new post is uploaded!
       </p>
     </div>
   );

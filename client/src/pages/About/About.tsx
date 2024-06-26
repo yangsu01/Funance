@@ -2,6 +2,7 @@ import { Image, Container, Row, Col } from "react-bootstrap";
 
 // components
 import Title from "../../components/UI/Title";
+import SubscribeLink from "../../components/SubscribeLink";
 
 const About = () => {
   return (
@@ -18,17 +19,18 @@ const About = () => {
             </h3>
             <p className="fs-5">
               Funance was created because I'm unemployed and have nothing better
-              to do. The original intent was to create a simple portfolio
-              simulator to play with some friends. But then I realized people
-              aren't nearly as interested as I thought they would be in
-              investing... So I decided to write a <i>weekly</i> blog.
+              to do. Currently, the website consists of a portfolio simulator
+              and a (mostly) weekly blog where I explore / learn about a
+              different topic in quantitative finance every week and record my
+              findings in each post. You can <SubscribeLink /> to Funance Blog
+              for FREE!! Would recommend.
             </p>
 
             <p className="fs-5">
               I have always been interested in finance and investing but
               procrastinated when it came to actually working on an actual
               project. So this was the perfect opportunity to learn more about
-              quantitative finance and record <i>my journey</i>.
+              quantitative finance and record <i>the process</i>.
             </p>
 
             <p className="fs-5">

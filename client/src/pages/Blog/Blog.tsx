@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { Col, Row } from "react-bootstrap";
-import { Link } from "react-router-dom";
 
 // components
 import Title from "../../components/UI/Title";
 import Loading from "../../components/UI/Loading";
 import InfoCard from "../../components/UI/InfoCard";
+import SubscribeLink from "../../components/SubscribeLink";
 // hooks
 import useGraphQL from "../../hooks/useGraphQL";
 // contexts
@@ -14,8 +14,6 @@ import { useShowAlert } from "../../contexts/AlertContext";
 import { BlogItem, BlogListData } from "../../utils/types";
 // utils
 import formatDatetime from "../../utils/formatDatetime";
-// constants
-import { EMAIL_FORM } from "../../utils/constants";
 
 const Blog = () => {
   const [blogCatalog, setBlogCatalog] = useState<BlogItem[] | null>(null);
@@ -70,15 +68,9 @@ const Blog = () => {
         subtitle="Weekly Posts on Quantitative Finance!"
       />
 
-      <Row className="mb-3">
-        <Link to={EMAIL_FORM} className="text-white text-center">
-          <h5>
-            <strong>
-              Subscribe to be notified whenever a new post is uploaded!
-            </strong>
-          </h5>
-        </Link>
-      </Row>
+      <h5 className="mb-3">
+        <SubscribeLink /> to be notified of new posts!
+      </h5>
 
       <Row>
         {blogCatalog.map((blog, index) => (
