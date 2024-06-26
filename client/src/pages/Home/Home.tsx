@@ -7,7 +7,6 @@ const Home = () => {
   return (
     <div className="home-container">
       <Title title="Welcome to Funance" subtitle="Investing is fun!" />
-
       <p className="fs-5">
         Join me on my journey of learning about quantitative finance! Be sure to
         Check out my latest <strong>Weekly blog</strong> posts uploaded on{" "}
@@ -15,9 +14,8 @@ const Home = () => {
           Funance Blog
         </Link>{" "}
         where I explore different applications of math and data science in
-        finance and investing.
+        finance.
       </p>
-
       <p className="fs-5">
         Want to test the waters and try out a new investing strategy?
         Create/join a lobby and start trading in the{" "}
@@ -32,6 +30,23 @@ const Home = () => {
           Game List
         </Link>{" "}
         for a preview.
+      </p>
+
+      <p className="fs-5">
+        <i>
+          This just in: you can now{" "}
+          <a
+            href="https://funance.ck.page/746330640c"
+            target="_blank"
+            className="link"
+          >
+            <u>
+              <strong>Subscribe</strong>
+            </u>
+          </a>{" "}
+          to Funance Blog (for FREE) and be the first to know when a new post is
+          uploaded!
+        </i>
       </p>
     </div>
   );

@@ -76,3 +76,5 @@ export const TOP_PORTFOLIO_TABLE_HEADERS: string[] = [
     "Profit/Loss",
     "Date (EST)",
   ]
+
+  export const EMAIL_FORM: string = "https://funance.ck.page/746330640c"

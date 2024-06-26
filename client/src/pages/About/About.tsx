@@ -123,8 +123,8 @@ const About = () => {
             </ul>
             <p className="fs-5">
               If you want to contact me for any reason, pls reach out at{" "}
-              <a href="mailto:ssgc1101@gmail.com" className="link">
-                <i>ssgc1101@gmail.com</i>
+              <a href="mailto:funance.blog@gmail.com" className="link">
+                <i>funance.blog@gmail.com</i>
               </a>
             </p>
           </Col>

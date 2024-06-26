@@ -14,6 +14,8 @@ import { useShowAlert } from "../../contexts/AlertContext";
 import { BlogPostData, BlogData, BlogItem } from "../../utils/types";
 // utils
 import formatDatetime from "../../utils/formatDatetime";
+// constants
+import { EMAIL_FORM } from "../../utils/constants";
 
 const BlogPost = () => {
   const [blogPost, setBlogPost] = useState<BlogData | null>(null);
@@ -125,6 +127,14 @@ const BlogPost = () => {
                 )}
               </Card.Body>
             </Card>
+
+            <div className="mt-3">
+              <Link to={EMAIL_FORM} className="text-white text-center">
+                <h6>
+                  <strong>Like what you're reading? Subscribe!</strong>
+                </h6>
+              </Link>
+            </div>
           </div>
         </Col>
       </Row>
