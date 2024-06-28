@@ -52,7 +52,7 @@ const TopNavbar = () => {
             height="30"
             className="me-2"
           />
-          <strong>FUNance</strong>
+          <strong>Funance</strong>
         </Navbar.Brand>
         <Navbar.Toggle
           aria-controls="responsive-navbar-nav"
