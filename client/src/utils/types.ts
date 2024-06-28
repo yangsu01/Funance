@@ -203,11 +203,8 @@ export type StockData = {
     stockId: number;
 }
 
-// games sort options
-export type GameSortOptions = "Participants" | "Start Date" | "Alphabetical";
-
 // games filter options
-export type GameFilterOptions = "All" | "Not Started" | "In Progress" | "Completed" | "Public" | "Private" | "Not Joined";
+export type GameFilterOptions = "All" | "Not Started" | "In Progress" | "Completed" | "Joined" | "Not Joined";
 
 // time series plot data for line chart labels
 export type LineChartLabel  = {

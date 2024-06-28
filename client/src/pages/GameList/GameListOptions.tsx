@@ -6,124 +6,97 @@ import {
   FloatingLabel,
   Col,
   Row,
+  Button,
 } from "react-bootstrap";
 
-import { GameFilterOptions, GameSortOptions } from "../../utils/types";
+// types
+import { GameFilterOptions } from "../../utils/types";
 
 type Props = {
   onSearch: (search: string) => void;
   onFilter: (filter: GameFilterOptions) => void;
-  onSort: (sort: GameSortOptions) => void;
+  onReset: () => void;
+  filter: GameFilterOptions;
 };
 
-const GameListOptions = ({ onSearch, onSort, onFilter }: Props) => {
-  const [selectedSort, setSelectedSort] = useState("Participants");
-  const [selectedFilter, setSelectedFilter] = useState("All");
+const GameListOptions = ({ onSearch, onFilter, filter, onReset }: Props) => {
+  const [search, setSearch] = useState("");
 
-  const handleSort = (sort: GameSortOptions) => {
-    setSelectedSort(sort);
-    onSort(sort);
+  const handleFilter = (selectedFilter: GameFilterOptions) => {
+    onFilter(selectedFilter);
   };
 
-  const handleFilter = (filter: GameFilterOptions) => {
-    setSelectedFilter(filter);
-    onFilter(filter);
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSearch(search);
   };
 
   return (
     <Row className="d-flex justify-content-end align-items-center">
-      <Col md={6}>
-        <InputGroup className="mb-3">
-          <FloatingLabel controlId="search" label="Search Game">
-            <Form.Control
-              required
-              type="text"
-              placeholder="Search Game"
-              onChange={(e) => {
-                onSearch(e.target.value);
-              }}
-            />
-          </FloatingLabel>
+      <Col md={6} onSubmit={handleSearch}>
+        <Form>
+          <InputGroup className="mb-3">
+            <FloatingLabel controlId="search" label="Search Game">
+              <Form.Control
+                required
+                type="text"
+                placeholder="Search Game"
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                }}
+              />
+            </FloatingLabel>
+            <Button type="submit" variant="outline-light">
+              Search
+            </Button>
 
-          <Dropdown
-            onSelect={(eventKey) => handleSort(eventKey as GameSortOptions)}
-          >
-            <Dropdown.Toggle variant="outline-light" id="dropdown-basic">
-              Sort
-            </Dropdown.Toggle>
+            <Dropdown
+              onSelect={(eventKey) =>
+                handleFilter(eventKey as GameFilterOptions)
+              }
+            >
+              <Dropdown.Toggle variant="outline-light" id="dropdown-basic">
+                Filter
+              </Dropdown.Toggle>
 
-            <Dropdown.Menu>
-              <Dropdown.Item
-                eventKey="Participants"
-                active={selectedSort === "Participants"}
-              >
-                Participants
-              </Dropdown.Item>
-              <Dropdown.Item
-                eventKey="Start Date"
-                active={selectedSort === "Start Date"}
-              >
-                Start Date
-              </Dropdown.Item>
-              <Dropdown.Item
-                eventKey="Alphabetical"
-                active={selectedSort === "Alphabetical"}
-              >
-                Alphabetical
-              </Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
-
-          <Dropdown
-            onSelect={(eventKey) => handleFilter(eventKey as GameFilterOptions)}
-          >
-            <Dropdown.Toggle variant="outline-light" id="dropdown-basic">
-              Filter
-            </Dropdown.Toggle>
-
-            <Dropdown.Menu>
-              <Dropdown.Item eventKey="All" active={selectedFilter === "All"}>
-                All
-              </Dropdown.Item>
-              <Dropdown.Item
-                eventKey="Not Started"
-                active={selectedFilter === "Not Started"}
-              >
-                Not Started
-              </Dropdown.Item>
-              <Dropdown.Item
-                eventKey="In Progress"
-                active={selectedFilter === "In Progress"}
-              >
-                In Progress
-              </Dropdown.Item>
-              <Dropdown.Item
-                eventKey="Completed"
-                active={selectedFilter === "Completed"}
-              >
-                Completed
-              </Dropdown.Item>
-              <Dropdown.Item
-                eventKey="Public"
-                active={selectedFilter === "Public"}
-              >
-                Public
-              </Dropdown.Item>
-              <Dropdown.Item
-                eventKey="Private"
-                active={selectedFilter === "Private"}
-              >
-                Private
-              </Dropdown.Item>
-              <Dropdown.Item
-                eventKey="Not Joined"
-                active={selectedFilter === "Not Joined"}
-              >
-                Not Joined
-              </Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
-        </InputGroup>
+              <Dropdown.Menu>
+                <Dropdown.Item eventKey="All" active={filter === "All"}>
+                  All
+                </Dropdown.Item>
+                <Dropdown.Item
+                  eventKey="Not Started"
+                  active={filter === "Not Started"}
+                >
+                  Not Started
+                </Dropdown.Item>
+                <Dropdown.Item
+                  eventKey="In Progress"
+                  active={filter === "In Progress"}
+                >
+                  In Progress
+                </Dropdown.Item>
+                <Dropdown.Item
+                  eventKey="Completed"
+                  active={filter === "Completed"}
+                >
+                  Completed
+                </Dropdown.Item>
+                <Dropdown.Item eventKey="Joined" active={filter === "Joined"}>
+                  Joined
+                </Dropdown.Item>
+                <Dropdown.Item
+                  eventKey="Not Joined"
+                  active={filter === "Not Joined"}
+                >
+                  Not Joined
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+            <Button variant="outline-light" onClick={onReset}>
+              Reset
+            </Button>
+          </InputGroup>
+        </Form>
       </Col>
     </Row>
   );
