@@ -170,8 +170,8 @@ def get_games_list(filter: str, offset: int, search: str, user_id=None) -> list:
             else f'{round_number(game.transaction_fee * 100)}% fee'
         )
         game_details = (
-            f'${round_number(game.starting_cash)} starting cash, with {transaction_fee} per transaction. '
-            f'No password required.' if game.password is None else 'Password required.'
+            f'${round_number(game.starting_cash)} starting cash, with {transaction_fee} per transaction. ' +
+            ('No password required.' if game.password is None else 'Password required.')
         )
 
         game_list.append({
