@@ -92,13 +92,22 @@ def join_game():
 @jwt_required(optional=True)
 def game_list():
     '''Get a summary list of all created games
+    
+        args:
+            gamesLoaded (int): number of games to load (optional, default=0)
+            filter (str): filter for games (optional, default="All")
+            search (str): search string for game name (optional, default="")
     '''
+    filter = request.args.get('filter', 'All')
+    offset = int(request.args.get('gamesLoaded', 0))
+    search = request.args.get('search', '')
+    
     try:
         if get_jwt_identity():
             user_id = get_jwt_identity()
-            data = get_games_list(user_id)
+            data = get_games_list(filter, offset, search, user_id)
         else:
-            data = get_games_list()
+            data = get_games_list(filter, offset, search)
         
     except Exception as e:
         return jsonify(msg=str(e)), 400

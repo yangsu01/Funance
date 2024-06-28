@@ -6,7 +6,16 @@ from .math_functions import round_number
 
 
 # updating database
-def add_game(creator_id: int, name: str, password: str, start_date: datetime, end_date: datetime, starting_cash: float, transaction_fee: float, fee_type: str) -> int:
+def add_game(
+    creator_id: int, 
+    name: str, 
+    password: str, 
+    start_date: datetime, 
+    end_date: datetime, 
+    starting_cash: float, 
+    transaction_fee: float, 
+    fee_type: str
+) -> int:
     """Creates a new game in the database
 
     Args:
@@ -100,27 +109,70 @@ def add_portfolio(name: str, user_id: int, password: str) -> int:
 
 
 # getting data 
-def get_games_list(user_id=None) -> list:
+def get_games_list(filter: str, offset: int, search: str, user_id=None) -> list:
     """ Gets a list of all games
 
     Args:
         user_id (int, optional): id of the user
+        filter (str, optional): filter for the games
 
     Returns:
         list: list of dictionaries containing game details
     """
-    games = Game.query.order_by(Game.participants.desc()).all()
+    # query data depending on filter
+    if filter=='All':
+        games = Game.query.filter(
+            Game.name.ilike(f"%{search}%")
+        ).order_by(
+            Game.participants.desc()
+        ).offset(offset).limit(10).all()
+        
+    elif filter=='In Progress' or filter=='Not Started' or filter=='Completed':
+        games = Game.query.filter(
+            Game.status==filter,
+        ).filter(
+            Game.name.ilike(f"%{search}%")
+        ).order_by(
+            Game.participants.desc()
+        ).offset(offset).limit(10).all()
+        
+    elif filter=='Joined':
+        games = Game.query.filter(
+            Game.portfolios.any(Portfolio.user_id==user_id)
+        ).filter(
+            Game.name.ilike(f"%{search}%")
+        ).order_by(
+            Game.participants.desc()
+        ).offset(offset).limit(10).all()
+    
+    elif filter=='Not Joined':
+        games = Game.query.filter(
+            ~Game.portfolios.any(Portfolio.user_id==user_id)
+        ).filter(
+            Game.name.ilike(f"%{search}%")
+        ).order_by(
+            Game.participants.desc()
+        ).offset(offset).limit(10).all()
+    
     game_list = []
 
     for game in games:
         if user_id is not None:
-            joined_game = Portfolio.query.filter_by(game_id=game.id, user_id=user_id).first() is not None
+            joined_game = Portfolio.query.filter_by(
+                game_id=game.id, user_id=user_id
+            ).first() is not None
         else:
             joined_game = False
 
-        transaction_fee = f'flat fee of ${round_number(game.transaction_fee)}' if game.fee_type == 'Flat Fee' else f'{round_number(game.transaction_fee * 100)}% fee'
-
-        game_details = f'${round_number(game.starting_cash)} starting cash, with {transaction_fee} per transaction. {"No password required." if game.password is None else "Password required."}'
+        transaction_fee = (
+            f'flat fee of ${round_number(game.transaction_fee)}' 
+            if game.fee_type == 'Flat Fee' 
+            else f'{round_number(game.transaction_fee * 100)}% fee'
+        )
+        game_details = (
+            f'${round_number(game.starting_cash)} starting cash, with {transaction_fee} per transaction. '
+            f'No password required.' if game.password is None else 'Password required.'
+        )
 
         game_list.append({
             'gameId': game.id,
@@ -192,10 +244,22 @@ def get_game_details(game_id: int, user_id=None) -> dict:
     starting_cash = f'${round_number(game.starting_cash)}'
     joined_game = portfolio is not None
     portfolio_id = portfolio.id if portfolio is not None else None
-    transaction_fee = f'${round_number(game.transaction_fee, 0)}' if game.fee_type == 'Flat Fee' else f'{round_number(game.transaction_fee * 100, 0)}%'
+    transaction_fee = (
+        f'${round_number(game.transaction_fee, 0)}' 
+        if game.fee_type == 'Flat Fee' 
+        else f'{round_number(game.transaction_fee * 100, 0)}%'
+    )
     password_required = game.password is not None
-    last_updated = utc_to_est(game.last_updated).strftime('%a, %b %d. %Y %I:%M %p') + ' EST' if game.last_updated is not None else 'n/a'
-    game_duration = f'{(game.end_date - game.start_date).days} days' if game.end_date is not None else 'Infinite'
+    last_updated = (
+        utc_to_est(game.last_updated).strftime('%a, %b %d. %Y %I:%M %p') + 
+        ' EST' if game.last_updated is not None 
+        else 'n/a'
+    )
+    game_duration = (
+        f'{(game.end_date - game.start_date).days} days' 
+        if game.end_date is not None 
+        else 'Infinite'
+    )
 
     return {
         'name': game.name,
@@ -225,7 +289,11 @@ def get_top_performers(game_id: int) -> list:
         list: list of dictionaries containing each portfolios details
     """
     game = Game.query.filter_by(id=game_id).first()
-    portfolios = Portfolio.query.filter_by(game_id=game_id).order_by(Portfolio.current_value.desc()).all()
+    portfolios = Portfolio.query.filter_by(
+        game_id=game_id
+    ).order_by(
+        Portfolio.current_value.desc()
+    ).all()
 
     starting_cash = game.starting_cash
     top_performers = []
@@ -239,7 +307,11 @@ def get_top_performers(game_id: int) -> list:
         portfolio_change =  round_number((current_value/starting_cash - 1) * 100, 2)
         portfolio_age = (get_est_time() - utc_to_est(portfolio.creation_date)).days
         rank = count if current_value != prev else '-'
-        daily_change = f'{round_number(portfolio_change/portfolio_age)}%' if portfolio_age != 0 else 'n/a'
+        daily_change = (
+            f'{round_number(portfolio_change/portfolio_age)}%' 
+            if portfolio_age != 0 
+            else 'n/a'
+        )
         
         top_performers.append({
             'Rank': rank,
@@ -266,7 +338,11 @@ def get_top_daily_performers(game_id: int) -> list:
     """
     portfolios = Portfolio.query.filter_by(game_id=game_id).all()
 
-    ranked_portfolios = sorted(portfolios, key=lambda p: (p.current_value / p.last_close_value), reverse=True)
+    ranked_portfolios = sorted(
+        portfolios, 
+        key=lambda p: (p.current_value/p.last_close_value),
+        reverse=True
+    )
 
     top_performers = []
     count = 0
@@ -275,7 +351,7 @@ def get_top_daily_performers(game_id: int) -> list:
     for portfolio in ranked_portfolios:
         count += 1
         
-        day_change =  round_number(portfolio.current_value - portfolio.last_close_value)
+        day_change =  round_number(portfolio.current_value-portfolio.last_close_value)
         day_change_percent = round_number(day_change/portfolio.last_close_value*100, 2)
         rank = count if day_change_percent != prev else '-'
 
@@ -303,12 +379,20 @@ def get_game_history(game_id: int) -> dict:
         dict: dictionary containing the closing history and daily performance history of all portfolios
     """
     # closing history
-    closing_history = ClosingHistory.query.join(Portfolio).filter_by(game_id=game_id).order_by(ClosingHistory.date.desc()).all()
+    closing_history = ClosingHistory.query.join(Portfolio).filter_by(
+        game_id=game_id
+    ).order_by(
+        ClosingHistory.date.desc()
+    ).all()
+    
     close = {}
 
     if closing_history is not None:
         for row in closing_history:
-            data = close.setdefault(row.portfolio_id, {'x': [], 'y': [], 'name': row.portfolio.portfolio_owner.username})
+            data = close.setdefault(
+                row.portfolio_id, 
+                {'x': [], 'y': [], 'name': row.portfolio.portfolio_owner.username}
+            )
             data['x'].append(row.date.strftime('%Y-%m-%d'))
             data['y'].append(row.portfolio_value)
             close[row.portfolio_id] = data
@@ -316,13 +400,23 @@ def get_game_history(game_id: int) -> dict:
     # todays performance history
     market_date = get_market_date(get_est_time()) # last date the market was open
 
-    daily_history = DailyHistory.query.filter_by(date=market_date).join(Portfolio).filter_by(game_id=game_id).order_by(DailyHistory.update_time.desc()).all()
+    daily_history = DailyHistory.query.filter_by(
+        date=market_date
+    ).join(Portfolio).filter_by(
+        game_id=game_id
+    ).order_by(
+        DailyHistory.update_time.desc()
+    ).all()
+    
     day = {}
 
     if daily_history is not None:
         for row in daily_history:
             daily_growth = (row.portfolio_value/row.portfolio.last_close_value - 1) * 100
-            data = day.setdefault(row.portfolio_id, {'x': [], 'y': [], 'name': row.portfolio.portfolio_owner.username})
+            data = day.setdefault(
+                row.portfolio_id, 
+                {'x': [], 'y': [], 'name': row.portfolio.portfolio_owner.username}
+            )
             data['x'].append(utc_to_est(row.update_time).strftime('%Y-%m-%d %H:%M'))
             data['y'].append(daily_growth)
             day[row.portfolio_id] = data
@@ -334,7 +428,15 @@ def get_game_history(game_id: int) -> dict:
     }
 
 # validation
-def validate_game(name: str, password: str, start_date: datetime, end_date: datetime, starting_cash: float, transaction_fee: float, fee_type: str) -> None:
+def validate_game(
+    name: str, 
+    password: str, 
+    start_date: datetime, 
+    end_date: datetime, 
+    starting_cash: float, 
+    transaction_fee: float, 
+    fee_type: str
+) -> None:
     """ Checks whether the game details are valid. Raises ValueError if not.
 
     Args:
