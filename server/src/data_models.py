@@ -70,6 +70,9 @@ class Portfolio(db.Model):
     current_value = db.Column(db.Float, nullable=False)
     last_updated = db.Column(db.DateTime(timezone=True), nullable=False)
     last_close_value = db.Column(db.Float, nullable=False)
+    day_change = db.Column(db.Float, nullable=True)
+    overall_rank = db.Column(db.Integer, nullable=True)
+    daily_rank = db.Column(db.Integer, nullable=True)
 
     # one to many
     holdings = db.relationship('Holding', backref='portfolio', lazy=True)
