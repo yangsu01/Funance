@@ -2,6 +2,7 @@ import yfinance as yf
 
 from ..data_models import db, Stock, DailyHistory, ClosingHistory, Portfolio, Game
 from .time import get_est_time
+from .math_functions import round_number
 
 
 # run periodically when markets are open
@@ -25,22 +26,51 @@ def update_stock_prices() -> None:
     db.session.commit()
 
 
-def update_portfolio_value() -> None:
-    '''Updates the total value of all portfolios in games that are 'In Progress'
+def update_portfolios() -> None:
+    '''Updates the total value and rankings of all portfolios in games that are 'In Progress'
     '''
-    portfolios = Portfolio.query.join(Game).filter_by(status='In Progress').all()
     update_time = get_est_time()
-
-    for portfolio in portfolios:
-        holdings = portfolio.holdings
-        portfolio_value = portfolio.available_cash
-
-        for holding in holdings:
-            portfolio_value += holding.shares_owned * holding.stock.current_price
-
-        portfolio.current_value = round(portfolio_value, 2)
-        portfolio.last_updated = update_time
-
+    games = Game.query.filter(Game.status == 'In Progress').all()
+    
+    for game in games:
+        portfolios = game.portfolios
+        
+        # update portfolio values
+        for portfolio in portfolios:
+            holdings = portfolio.holdings
+            portfolio_value = portfolio.available_cash
+            
+            for holding in holdings:
+                portfolio_value += (holding.shares_owned * holding.stock.current_price)
+                
+            portfolio.current_value = round_number(portfolio_value)
+            portfolio.day_change = round_number(portfolio.current_value-portfolio.last_close_value)
+            portfolio.last_updated = update_time
+            
+        # update overall rankings
+        prev_rank = 1
+        prev = 0
+        portfolios = sorted(portfolios, key=lambda x: x.current_value, reverse=True)
+        for i, portfolio in enumerate(portfolios):
+            if portfolio.current_value != prev:
+                portfolio.overall_rank = i+1
+                prev = portfolio.current_value
+                prev_rank = i+1
+            else:
+                portfolio.overall_rank = prev_rank
+                
+        # update daily rankings
+        prev_rank = 1
+        prev = 0
+        portfolios = sorted(portfolios, key=lambda x: x.day_change, reverse=True)
+        for i, portfolio in enumerate(portfolios):
+            if portfolio.day_change != prev:
+                portfolio.daily_rank = i+1
+                prev = portfolio.day_change
+                prev_rank = i+1
+            else:
+                portfolio.daily_rank = prev_rank
+            
     db.session.commit()
 
 
