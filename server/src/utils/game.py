@@ -410,6 +410,7 @@ def get_closing_history(game_id: int, filter='top5') -> list:
     
     for portfolio in portfolios:
         history = portfolio.closing_history
+        history = sorted(history, key=lambda x: x.date)
         
         if history is not None:
             name = portfolio.portfolio_owner.username
@@ -462,6 +463,7 @@ def get_daily_history(game_id: int, filter='top5') -> dict:
     
     for portfolio in portfolios:
         history = portfolio.daily_history
+        history = sorted(history, key=lambda x: x.update_time)
     
         if history is not None:
             name = portfolio.portfolio_owner.username
