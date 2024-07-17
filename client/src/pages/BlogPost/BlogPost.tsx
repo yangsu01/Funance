@@ -50,7 +50,7 @@ const BlogPost = () => {
         }
       }
     }
-    funanceBlogPostCollection {
+    funanceBlogPostCollection (order: sys_firstPublishedAt_DESC) {
       items {
         sys {
           id
