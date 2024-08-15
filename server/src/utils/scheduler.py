@@ -31,12 +31,8 @@ def update_portfolios() -> None:
     '''Updates the total value and rankings of all portfolios in games that are 'In Progress'
     '''
     portfolios = Portfolio.query.join(Game).filter_by(status='In Progress').all()
-    orders = portfolios.orders
     update_time = get_est_time()
     games = Game.query.filter(Game.status == 'In Progress').all()
-    
-    # check and fulfill orders
-    check_orders(orders)
     
     for game in games:
         portfolios = game.portfolios
@@ -44,6 +40,11 @@ def update_portfolios() -> None:
         
         # update portfolio values
         for portfolio in portfolios:
+            # check if any orders can be fulfilled
+            orders = portfolio.orders
+            check_orders(orders)
+            
+            # update portfolio value
             holdings = portfolio.holdings
             portfolio_value = portfolio.available_cash
             
