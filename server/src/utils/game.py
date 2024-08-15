@@ -1,12 +1,21 @@
 from datetime import datetime
 
-from src.data_models import db, Portfolio, DailyHistory, ClosingHistory, Game
+from src.data_models import db, Portfolio, Game
 from .time import get_est_time, get_market_date, utc_to_est
 from .math_functions import round_number
 
 
 # updating database
-def add_game(creator_id: int, name: str, password: str, start_date: datetime, end_date: datetime, starting_cash: float, transaction_fee: float, fee_type: str) -> int:
+def add_game(
+    creator_id: int, 
+    name: str, 
+    password: str, 
+    start_date: datetime, 
+    end_date: datetime, 
+    starting_cash: float, 
+    transaction_fee: float, 
+    fee_type: str
+) -> int:
     """Creates a new game in the database
 
     Args:
@@ -100,27 +109,70 @@ def add_portfolio(name: str, user_id: int, password: str) -> int:
 
 
 # getting data 
-def get_games_list(user_id=None) -> list:
+def get_games_list(filter: str, offset: int, search: str, user_id=None) -> list:
     """ Gets a list of all games
 
     Args:
         user_id (int, optional): id of the user
+        filter (str, optional): filter for the games
 
     Returns:
         list: list of dictionaries containing game details
     """
-    games = Game.query.order_by(Game.participants.desc()).all()
+    # query data depending on filter
+    if filter=='All':
+        games = Game.query.filter(
+            Game.name.ilike(f"%{search}%")
+        ).order_by(
+            Game.participants.desc()
+        ).offset(offset).limit(10).all()
+        
+    elif filter=='In Progress' or filter=='Not Started' or filter=='Completed':
+        games = Game.query.filter(
+            Game.status==filter,
+        ).filter(
+            Game.name.ilike(f"%{search}%")
+        ).order_by(
+            Game.participants.desc()
+        ).offset(offset).limit(10).all()
+        
+    elif filter=='Joined':
+        games = Game.query.filter(
+            Game.portfolios.any(Portfolio.user_id==user_id)
+        ).filter(
+            Game.name.ilike(f"%{search}%")
+        ).order_by(
+            Game.participants.desc()
+        ).offset(offset).limit(10).all()
+    
+    elif filter=='Not Joined':
+        games = Game.query.filter(
+            ~Game.portfolios.any(Portfolio.user_id==user_id)
+        ).filter(
+            Game.name.ilike(f"%{search}%")
+        ).order_by(
+            Game.participants.desc()
+        ).offset(offset).limit(10).all()
+    
     game_list = []
 
     for game in games:
         if user_id is not None:
-            joined_game = Portfolio.query.filter_by(game_id=game.id, user_id=user_id).first() is not None
+            joined_game = Portfolio.query.filter_by(
+                game_id=game.id, user_id=user_id
+            ).first() is not None
         else:
             joined_game = False
 
-        transaction_fee = f'flat fee of ${round_number(game.transaction_fee)}' if game.fee_type == 'Flat Fee' else f'{round_number(game.transaction_fee * 100)}% fee'
-
-        game_details = f'${round_number(game.starting_cash)} starting cash, with {transaction_fee} per transaction. {"No password required." if game.password is None else "Password required."}'
+        transaction_fee = (
+            f'flat fee of ${round_number(game.transaction_fee)}' 
+            if game.fee_type == 'Flat Fee' 
+            else f'{round_number(game.transaction_fee * 100)}% fee'
+        )
+        game_details = (
+            f'${round_number(game.starting_cash)} starting cash, with {transaction_fee} per transaction. ' +
+            ('No password required.' if game.password is None else 'Password required.')
+        )
 
         game_list.append({
             'gameId': game.id,
@@ -138,29 +190,45 @@ def get_games_list(user_id=None) -> list:
     return game_list
 
 
-def get_game_leaderboard(game_id: int, user_id=None) -> dict:
+def get_game_leaderboard(game_id: int, user_id=None, top_filter=None, daily_filter=None) -> dict:
     """ Gets the leaderboard details of a game
 
     Args:
         game_id (int): id of the game
         user_id (int, optional): id of the user
+        top_filter (str, optional): number of top performers to display
+        daily_filter (str, optional): number of top daily performers to display
 
     Returns:
         dict: dictionary of the game leaderboard details
     """
-    game_details = get_game_details(game_id, user_id) # game info
-    top_performers = get_top_performers(game_id) # for display in a table
-    top_daily_performers = get_top_daily_performers(game_id) # for display in a table
-    performance_history = get_game_history(game_id) # for display in a time series plot
+    if top_filter is not None:
+        closing_history = get_closing_history(game_id, top_filter)
+        return {
+            'closingHistory': closing_history
+        }
+        
+    elif daily_filter is not None:
+        daily_history = get_daily_history(game_id, daily_filter)
+        return {
+            'dailyHistory': daily_history.get('dailyHistory')
+        }
+        
+    else:
+        game_details = get_game_details(game_id, user_id) # game info
+        top_performers = get_top_performers(game_id) # for display in a table
+        top_daily_performers = get_top_daily_performers(game_id) # for display in a table
+        closing_history = get_closing_history(game_id)
+        daily_history = get_daily_history(game_id)
 
-    return {
-        'gameDetails': game_details,
-        'topPortfolios': top_performers,
-        'dailyPortfolios': top_daily_performers,
-        'closingHistory': performance_history.get('closingHistory'),
-        'dailyHistory': performance_history.get('dailyHistory'),
-        'dailyHistoryDate': performance_history.get('date')
-    }
+        return {
+            'gameDetails': game_details,
+            'topPortfolios': top_performers,
+            'dailyPortfolios': top_daily_performers,
+            'closingHistory': closing_history,
+            'dailyHistory': daily_history.get('dailyHistory'),
+            'dailyHistoryDate': daily_history.get('date')
+        }
     
     
 def get_game_details(game_id: int, user_id=None) -> dict:
@@ -192,10 +260,22 @@ def get_game_details(game_id: int, user_id=None) -> dict:
     starting_cash = f'${round_number(game.starting_cash)}'
     joined_game = portfolio is not None
     portfolio_id = portfolio.id if portfolio is not None else None
-    transaction_fee = f'${round_number(game.transaction_fee, 0)}' if game.fee_type == 'Flat Fee' else f'{round_number(game.transaction_fee * 100, 0)}%'
+    transaction_fee = (
+        f'${round_number(game.transaction_fee, 0)}' 
+        if game.fee_type == 'Flat Fee' 
+        else f'{round_number(game.transaction_fee * 100, 0)}%'
+    )
     password_required = game.password is not None
-    last_updated = utc_to_est(game.last_updated).strftime('%a, %b %d. %Y %I:%M %p') + ' EST' if game.last_updated is not None else 'n/a'
-    game_duration = f'{(game.end_date - game.start_date).days} days' if game.end_date is not None else 'Infinite'
+    last_updated = (
+        utc_to_est(game.last_updated).strftime('%a, %b %d. %Y %I:%M %p') + 
+        ' EST' if game.last_updated is not None 
+        else 'n/a'
+    )
+    game_duration = (
+        f'{(game.end_date - game.start_date).days} days' 
+        if game.end_date is not None 
+        else 'Infinite'
+    )
 
     return {
         'name': game.name,
@@ -225,21 +305,28 @@ def get_top_performers(game_id: int) -> list:
         list: list of dictionaries containing each portfolios details
     """
     game = Game.query.filter_by(id=game_id).first()
-    portfolios = Portfolio.query.filter_by(game_id=game_id).order_by(Portfolio.current_value.desc()).all()
+    portfolios = Portfolio.query.filter_by(
+        game_id=game_id
+    ).order_by(
+        Portfolio.overall_rank.asc()
+    ).all()
 
     starting_cash = game.starting_cash
     top_performers = []
-    count = 0
-    prev = None
+    prev_rank = None
 
     for portfolio in portfolios:
-        count += 1
-        
         current_value = portfolio.current_value
+        rank = portfolio.overall_rank if prev_rank != portfolio.overall_rank else '-'
+        prev_rank = portfolio.overall_rank
+        
         portfolio_change =  round_number((current_value/starting_cash - 1) * 100, 2)
         portfolio_age = (get_est_time() - utc_to_est(portfolio.creation_date)).days
-        rank = count if current_value != prev else '-'
-        daily_change = f'{round_number(portfolio_change/portfolio_age)}%' if portfolio_age != 0 else 'n/a'
+        daily_change = (
+            f'{round_number(portfolio_change/portfolio_age)}%'
+            if portfolio_age != 0 
+            else 'n/a'
+        )
         
         top_performers.append({
             'Rank': rank,
@@ -250,7 +337,7 @@ def get_top_performers(game_id: int) -> list:
             'Daily Change': f'{daily_change}',
         })
 
-        prev = current_value
+        prev_rank = portfolio.overall_rank
 
     return top_performers
 
@@ -264,77 +351,150 @@ def get_top_daily_performers(game_id: int) -> list:
     Returns:
         list: list of dictionaries containing each portfolios details
     """
-    portfolios = Portfolio.query.filter_by(game_id=game_id).all()
-
-    ranked_portfolios = sorted(portfolios, key=lambda p: (p.current_value / p.last_close_value), reverse=True)
+    portfolios = Portfolio.query.filter(
+        Portfolio.game_id==game_id
+    ).order_by(
+        Portfolio.daily_rank.asc()
+    ).all()
 
     top_performers = []
-    count = 0
-    prev = None
+    prev_rank = None
 
-    for portfolio in ranked_portfolios:
-        count += 1
-        
-        day_change =  round_number(portfolio.current_value - portfolio.last_close_value)
-        day_change_percent = round_number(day_change/portfolio.last_close_value*100, 2)
-        rank = count if day_change_percent != prev else '-'
+    for portfolio in portfolios: 
+        day_change_percent = round_number(portfolio.day_change/portfolio.last_close_value*100, 2)
+        rank = portfolio.daily_rank if portfolio.daily_rank != prev_rank else '-'
 
         top_performers.append({
             'Rank': rank,
             'Username': portfolio.portfolio_owner.username,
             '% Change': f'{day_change_percent}%',
-            'Change': f'${day_change}',
+            'Change': f'${portfolio.day_change}',
             'Value': f'${portfolio.current_value}'
         })
 
-        prev = day_change_percent
+        prev_rank = portfolio.daily_rank
 
     return top_performers
 
 
-def get_game_history(game_id: int) -> dict:
-    """ Gets todays performance history and daily closing history of all portfolios in a game
-        if market is closed, gets the history for the last day the market was open
+def get_closing_history(game_id: int, filter='top5') -> list:
+    """ Gets top performers for overall leaderboard filtered by overall change
 
     Args:
         game_id (int): id of the game
+        filter (str, optional): amount of data to show. Defaults to 'top5'.
 
     Returns:
-        dict: dictionary containing the closing history and daily performance history of all portfolios
+        list: list of dictionaries containing the closing history of portfolios
     """
-    # closing history
-    closing_history = ClosingHistory.query.join(Portfolio).filter_by(game_id=game_id).order_by(ClosingHistory.date.desc()).all()
-    close = {}
+    # query data depending on filter
+    if filter=='top5':
+        portfolios = Portfolio.query.filter(
+            Portfolio.game_id==game_id
+        ).order_by(
+            Portfolio.overall_rank.asc()
+        ).limit(5).all()
+    elif filter=='bottom5':
+        portfolios = Portfolio.query.filter(
+            Portfolio.game_id==game_id
+        ).order_by(
+            Portfolio.overall_rank.desc()
+        ).limit(5).all()
+    else:
+        portfolios = Portfolio.query.filter(
+            Portfolio.game_id==game_id
+        ).all()
+    
+    # parse data for plotting
+    parsed_data = []
+    
+    for portfolio in portfolios:
+        history = portfolio.closing_history
+        history = sorted(history, key=lambda x: x.date)
+        
+        if history is not None:
+            name = portfolio.portfolio_owner.username
+            portfolio_history = {'name': name, 'x': [], 'y': []}
+        
+            for row in history:
+                x = row.date.strftime('%Y-%m-%d')
+                y = row.portfolio_value
+                
+                portfolio_history['x'].append(x)
+                portfolio_history['y'].append(y)
+                
+            parsed_data.append(portfolio_history)
+    
+    return parsed_data
+        
 
-    if closing_history is not None:
-        for row in closing_history:
-            data = close.setdefault(row.portfolio_id, {'x': [], 'y': [], 'name': row.portfolio.portfolio_owner.username})
-            data['x'].append(row.date.strftime('%Y-%m-%d'))
-            data['y'].append(row.portfolio_value)
-            close[row.portfolio_id] = data
+def get_daily_history(game_id: int, filter='top5') -> dict:
+    """ Gets top performers for the daily leaderboard filtered by daily change %
 
-    # todays performance history
+    Args:
+        game_id (int): id of the game
+        filter (str, optional): amount of data to show. Defaults to 'top5'.
+
+    Returns:
+        dict: dictionary of the list of daily history of portfolios and the date
+    """
     market_date = get_market_date(get_est_time()) # last date the market was open
+    
+    # query data depending on filter
+    if filter=='top5':
+        portfolios = Portfolio.query.filter(
+            Portfolio.game_id==game_id
+        ).order_by(
+            Portfolio.daily_rank.asc()
+        ).limit(5).all()
+    elif filter=='bottom5':
+        portfolios = Portfolio.query.filter(
+            Portfolio.game_id==game_id
+        ).order_by(
+            Portfolio.daily_rank.desc()
+        ).limit(5).all()
+    else:
+        portfolios = Portfolio.query.filter(
+            Portfolio.game_id==game_id
+        ).all()
+    
+    # parse data for plotting
+    parsed_data = []
+    
+    for portfolio in portfolios:
+        history = portfolio.daily_history
+        history = sorted(history, key=lambda x: x.update_time)
+    
+        if history is not None:
+            name = portfolio.portfolio_owner.username
+            portfolio_history = {'name': name, 'x': [], 'y': []}
+            
+            for row in history:
+                if row.date == market_date:
+                    x = utc_to_est(row.update_time).strftime('%Y-%m-%d %H:%M')
+                    y = (row.portfolio_value/portfolio.last_close_value-1)*100
 
-    daily_history = DailyHistory.query.filter_by(date=market_date).join(Portfolio).filter_by(game_id=game_id).order_by(DailyHistory.update_time.desc()).all()
-    day = {}
-
-    if daily_history is not None:
-        for row in daily_history:
-            daily_growth = (row.portfolio_value/row.portfolio.last_close_value - 1) * 100
-            data = day.setdefault(row.portfolio_id, {'x': [], 'y': [], 'name': row.portfolio.portfolio_owner.username})
-            data['x'].append(utc_to_est(row.update_time).strftime('%Y-%m-%d %H:%M'))
-            data['y'].append(daily_growth)
-            day[row.portfolio_id] = data
-
+                    portfolio_history['x'].append(x)
+                    portfolio_history['y'].append(y)
+                    
+            parsed_data.append(portfolio_history)
+    
     return {
-        'closingHistory': list(close.values()),
-        'dailyHistory': list(day.values()),
+        'dailyHistory': parsed_data,
         'date': market_date.strftime('%b %d, %Y')
     }
 
+
 # validation
-def validate_game(name: str, password: str, start_date: datetime, end_date: datetime, starting_cash: float, transaction_fee: float, fee_type: str) -> None:
+def validate_game(
+    name: str, 
+    password: str, 
+    start_date: datetime, 
+    end_date: datetime, 
+    starting_cash: float, 
+    transaction_fee: float, 
+    fee_type: str
+) -> None:
     """ Checks whether the game details are valid. Raises ValueError if not.
 
     Args:

@@ -18,7 +18,9 @@ import { useShowAlert } from "../../contexts/AlertContext";
 import {
   GameLeaderboardData,
   TimeSeriesPlotData,
-  LeaderboardFilterOptions,
+  GameDetails,
+  TopPortfolio,
+  DailyPortfolio,
 } from "../../utils/types";
 // constants
 import {
@@ -27,21 +29,26 @@ import {
 } from "../../utils/constants";
 
 const GameLeaderboard = () => {
-  const [leaderboardData, setLeaderboardData] = useState<GameLeaderboardData>(
-    {} as GameLeaderboardData
+  const [gameDetails, setGameDetails] = useState<GameDetails>(
+    {} as GameDetails
   );
-  const [filteredClose, setFilteredClose] = useState<TimeSeriesPlotData[]>(
+  const [topPortfolios, setTopPortfolios] = useState<TopPortfolio[]>(
+    [] as TopPortfolio[]
+  );
+  const [dailyPortfolios, setDailyPortfolios] = useState<DailyPortfolio[]>(
+    [] as DailyPortfolio[]
+  );
+  const [dailyHistoryDate, setDailyHistoryDate] = useState("");
+  const [closingHistory, setClosingHistory] = useState<TimeSeriesPlotData[]>(
     [] as TimeSeriesPlotData[]
   );
-  const [filteredDaily, setFilteredDaily] = useState<TimeSeriesPlotData[]>(
+  const [dailyHistory, setDailyHistory] = useState<TimeSeriesPlotData[]>(
     [] as TimeSeriesPlotData[]
   );
-  const [topCloseUsers, setTopCloseUsers] = useState<string[]>([]);
-  const [topDailyUsers, setTopDailyUsers] = useState<string[]>([]);
   const [showPopup, setShowPopup] = useState(false);
 
   const { id } = useParams();
-  const { fetchData, loading } = useFetch<GameLeaderboardData>();
+  const { fetchData } = useFetch<GameLeaderboardData>();
   const { postData } = usePost();
   const navigate = useNavigate();
   const showAlert = useShowAlert();
@@ -52,41 +59,27 @@ const GameLeaderboard = () => {
       if (res.status === "error") {
         showAlert(res.msg, "danger");
       } else {
-        setLeaderboardData(res.data);
-
-        const topClose = res.data.topPortfolios.map((data) => {
-          return data.Username;
-        });
-        const topDaily = res.data.dailyPortfolios.map((data) => {
-          return data.Username;
-        });
-
-        setTopCloseUsers(topClose);
-        setTopDailyUsers(topDaily);
-
-        // initiate filtered data
-        const filteredClose = res.data.closingHistory.filter((data) => {
-          return topClose.slice(0, 5).includes(data.name);
-        });
-        setFilteredClose(filteredClose);
-
-        const filteredDaily = res.data.dailyHistory.filter((data) => {
-          return topDaily.slice(0, 5).includes(data.name);
-        });
-        setFilteredDaily(filteredDaily);
+        setGameDetails(res.data.gameDetails);
+        setDailyHistory(res.data.dailyHistory);
+        setClosingHistory(res.data.closingHistory);
+        setDailyHistoryDate(res.data.dailyHistoryDate);
+        setTopPortfolios(res.data.topPortfolios);
+        setDailyPortfolios(res.data.dailyPortfolios);
       }
     });
   }, []);
 
+  // navigation
   const handleBack = () => {
     navigate(-1);
   };
 
+  // joining game
   const handleJoin = () => {
-    if (leaderboardData.gameDetails.passwordRequired) {
+    if (gameDetails.passwordRequired) {
       setShowPopup(true);
     } else {
-      joinGame(leaderboardData.gameDetails.name);
+      joinGame(gameDetails.name);
     }
   };
 
@@ -108,51 +101,24 @@ const GameLeaderboard = () => {
     });
   };
 
-  const handleCloseFilter = (filter: LeaderboardFilterOptions) => {
-    switch (filter) {
-      case "Top 5":
-        const topFilter = leaderboardData.closingHistory.filter((data) => {
-          return topCloseUsers.slice(0, 5).includes(data.name);
-        });
-        setFilteredClose(topFilter);
-        break;
+  // filtering plots
+  const handleFilter = (filterData: string, filter: string) => {
+    const body = { [filterData]: filter };
 
-      case "Bottom 5":
-        const bottomFilter = leaderboardData.closingHistory.filter((data) => {
-          return topCloseUsers.slice(-5).includes(data.name);
-        });
-        setFilteredClose(bottomFilter);
-        break;
-
-      default:
-        setFilteredClose(leaderboardData.closingHistory);
-        break;
-    }
+    fetchData(`/game-leaderboard/${id}`, body).then((res) => {
+      if (res.status === "error") {
+        showAlert(res.msg, "danger");
+      } else {
+        if (filterData === "closeData") {
+          setClosingHistory(res.data.closingHistory);
+        } else if (filterData === "dailyData") {
+          setDailyHistory(res.data.dailyHistory);
+        }
+      }
+    });
   };
 
-  const handleDailyFilter = (filter: LeaderboardFilterOptions) => {
-    switch (filter) {
-      case "Top 5":
-        const topFilter = leaderboardData.dailyHistory.filter((data) => {
-          return topDailyUsers.slice(0, 5).includes(data.name);
-        });
-        setFilteredDaily(topFilter);
-        break;
-
-      case "Bottom 5":
-        const bottomFilter = leaderboardData.dailyHistory.filter((data) => {
-          return topDailyUsers.slice(-5).includes(data.name);
-        });
-        setFilteredDaily(bottomFilter);
-        break;
-
-      default:
-        setFilteredDaily(leaderboardData.dailyHistory);
-        break;
-    }
-  };
-
-  if (loading || !leaderboardData.gameDetails) {
+  if (!gameDetails.name) {
     return (
       <>
         {/* page title */}
@@ -171,7 +137,7 @@ const GameLeaderboard = () => {
     <>
       {/* page title */}
       <Title
-        title={`${leaderboardData.gameDetails.name} Leaderboard`}
+        title={`${gameDetails.name} Leaderboard`}
         subtitle="Detailed stats for the game"
         button="Back"
         onClick={handleBack}
@@ -180,7 +146,7 @@ const GameLeaderboard = () => {
       {/* popup */}
       <PopupForm
         show={showPopup}
-        name={leaderboardData.gameDetails.name}
+        name={gameDetails.name}
         content="Please enter the password to join the game."
         submitName="Join Game"
         onClose={() => setShowPopup(false)}
@@ -189,18 +155,18 @@ const GameLeaderboard = () => {
 
       {/* buttons */}
       <GameLeaderboardButtons
-        portfolioId={leaderboardData.gameDetails.portfolioId}
-        gameStatus={leaderboardData.gameDetails.status}
-        joinedGame={leaderboardData.gameDetails.joinedGame}
+        portfolioId={gameDetails.portfolioId}
+        gameStatus={gameDetails.status}
+        joinedGame={gameDetails.joinedGame}
         onJoin={handleJoin}
       />
 
       {/* game info */}
-      <GameLeaderboardInfo details={leaderboardData.gameDetails} />
+      <GameLeaderboardInfo details={gameDetails} />
 
-      {leaderboardData.gameDetails.status === "Not Started" ? (
+      {gameDetails.status === "Not Started" ? (
         <EmptyMessage
-          title={`Game will start on: ${leaderboardData.gameDetails.startDate}`}
+          title={`Game will start on: ${gameDetails.startDate}`}
           subtitle="Analytics will be available once the game starts."
         />
       ) : (
@@ -215,16 +181,17 @@ const GameLeaderboard = () => {
               yLabel: "Portfolio Value ($)",
               xUnit: "day",
             }}
-            plotData={filteredClose}
+            plotData={closingHistory}
             tableHeaders={TOP_PORTFOLIO_TABLE_HEADERS}
-            tableData={leaderboardData.topPortfolios}
-            onFilter={handleCloseFilter}
+            tableData={topPortfolios}
+            filterData="closeData"
+            onFilter={handleFilter}
           />
 
           {/* daily top performers */}
-          {leaderboardData.gameDetails.status === "In Progress" && (
+          {gameDetails.status === "In Progress" && (
             <GameLeaderboardRankings
-              title={`Top Growers (${leaderboardData.dailyHistoryDate})`}
+              title={`Top Growers (${dailyHistoryDate})`}
               subtitle="*Updated every 30 minutes during market hours"
               chartLabel={{
                 title: "Todays Portfolio Growth",
@@ -232,10 +199,11 @@ const GameLeaderboard = () => {
                 yLabel: "Growth (%)",
                 xUnit: "minute",
               }}
-              plotData={filteredDaily}
+              plotData={dailyHistory}
               tableHeaders={DAILY_PORTFOLIOS_TABLE_HEADERS}
-              tableData={leaderboardData.dailyPortfolios}
-              onFilter={handleDailyFilter}
+              tableData={dailyPortfolios}
+              filterData="dailyData"
+              onFilter={handleFilter}
             />
           )}
         </>

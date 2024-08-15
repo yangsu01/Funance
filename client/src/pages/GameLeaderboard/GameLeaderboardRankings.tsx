@@ -20,7 +20,8 @@ type Props = {
   plotData: TimeSeriesPlotData[];
   tableHeaders: string[];
   tableData: TopPortfolio[] | DailyPortfolio[];
-  onFilter: (filter: LeaderboardFilterOptions) => void;
+  filterData: string;
+  onFilter: (filterData: string, filter: string) => void;
 };
 
 const GameLeaderboardRankings = ({
@@ -30,13 +31,25 @@ const GameLeaderboardRankings = ({
   plotData,
   tableHeaders,
   tableData,
+  filterData,
   onFilter,
 }: Props) => {
   const [selectedFilter, setSelectedFilter] = useState("Top 5");
 
   const handleFilter = (filter: LeaderboardFilterOptions) => {
     setSelectedFilter(filter);
-    onFilter(filter);
+
+    switch (filter) {
+      case "Top 5":
+        onFilter(filterData, "top5");
+        break;
+      case "Bottom 5":
+        onFilter(filterData, "bottom5");
+        break;
+      case "All":
+        onFilter(filterData, "all");
+        break;
+    }
   };
 
   return (
@@ -70,7 +83,7 @@ const GameLeaderboardRankings = ({
                 </Dropdown.Item>
                 <Dropdown.Item
                   eventKey="Bottom 5"
-                  active={selectedFilter === "Buttom 5"}
+                  active={selectedFilter === "Bottom 5"}
                 >
                   Bottom 5
                 </Dropdown.Item>
@@ -83,6 +96,7 @@ const GameLeaderboardRankings = ({
         </Row>
 
         <MultiTimeSeriesPlot plotData={plotData} label={chartLabel} />
+
         <PaginationTable
           headers={tableHeaders}
           content={tableData}

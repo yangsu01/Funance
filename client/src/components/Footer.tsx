@@ -13,7 +13,7 @@ const Footer = ({ version }: Props) => {
     <Navbar sticky="bottom" className="mt-3 bg-dark mx-3 border-top">
       <Container>
         <Nav className="d-flex align-items-center me-auto">
-          &copy; 2024 FUNance {version}
+          &copy; 2024 Funance {version}
         </Nav>
         <Nav>
           <Nav.Link href={githubUrl}>

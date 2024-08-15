@@ -10,7 +10,7 @@ from src.utils.scheduler import (
     # run when markets open
     update_last_close_value, update_started_games, drop_prev_day_data,
     # run periodically when markets are open
-    update_stock_prices, update_portfolio_value, save_daily_history, 
+    update_stock_prices, update_portfolios, save_daily_history,
     # run at end of trading day
     save_closing_history, update_completed_games, close_expired_orders
 )
@@ -60,7 +60,8 @@ scheduler.start()
 def run_periodically():
     with api.app_context():
         update_stock_prices()
-        update_portfolio_value()
+        update_portfolios()
+        save_game_update_time()
         save_daily_history()
 
 def run_at_open():

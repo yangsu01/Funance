@@ -92,13 +92,22 @@ def join_game():
 @jwt_required(optional=True)
 def game_list():
     '''Get a summary list of all created games
+    
+        args:
+            gamesLoaded (int): number of games to load (optional, default=0)
+            filter (str): filter for games (optional, default="All")
+            search (str): search string for game name (optional, default="")
     '''
+    filter = request.args.get('filter', 'All')
+    offset = int(request.args.get('gamesLoaded', 0))
+    search = request.args.get('search', '')
+    
     try:
         if get_jwt_identity():
             user_id = get_jwt_identity()
-            data = get_games_list(user_id)
+            data = get_games_list(filter, offset, search, user_id)
         else:
-            data = get_games_list()
+            data = get_games_list(filter, offset, search)
         
     except Exception as e:
         return jsonify(msg=str(e)), 400
@@ -116,17 +125,16 @@ def game_leaderboard(game_id: str):
 
         args:
             game_id (int): id of the game
+            closeData (str): number of top players to show (optional)
+            dailyData (str): number of players to show for daily leaderboard (optional)
     '''
     game_id = int(game_id)
+    top_filter = request.args.get('closeData', None)
+    daily_filter = request.args.get('dailyData', None)
 
     try:
-        if get_jwt_identity():
-            user_id = get_jwt_identity()
-            data = get_game_leaderboard(game_id, user_id)
-        else:
-            data = get_game_leaderboard(game_id)
-            
-        
+        user_id = get_jwt_identity() if get_jwt_identity() else None      
+        data = get_game_leaderboard(game_id, user_id, top_filter, daily_filter)
 
     except Exception as e:
         return jsonify(msg=str(e)), 400

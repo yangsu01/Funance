@@ -24,12 +24,13 @@ export default function useFetch <T>() {
     let responseData: FetchResponse<T> = {status: 'error', msg: 'Failed to Load'}
     const headers = token ? { Authorization: `Bearer ${token}` } : {}
 
-    const fetchData = async (route: string) => {
+    const fetchData = async (route: string, body={}) => {
         setLoading(true)
 
         try {
             const response = await api.get(route, {
-                headers: headers
+                headers: headers,
+                params: body
             })
             responseData = {status: 'success', data: response.data.data}
         } catch (err: any) {
