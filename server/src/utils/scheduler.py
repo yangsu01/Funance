@@ -35,8 +35,12 @@ def update_portfolios() -> None:
     update_time = get_est_time()
     games = Game.query.filter(Game.status == 'In Progress').all()
     
+    # check and fulfill orders
+    check_orders(orders)
+    
     for game in games:
         portfolios = game.portfolios
+        game.last_updated = update_time
         
         # update portfolio values
         for portfolio in portfolios:
@@ -74,34 +78,6 @@ def update_portfolios() -> None:
             else:
                 portfolio.daily_rank = prev_rank
             
-    db.session.commit()
-
-
-def save_game_update_time() -> None:
-    '''Saves the last update time of all games that are 'In Progress'
-    '''
-    games = Game.query.filter_by(status='In Progress').all()
-
-    update_time = get_est_time()
-
-    
-    # check and fulfil orders
-    check_orders(orders)
-
-    for portfolio in portfolios:
-        holdings = portfolio.holdings
-        portfolio_value = portfolio.available_cash
-
-        for holding in holdings:
-            portfolio_value += holding.shares_owned * holding.stock.current_price
-
-        portfolio.current_value = round(portfolio_value, 2)
-        portfolio.last_updated = update_time
-    
-    games = portfolios.games
-    for game in games:
-        game.last_updated = update_time
-
     db.session.commit()
 
 
