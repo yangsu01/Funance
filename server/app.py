@@ -61,7 +61,6 @@ def run_periodically():
     with api.app_context():
         update_stock_prices()
         update_portfolios()
-        save_game_update_time()
         save_daily_history()
 
 def run_at_open():
