@@ -148,7 +148,7 @@ class Order(db.Model):
     # order types: limit buy/sell, stop-loss
     order_type = db.Column(db.String(100), nullable=False)
     shares = db.Column(db.Integer, nullable=False)
-    target_price = db.Column(db.Float, nullable=False)
+    target_price = db.Column(db.Float, nullable=True)
     order_date = db.Column(db.DateTime(timezone=True), nullable=False)
     # order status: pending, filled, cancelled, expired
     order_status = db.Column(db.String(10), nullable=False) 
