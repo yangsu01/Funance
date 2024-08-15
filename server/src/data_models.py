@@ -76,6 +76,7 @@ class Portfolio(db.Model):
     transactions = db.relationship('Transaction', backref='portfolio', lazy=True)
     daily_history = db.relationship('DailyHistory', backref='portfolio', lazy=True)
     closing_history = db.relationship('ClosingHistory', backref='portfolio', lazy=True)
+    orders = db.relationship('Order', backref='portfolio', lazy=True)
 
 
 class Stock(db.Model):
@@ -94,6 +95,7 @@ class Stock(db.Model):
     # one to many
     holdings = db.relationship('Holding', backref='stock', lazy=True)
     transactions = db.relationship('Transaction', backref='stock', lazy=True)
+    orders = db.relationship('Order', backref='stock', lazy=True)
 
 
 class Holding(db.Model):
@@ -133,3 +135,18 @@ class DailyHistory(db.Model):
     date = db.Column(db.Date, nullable=False)
     update_time = db.Column(db.DateTime(timezone=True), nullable=False)
     portfolio_value = db.Column(db.Float, nullable=False)
+    
+
+class Order(db.Model):
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    stock_id = db.Column(db.Integer, db.ForeignKey('stock.id'), nullable=False)
+    portfolio_id = db.Column(db.Integer, db.ForeignKey('portfolio.id'), nullable=False)
+
+    # order types: limit buy/sell, stop-loss
+    order_type = db.Column(db.String(100), nullable=False)
+    shares = db.Column(db.Integer, nullable=False)
+    target_price = db.Column(db.Float, nullable=False)
+    order_date = db.Column(db.DateTime(timezone=True), nullable=False)
+    # order status: pending, filled, cancelled, expired
+    order_status = db.Column(db.String(10), nullable=False) 
+    order_expiration = db.Column(db.Date, nullable=True)
