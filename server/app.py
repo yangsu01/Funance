@@ -10,14 +10,15 @@ from src.utils.scheduler import (
     # run when markets open
     update_last_close_value, update_started_games, drop_prev_day_data,
     # run periodically when markets are open
-    update_stock_prices, update_portfolio_value, save_game_update_time, save_daily_history,
+    update_stock_prices, update_portfolio_value, save_daily_history, 
     # run at end of trading day
-    save_closing_history, update_completed_games,
+    save_closing_history, update_completed_games, close_expired_orders
 )
 
 # import blueprints
 from src.routes.auth import auth
 from src.routes.portfolio_sim import portfolio_sim
+from src.routes.orders import orders
 
 api = Flask(__name__)
 api.config.from_object(AppConfig)
@@ -47,6 +48,7 @@ db.init_app(api)
 #register blueprints
 api.register_blueprint(auth, url_prefix='/api')
 api.register_blueprint(portfolio_sim, url_prefix='/api')
+api.register_blueprint(orders, url_prefix='/api')
 
 
 # initiate scheduler
@@ -59,7 +61,6 @@ def run_periodically():
     with api.app_context():
         update_stock_prices()
         update_portfolio_value()
-        save_game_update_time()
         save_daily_history()
 
 def run_at_open():
@@ -76,6 +77,7 @@ def run_at_close():
 
         save_closing_history()
         update_completed_games()
+        close_expired_orders()
 
 # add jobs
 scheduler.add_job(
@@ -90,15 +92,25 @@ scheduler.add_job(
 )
 
 scheduler.add_job(
-    id='run_periodically',
+    id='run_935-955',
+    func=run_periodically,
+    trigger='cron',
+    day_of_week='mon-fri', 
+    hour='9', 
+    minute='35-55/5',
+    timezone='US/Eastern',
+    misfire_grace_time=300
+)
+
+scheduler.add_job(
+    id='run_10-1359',
     func=run_periodically,
     trigger='cron',
     day_of_week='mon-fri', 
     hour='10-15', 
-    minute='0, 30',
-    second='10',
+    minute='*/5',
     timezone='US/Eastern',
-    misfire_grace_time=None
+    misfire_grace_time=300
 )
 
 scheduler.add_job(
