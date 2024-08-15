@@ -5,7 +5,7 @@ from datetime import datetime
 from src.utils.game import add_game, add_portfolio, get_games_list, get_game_leaderboard
 from src.utils.portfolio import get_latest_portfolio_id, get_portfolio
 from src.utils.stock_data import get_stock_info, get_stock_news, get_stock_history
-from src.utils.transaction import add_stock, record_transaction, get_buy_info, get_sell_info
+from src.utils.transaction import add_stock, get_buy_info, get_sell_info
 
 
 portfolio_sim = Blueprint('portfolio_sim', __name__)
@@ -235,49 +235,3 @@ def sell_info(portfolio_id: str):
         data=data,
         msg="success"
     ), 200
-
-
-@portfolio_sim.route('/buy-stock', methods=['POST'])
-@jwt_required()
-def buy_stock():
-    '''Buy a stock
-    
-        args:
-            portfolioId (int): id of the portfolio
-            stockId (int): id of the stock
-            shares (int): number of shares
-    '''
-    portfolio_id = request.json.get('portfolioId', None)
-    stock_id = request.json.get('stockId', None)
-    shares = request.json.get('shares', None)
-
-    try:
-        record_transaction(portfolio_id, current_user.id, stock_id, 'buy', shares)
-
-    except Exception as e:
-        return jsonify(msg=str(e)), 400
-
-    return jsonify(msg='Stock bought successfully!'), 200
-
-
-@portfolio_sim.route('/sell-stock', methods=['POST'])
-@jwt_required()
-def sell_stock():
-    '''Sell a stock
-    
-        args:
-            portfolioId (int): id of the portfolio
-            stockId (int): id of the stock
-            shares (int): number of shares
-    '''
-    portfolio_id = request.json.get('portfolioId', None)
-    stock_id = request.json.get('stockId', None)
-    shares = request.json.get('shares', None)
-
-    try:
-        record_transaction(portfolio_id, current_user.id, stock_id, 'sell', shares)
-
-    except Exception as e:
-        return jsonify(msg=str(e)), 400
-
-    return jsonify(msg='Stock sold successfully!'), 200

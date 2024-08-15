@@ -1,6 +1,7 @@
 from src.data_models import Portfolio, Holding, Transaction, DailyHistory, ClosingHistory
 from .time import get_est_time, get_market_date, utc_to_est
 from .math_functions import round_number
+from .order import get_orders
 
 
 # getting data
@@ -41,6 +42,7 @@ def get_portfolio(user_id: int, portfolio_id: int) -> dict:
     sector_breakdown = get_sector_breakdown(portfolio_id) # for display in a pie chart
     portfolio_transactions = get_portfolio_transactions(portfolio_id) # for display in a table
     portfolio_holdings = get_portfolio_holdings(portfolio_id) # for display in a table
+    pending_orders = get_orders(portfolio_id) # for display in a table
 
     return {
         'userPortfolios': user_portfolios,
@@ -52,6 +54,7 @@ def get_portfolio(user_id: int, portfolio_id: int) -> dict:
         'sectorBreakdown': sector_breakdown,
         'portfolioTransactions': portfolio_transactions,
         'portfolioHoldings': portfolio_holdings,
+        'pendingOrders': pending_orders
     }
 
 
