@@ -88,7 +88,7 @@ def validate_order(
         Exception: insufficient shares
     """
     # check if order type is valid
-    valid_types = ['limit buy', 'limit sell', 'stop-loss']
+    valid_types = ['limit buy', 'limit sell', 'stop-loss', 'market buy', 'market sell']
     if order_type not in valid_types:
         raise Exception('Invalid order type')
     
@@ -97,7 +97,7 @@ def validate_order(
         raise Exception('Invalid number of shares')
     
     # check if target price is valid
-    if target_price <= 0:
+    if order_type not in ['market buy', 'market sell'] and target_price <= 0:
         raise Exception('Invalid target price')
     
     # check if expiration date is valid
@@ -158,6 +158,9 @@ def check_orders(orders: list) -> None:
         orders (list): list of Order objects that are pending
     """
     for order in orders:
+        if order.order_status != 'pending':
+            continue
+        
         current_price = order.stock.current_price
         # check limit buy
         if order.order_type == 'limit buy':
@@ -167,9 +170,12 @@ def check_orders(orders: list) -> None:
         elif order.order_type == 'limit sell':
             if current_price >= order.target_price:
                 execute_order(order)
+        # check stop-loss
         elif order.order_type == 'stop-loss':
             if current_price <= order.target_price:
                 execute_order(order)
+        elif order.order_type == 'market buy' or order.order_type == 'market sell':
+            execute_order(order)
 
 
 def execute_order(order: Order) -> None:
@@ -183,6 +189,8 @@ def execute_order(order: Order) -> None:
     type = order.portfolio.parent_game.fee_type
     cash = order.portfolio.available_cash
     shares = order.shares
+    full_shares = shares
+    order_type = order.order_type
     
     def calculate_value(val: float, fee: float, type: str) -> float:
         if type == 'Flat Fee':
@@ -191,7 +199,7 @@ def execute_order(order: Order) -> None:
             return val + abs(val) * fee
     
     # execute buy
-    if order.order_type == 'limit buy':
+    if order_type == 'limit buy' or order_type == 'market buy':
         transaction_type = 'buy'
         value = calculate_value(shares*price, fee, type)
         
@@ -205,11 +213,18 @@ def execute_order(order: Order) -> None:
         value = calculate_value(shares*price, fee, type)
             
     # execute sell
-    elif order.order_type == 'limit sell' or order.order_type == 'stop-loss':
-        shares_owned = Holding.query.filter_by(
+    elif order_type == 'limit sell' or order_type == 'stop-loss' or order_type == 'market sell':
+        holding = Holding.query.filter_by(
             portfolio_id=order.portfolio_id,
             stock_id=order.stock_id
-        ).first().shares_owned
+        ).first()
+        
+        if holding is None:
+            order.order_status = 'cancelled'
+            db.session.commit()
+            return
+        else:
+            shares_owned = holding.shares_owned
         
         # sell all shares if order shares exceed shares owned
         shares = min(shares_owned, order.shares)
@@ -237,7 +252,10 @@ def execute_order(order: Order) -> None:
         order.portfolio.available_cash = round_number(
             order.portfolio.available_cash - value
         )
-        order.order_status = 'filled'
+        if shares < full_shares:
+            order.order_status = 'partially filled'
+        else:
+            order.order_status = 'filled'
         db.session.commit()
     else:
         order.order_status = 'cancelled'
@@ -252,8 +270,11 @@ def check_order_expired(orders: list) -> None:
     """
     today = get_est_time().date()
     for order in orders:
+        if order.order_status != 'pending':
+            continue
+        
         # cancel orders if game is completed
-        if order.portfolio.parent_game.status == 'Completed':
+        elif order.portfolio.parent_game.status == 'Completed':
             order.order_status = 'cancelled'
             db.session.commit()
             
@@ -294,7 +315,7 @@ def get_orders(portfolio_id: int) -> list:
             'Order Type': order.order_type,
             'Stock Symbol': order.stock.ticker,
             'Shares': order.shares,
-            'Target Price': order.target_price,
+            'Target Price': order.target_price if order.target_price is not None else 'n/a',
             'Current Price': order.stock.current_price,
             'Expiration Date': expiration,
             'Order Date': date,
