@@ -1,7 +1,8 @@
 import yfinance as yf
 
-from ..data_models import db, Stock, DailyHistory, ClosingHistory, Portfolio, Game
+from ..data_models import db, Stock, DailyHistory, ClosingHistory, Portfolio, Game, Order
 from .time import get_est_time
+from .order import check_order_expired, check_orders
 
 
 # run periodically when markets are open
@@ -29,7 +30,11 @@ def update_portfolio_value() -> None:
     '''Updates the total value of all portfolios in games that are 'In Progress'
     '''
     portfolios = Portfolio.query.join(Game).filter_by(status='In Progress').all()
+    orders = portfolios.orders
     update_time = get_est_time()
+    
+    # check and fulfil orders
+    check_orders(orders)
 
     for portfolio in portfolios:
         holdings = portfolio.holdings
@@ -40,17 +45,8 @@ def update_portfolio_value() -> None:
 
         portfolio.current_value = round(portfolio_value, 2)
         portfolio.last_updated = update_time
-
-    db.session.commit()
-
-
-def save_game_update_time() -> None:
-    '''Saves the last update time of all games that are 'In Progress'
-    '''
-    games = Game.query.filter_by(status='In Progress').all()
-
-    update_time = get_est_time()
-
+    
+    games = portfolios.games
     for game in games:
         game.last_updated = update_time
 
@@ -106,26 +102,16 @@ def update_completed_games() -> None:
     for game in games:
         if game.end_date is not None and game.end_date < current_date:
             game.status = 'Completed'
-
-            # create_game_summary(game.id)
     
     db.session.commit()
 
 
-# def create_game_summary(game_id: int) -> None:
-#     '''Generates a game summary after a game has ended
+def close_expired_orders() -> None:
+    '''Closes all orders that have expired
+    '''
+    orders = Order.query.filter_by(order_status='pending').all()
+    check_order_expired(orders)
 
-#         args:
-#             game_id (int): id of the game
-#     '''
-#     portfolios = Portfolio.query.filter_by(game_id=game_id).all()
-#     transactions = Transaction.query.join(Portfolio).filter_by(game_id=game_id).all()
-#     holdings = Holding.query.join(Portfolio).filter_by(game_id=game_id).all()
-    
-#     most_valueable_portfolio = max(portfolios, key=lambda x: x.current_value)
-#     least_valueable_portfolio = min(portfolios, key=lambda x: x.current_value)
-
-    
 
 # run right before market opens
 def update_last_close_value() -> None:
