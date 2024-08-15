@@ -37,11 +37,15 @@ def check_market_closed() -> bool:
         bool: True if market is closed, False if market is open
     """
     est_time = get_est_time()
-
-    if est_time.weekday() < 5 and est_time.hour < 16:
-        return False
-    else:
+    
+    if est_time.weekday() > 5:
         return True
+    elif est_time.hour >= 16: 
+        return True
+    elif est_time.hour < 9 or (est_time.hour == 9 and est_time.minute < 30):
+        return True
+    
+    return False
     
 
 def get_market_date(est_time: datetime) -> datetime.date:
