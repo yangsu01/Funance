@@ -9,8 +9,10 @@ import PortfolioHistoryPlots from "./PortfolioHistoryPlots";
 import PortfolioHoldingsPlots from "./PortfolioHoldingsPlots";
 import EmptyMessage from "../../components/UI/EmptyMessage";
 import PortfolioTable from "./PortfolioTable";
+import PortfolioOrders from "./PortfolioOrders";
 // hooks
 import useFetch from "../../hooks/useFetch";
+import usePost from "../../hooks/usePost";
 // contexts
 import { useShowAlert } from "../../contexts/AlertContext";
 // types
@@ -28,6 +30,7 @@ const Portfolio = () => {
 
   let { id } = useParams();
   const { fetchData, loading } = useFetch<PortfolioData>();
+  const { postData } = usePost();
   const navigate = useNavigate();
   const showAlert = useShowAlert();
 
@@ -46,6 +49,24 @@ const Portfolio = () => {
 
   const handleLeaderboard = () => {
     navigate(`/games/${portfolioData.portfolioDetails.gameId}`);
+  };
+
+  const handleCancelOrder = (id: number | string) => {
+    const body = { orderId: id };
+
+    postData("/cancel-order", body).then((res) => {
+      if (res.status === "error") {
+        showAlert(res.msg, "danger");
+      } else {
+        showAlert(res.msg, "success");
+        setPortfolioData({
+          ...portfolioData,
+          pendingOrders: portfolioData.pendingOrders.filter(
+            (order) => order.id !== id
+          ),
+        });
+      }
+    });
   };
 
   if (loading || !portfolioData.portfolioDetails) {
@@ -83,6 +104,10 @@ const Portfolio = () => {
         />
       ) : (
         <>
+          <PortfolioOrders
+            pendingOrders={portfolioData.pendingOrders}
+            onCancelOrder={handleCancelOrder}
+          />
           <PortfolioHistoryPlots
             closeData={portfolioData.closingHistory}
             dailyData={portfolioData.dailyHistory}

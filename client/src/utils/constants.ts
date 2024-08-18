@@ -77,4 +77,14 @@ export const TOP_PORTFOLIO_TABLE_HEADERS: string[] = [
     "Date (EST)",
   ]
 
+export const PENDING_ORDERS_TABLE_HEADERS: string[] = [
+  "Order Type",
+  "Stock Symbol",
+  "Shares",
+  "Target Price",
+  "Current Price",
+  "Expiration Date",
+  "Order Date",
+]
+
   export const EMAIL_FORM: string = "https://funance.ck.page/746330640c"

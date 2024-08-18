@@ -106,6 +106,7 @@ export type PortfolioDetails = {
     change: number;
     profit: number;
     lastUpdated: string;
+    overallRank: number;
 }
 export type LinePlotData = {
     x: string[];
@@ -139,6 +140,16 @@ export type Holding = {
     'Market Value': number
     'Currency': string
 }
+export type PendingOrders = {
+    'id': number;
+    'Order Type': string;
+    'Stock Symbol': string;
+    'Shares': number;
+    'Target Price': number;
+    'Current Price': number;
+    'Expiration Date': string;
+    'Order Date': string;
+}
 export type PortfolioData = {
     userPortfolios: UserPortfolios[];
     portfolioDetails: PortfolioDetails;
@@ -149,6 +160,7 @@ export type PortfolioData = {
     sectorBreakdown: PiePlotData;
     portfolioTransactions: Transaction[];
     portfolioHoldings: Holding[];
+    pendingOrders: PendingOrders[];
 }
 
 // info needed before buy transaction
@@ -201,6 +213,8 @@ export type StockData = {
     news: StockNews[];
     tickerInfo: TickerInfo;
     stockId: number;
+    marketClosed: boolean;
+    nextMarketDate: string;
 }
 
 // games filter options
@@ -271,3 +285,5 @@ export type BlogPostData = {
         items: BlogItem[];
     };
 }
+
+export type OrderTypes = "market buy" | "limit buy" | "market sell" | "limit sell" | "stop-loss"
