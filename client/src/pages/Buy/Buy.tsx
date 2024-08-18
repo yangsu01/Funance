@@ -3,17 +3,18 @@ import { useParams, useNavigate } from "react-router-dom";
 
 // components
 import BuySearchForm from "./BuySearchForm";
-import BuyForm from "./BuyForm";
+import BuyOrder from "./BuyOrder";
 import Title from "../../components/UI/Title";
 import Loading from "../../components/UI/Loading";
 import StockInfo from "../../components/StockInfo";
 // hooks
 import useFetch from "../../hooks/useFetch";
 import usePost from "../../hooks/usePost";
+import useValidateDate from "../../hooks/useValidateDate";
 // contexts
 import { useShowAlert } from "../../contexts/AlertContext";
 // types
-import { BuyInfo, StockData } from "../../utils/types";
+import { BuyInfo, StockData, OrderTypes } from "../../utils/types";
 
 const Buy = () => {
   const buyInfoRef = useRef<BuyInfo>({} as BuyInfo);
@@ -46,6 +47,7 @@ const Buy = () => {
     navigate(-1);
   };
 
+  // searching for stock data
   const handleSearch = (ticker: string) => {
     if (ticker.toUpperCase().trim() === searchedTicker) return;
 
@@ -62,14 +64,74 @@ const Buy = () => {
     setSearchedTicker(ticker.toUpperCase().trim());
   };
 
+  // market buy
   const handleBuy = (shares: number) => {
+    // if market is closed, submit market buy order
+    if (stockDataRef.current.marketClosed) {
+      const body = {
+        portfolioId: id,
+        stockId: stockDataRef.current.stockId,
+        shares: shares,
+        orderType: "market buy",
+      };
+
+      postData(`/submit-order`, body).then((res) => {
+        if (res.status === "error") {
+          showAlert(res.msg, "danger");
+        } else {
+          showAlert(res.msg, "success");
+          navigate(`/portfolio/${id}`);
+        }
+      });
+      // if market is open, submit market buy
+    } else {
+      const body = {
+        portfolioId: id,
+        stockId: stockDataRef.current.stockId,
+        shares: shares,
+      };
+
+      postData(`/buy-stock`, body).then((res) => {
+        if (res.status === "error") {
+          showAlert(res.msg, "danger");
+        } else {
+          showAlert(res.msg, "success");
+          navigate(`/portfolio/${id}`);
+        }
+      });
+    }
+  };
+
+  // limit buy
+  const handleOrder = (
+    shares: number,
+    orderType: OrderTypes,
+    expiration: string | null,
+    targetPrice: number | null
+  ) => {
+    // check date is valid if expiration is set
+    if (
+      expiration &&
+      !useValidateDate(
+        expiration,
+        undefined,
+        stockDataRef.current.nextMarketDate
+      )
+    ) {
+      showAlert("Invalid Date!", "danger");
+      return;
+    }
+
     const body = {
       portfolioId: id,
-      stockId: stockDataRef.current.stockId,
+      orderType: orderType,
       shares: shares,
+      expiration: expiration,
+      targetPrice: targetPrice,
+      stockId: stockDataRef.current.stockId,
     };
 
-    postData(`/buy-stock`, body).then((res) => {
+    postData("/submit-order", body).then((res) => {
       if (res.status === "error") {
         showAlert(res.msg, "danger");
       } else {
@@ -113,11 +175,15 @@ const Buy = () => {
           <Loading />
         ) : (
           <>
-            <BuyForm
+            <BuyOrder
               info={buyInfoRef.current}
               currentPrice={stockDataRef.current.tickerInfo.price}
+              dayChange={stockDataRef.current.tickerInfo["%DayChange"]}
               ticker={searchedTicker}
-              onSubmit={handleBuy}
+              marketClosed={stockDataRef.current.marketClosed}
+              nextMarketDate={stockDataRef.current.nextMarketDate}
+              onBuy={handleBuy}
+              onOrder={handleOrder}
             />
             <StockInfo data={stockDataRef.current} ticker={searchedTicker} />
           </>
