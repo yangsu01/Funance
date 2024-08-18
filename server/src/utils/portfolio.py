@@ -1,5 +1,5 @@
 from src.data_models import Portfolio, Holding, Transaction, DailyHistory, ClosingHistory
-from .time import get_est_time, get_market_date, utc_to_est
+from .time import get_est_time, get_prev_market_date, utc_to_est
 from .math_functions import round_number
 from .order import get_orders
 
@@ -79,7 +79,7 @@ def get_portfolio_details(portfolio_id: int, user_id: int) -> dict:
     transaction_fee = f'${round_number(parent_game.transaction_fee)}' if parent_game.fee_type == 'Flat Fee' else f'{round_number(parent_game.transaction_fee * 100)}%'
     starting_cash = parent_game.starting_cash
     start_date = parent_game.start_date.strftime("%B %d, %Y")
-    end_date = parent_game.end_date.strftime('%Y-%m-%d') if parent_game.end_date is not None else 'n/a',
+    end_date = parent_game.end_date.strftime("%B %d, %Y") if parent_game.end_date is not None else 'n/a',
     current_value = portfolio.current_value
     change = round_number((current_value/starting_cash - 1) * 100)
     profit = round_number(current_value - starting_cash)
@@ -102,6 +102,7 @@ def get_portfolio_details(portfolio_id: int, user_id: int) -> dict:
         'change': change,
         'profit': profit,
         'lastUpdated': last_updated,
+        'overallRank': portfolio.overall_rank if portfolio.overall_rank is not None else 'n/a',
     }
         
     
@@ -138,7 +139,7 @@ def get_portfolio_history(portfolio_id: int) -> dict:
     Returns:
         dict: dicionary of the closing price history and todays history
     """
-    market_date = get_market_date(get_est_time()) # last date the market was open
+    market_date = get_prev_market_date(get_est_time()) # last date the market was open
         
     daily_history = DailyHistory.query.filter_by(portfolio_id=portfolio_id, date=market_date).order_by(DailyHistory.update_time.desc()).all()
     closing_history = ClosingHistory.query.filter_by(portfolio_id=portfolio_id).order_by(ClosingHistory.date.desc()).all()

@@ -311,7 +311,7 @@ def get_orders(portfolio_id: int) -> list:
         expiration = order.order_expiration.strftime('%m-%d-%Y') if order.order_expiration is not None else 'n/a'
         
         orders_list.append({
-            'Order ID': order.id,
+            'id': order.id,
             'Order Type': order.order_type,
             'Stock Symbol': order.stock.ticker,
             'Shares': order.shares,

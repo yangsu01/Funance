@@ -6,6 +6,7 @@ from src.utils.game import add_game, add_portfolio, get_games_list, get_game_lea
 from src.utils.portfolio import get_latest_portfolio_id, get_portfolio
 from src.utils.stock_data import get_stock_info, get_stock_news, get_stock_history
 from src.utils.transaction import add_stock, get_buy_info, get_sell_info
+from src.utils.time import check_market_closed, get_next_market_date
 
 
 portfolio_sim = Blueprint('portfolio_sim', __name__)
@@ -197,7 +198,9 @@ def stock_info(ticker: str):
             'tickerInfo': stock_info,
             'news': news,
             'history': history,
-            'stockId': stock_id
+            'stockId': stock_id,
+            'marketClosed': check_market_closed(),
+            'nextMarketDate': get_next_market_date()
         },
         msg="success"
     ), 200
