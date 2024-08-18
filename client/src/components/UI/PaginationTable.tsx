@@ -1,11 +1,14 @@
 import { useState } from "react";
-import { Table, Pagination } from "react-bootstrap";
+import { Table, Pagination, Button } from "react-bootstrap";
 
 type Props = {
   tableName?: string;
   headers: string[];
   content: Record<string, string | number>[];
   itemsPerPage?: number;
+  actionName?: string;
+  onAction?: (id: number | string) => void;
+  idColumn?: string;
 };
 
 const PaginationTable = ({
@@ -13,6 +16,9 @@ const PaginationTable = ({
   content,
   headers,
   itemsPerPage = 10,
+  onAction,
+  actionName,
+  idColumn,
 }: Props) => {
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -35,6 +41,12 @@ const PaginationTable = ({
     setCurrentPage((page) => page - 1);
   };
 
+  const handleAction = (id: number | string) => {
+    if (onAction) {
+      onAction(id);
+    }
+  };
+
   return (
     <>
       {tableName && <h3>{tableName}</h3>}
@@ -46,6 +58,7 @@ const PaginationTable = ({
                 {header}
               </th>
             ))}
+            {actionName && <th scope="col">Action</th>}
           </tr>
         </thead>
 
@@ -55,6 +68,17 @@ const PaginationTable = ({
               {headers.map((header, item) => (
                 <td key={item}>{row[header]}</td>
               ))}
+              {idColumn && (
+                <td>
+                  <Button
+                    variant="outline-light"
+                    size="sm"
+                    onClick={() => handleAction(row[idColumn])}
+                  >
+                    Cancel
+                  </Button>
+                </td>
+              )}
             </tr>
           ))}
         </tbody>
