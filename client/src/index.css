@@ -112,3 +112,12 @@
   position: sticky;
   top: 100px;
 }
+
+/* text colors */
+.green {
+  color: #00ff00;
+}
+
+.red {
+  color: #ff0000;
+}
