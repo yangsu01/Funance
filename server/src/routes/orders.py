@@ -3,6 +3,7 @@ from flask_jwt_extended import jwt_required, current_user
 
 from src.utils.transaction import record_transaction
 from src.utils.order import add_order, mark_cancelled
+from src.utils.time import check_market_closed
 
 orders = Blueprint('orders', __name__)
 
@@ -20,6 +21,10 @@ def buy_stock():
     portfolio_id = request.json.get('portfolioId', None)
     stock_id = request.json.get('stockId', None)
     shares = request.json.get('shares', None)
+    
+    # if market is closed, return error
+    if check_market_closed():
+        return jsonify(msg='Market is closed! Please put in an order'), 400
 
     try:
         record_transaction(portfolio_id, current_user.id, stock_id, 'buy', shares)
@@ -43,6 +48,10 @@ def sell_stock():
     portfolio_id = request.json.get('portfolioId', None)
     stock_id = request.json.get('stockId', None)
     shares = request.json.get('shares', None)
+    
+    # if market is closed, return error
+    if check_market_closed():
+        return jsonify(msg='Market is closed! Please put in an order'), 400
 
     try:
         record_transaction(portfolio_id, current_user.id, stock_id, 'sell', shares)
@@ -64,7 +73,7 @@ def submit_order():
             stockId (int): id of the stock
             shares (int): number of shares
             expiration (str): expiration date of the order (optional)
-            targetPrice (float): target price for the order
+            targetPrice (float): target price for the order (optional)
     '''
     portfolio_id = request.json.get('portfolioId', None)
     stock_id = request.json.get('stockId', None)
@@ -86,7 +95,7 @@ def submit_order():
     except Exception as e:
         return jsonify(msg=str(e)), 400
     
-    return jsonify(msg='Order submitted successfully!'), 200
+    return jsonify(msg=f'{order_type} order submitted!'), 200
 
 
 @orders.route('/cancel-order', methods=['POST'])
