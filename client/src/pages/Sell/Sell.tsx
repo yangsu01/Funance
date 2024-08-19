@@ -3,17 +3,18 @@ import { useParams, useNavigate } from "react-router-dom";
 
 // components
 import SellSearchForm from "./SellSearchForm";
-import SellForm from "./SellForm";
+import SellOrder from "./SellOrder";
 import Title from "../../components/UI/Title";
 import Loading from "../../components/UI/Loading";
 import StockInfo from "../../components/StockInfo";
 // hooks
 import useFetch from "../../hooks/useFetch";
 import usePost from "../../hooks/usePost";
+import useValidateDate from "../../hooks/useValidateDate";
 // contexts
 import { useShowAlert } from "../../contexts/AlertContext";
 // types
-import { SellInfo, StockData } from "../../utils/types";
+import { SellInfo, StockData, OrderTypes } from "../../utils/types";
 
 const Sell = () => {
   const sellInfoRef = useRef<SellInfo>({} as SellInfo);
@@ -61,14 +62,75 @@ const Sell = () => {
     setSelectedTicker(ticker.toUpperCase());
   };
 
+  // market sell
   const handleSell = (shares: number) => {
+    // if market is closed, submit market sell order
+    if (stockDataRef.current.marketClosed) {
+      const body = {
+        portfolioId: id,
+        stockId: stockDataRef.current.stockId,
+        shares: shares,
+        orderType: "market sell",
+      };
+
+      postData(`/submit-order`, body).then((res) => {
+        if (res.status === "error") {
+          showAlert(res.msg, "danger");
+        } else {
+          showAlert(res.msg, "success");
+          navigate(`/portfolio/${id}`);
+        }
+      });
+
+      // if market is open, submit market sell
+    } else {
+      const body = {
+        portfolioId: id,
+        stockId: stockDataRef.current.stockId,
+        shares: shares,
+      };
+
+      postData(`/sell-stock`, body).then((res) => {
+        if (res.status === "error") {
+          showAlert(res.msg, "danger");
+        } else {
+          showAlert(res.msg, "success");
+          navigate(`/portfolio/${id}`);
+        }
+      });
+    }
+  };
+
+  // limit sell or stop-loss
+  const handleOrder = (
+    shares: number,
+    orderType: OrderTypes,
+    expiration: string | null,
+    targetPrice: number | null
+  ) => {
+    // check date is valid if expiration is set
+    if (
+      expiration &&
+      !useValidateDate(
+        expiration,
+        undefined,
+        stockDataRef.current.nextMarketDate
+      )
+    ) {
+      showAlert("Invalid Date!", "danger");
+      return;
+    }
+
     const body = {
       portfolioId: id,
-      stockId: stockDataRef.current.stockId,
+      orderType: orderType,
       shares: shares,
+      expiration: expiration,
+      targetPrice: targetPrice,
+      stockId: stockDataRef.current.stockId,
     };
 
-    postData(`/sell-stock`, body).then((res) => {
+    postData("/submit-order", body).then((res) => {
       if (res.status === "error") {
         showAlert(res.msg, "danger");
       } else {
@@ -97,7 +159,7 @@ const Sell = () => {
     <>
       {/* page title */}
       <Title
-        title="Sell Stock"
+        title="Sell"
         subtitle={`For Game: ${sellInfoRef.current.gameName}`}
         button="Back"
         onClick={handleBack}
@@ -111,11 +173,21 @@ const Sell = () => {
           <Loading />
         ) : (
           <>
-            <SellForm
+            <SellOrder
               info={sellInfoRef.current}
               currentPrice={stockDataRef.current.tickerInfo.price}
+              dayChange={stockDataRef.current.tickerInfo["%DayChange"]}
               ticker={selectedTicker}
-              onSubmit={handleSell}
+              marketClosed={stockDataRef.current.marketClosed}
+              nextMarketDate={stockDataRef.current.nextMarketDate}
+              sharesOwned={
+                sellInfoRef.current.holdingsInfo[selectedTicker].sharesOwned
+              }
+              averagePrice={
+                sellInfoRef.current.holdingsInfo[selectedTicker].averagePrice
+              }
+              onSell={handleSell}
+              onOrder={handleOrder}
             />
             <StockInfo data={stockDataRef.current} ticker={selectedTicker} />
           </>
