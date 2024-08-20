@@ -361,7 +361,7 @@ def get_top_daily_performers(game_id: int) -> list:
     prev_rank = None
 
     for portfolio in portfolios: 
-        day_change_percent = round_number(portfolio.day_change/portfolio.last_close_value*100, 2)
+        day_change_percent = round_number(portfolio.day_change/portfolio.last_close_value*100, 2) if portfolio.day_change else 0
         rank = portfolio.daily_rank if portfolio.daily_rank != prev_rank else '-'
 
         top_performers.append({

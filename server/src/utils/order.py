@@ -275,11 +275,11 @@ def check_order_expired(orders: list) -> None:
         
         # cancel orders if game is completed
         elif order.portfolio.parent_game.status == 'Completed':
-            order.order_status = 'cancelled'
+            order.order_status = 'expired'
             db.session.commit()
             
         # cancel orders if expiration date is reached
-        elif order.order_expiration <= today:
+        elif order.order_expiration and order.order_expiration <= today:
             order.order_status = 'expired'
             db.session.commit()
             
