@@ -66,8 +66,11 @@ const Buy = () => {
 
   // market buy
   const handleBuy = (shares: number) => {
-    // if market is closed, submit market buy order
-    if (stockDataRef.current.marketClosed) {
+    // if market is closed, or game has not started, submit buy order
+    if (
+      stockDataRef.current.marketClosed ||
+      buyInfoRef.current.gameStatus === "Not Started"
+    ) {
       const body = {
         portfolioId: id,
         stockId: stockDataRef.current.stockId,
