@@ -107,6 +107,8 @@ export type PortfolioDetails = {
     profit: number;
     lastUpdated: string;
     overallRank: number;
+    dayChange: number;
+    dayChangePercent: number;
 }
 export type LinePlotData = {
     x: string[];
