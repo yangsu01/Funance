@@ -171,6 +171,8 @@ export type BuyInfo = {
     availableCash: number;
     feeType: string;
     transactionFee: number;
+    startDate: string;
+    gameStatus: string;
 }
 
 // info needed before sell transaction

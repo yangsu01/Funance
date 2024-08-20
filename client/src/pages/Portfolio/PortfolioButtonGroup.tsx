@@ -39,7 +39,7 @@ const PortfolioButtonGroup = ({
         ))}
       </DropdownButton>
       <ButtonGroup size="lg" className="mb-4">
-        {gameStatus === "In Progress" && (
+        {gameStatus !== "Completed" && (
           <>
             <Link
               to={`/portfolio/${portfolioId}/buy`}

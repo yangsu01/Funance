@@ -18,6 +18,22 @@ const BuySearchForm = ({ buyInfo, onSubmit }: Props) => {
     buyInfo.feeType === "Flat Fee"
       ? `$${buyInfo.transactionFee}`
       : `${buyInfo.transactionFee * 100}%`;
+  let detailsContent: string[] = [];
+
+  if (buyInfo.gameStatus === "Not Started") {
+    detailsContent = [
+      `Game Start Date: ${buyInfo.startDate}`,
+      `Available Cash: $${buyInfo.availableCash}`,
+      `Fee Type: ${buyInfo.feeType}`,
+      `Fee Per Transaction: ${transactionFee}`,
+    ];
+  } else {
+    detailsContent = [
+      `Available Cash: $${buyInfo.availableCash}`,
+      `Fee Type: ${buyInfo.feeType}`,
+      `Fee Per Transaction: ${transactionFee}`,
+    ];
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,14 +45,7 @@ const BuySearchForm = ({ buyInfo, onSubmit }: Props) => {
   return (
     <Row className="d-flex align-items-end">
       <Col md={6} className="mb-3">
-        <InfoCard
-          title="Game Details"
-          infoList={[
-            `Available Cash: $${buyInfo.availableCash}`,
-            `Fee Type: ${buyInfo.feeType}`,
-            `Fee Per Transaction: ${transactionFee}`,
-          ]}
-        />
+        <InfoCard title="Game Details" infoList={detailsContent} />
       </Col>
       <Col md={6} className="mb-3">
         <CardWrapper>

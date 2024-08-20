@@ -201,6 +201,8 @@ def get_buy_info(portfolio_id: int, user_id: int) -> dict:
         'availableCash': portfolio.available_cash,
         'transactionFee': portfolio.parent_game.transaction_fee,
         'feeType': portfolio.parent_game.fee_type,
+        'startDate': portfolio.parent_game.start_date.strftime('%Y-%m-%d'),
+        'gameStatus': portfolio.parent_game.status
     }
     
 

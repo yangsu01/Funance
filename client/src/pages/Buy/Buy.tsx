@@ -115,7 +115,8 @@ const Buy = () => {
       !useValidateDate(
         expiration,
         undefined,
-        stockDataRef.current.nextMarketDate
+        stockDataRef.current.nextMarketDate,
+        buyInfoRef.current.startDate
       )
     ) {
       showAlert("Invalid Date!", "danger");
@@ -145,12 +146,7 @@ const Buy = () => {
     return (
       <>
         {/* page title */}
-        <Title
-          title="Buy Stock"
-          subtitle={`For Game`}
-          button="Back"
-          onClick={handleBack}
-        />
+        <Title title="Buy" button="Back" onClick={handleBack} />
         <Loading />
       </>
     );
@@ -161,7 +157,7 @@ const Buy = () => {
       {/* page title */}
       <Title
         title="Buy"
-        subtitle={`For Game: ${buyInfoRef.current.gameName}`}
+        subtitle={buyInfoRef.current.gameName}
         button="Back"
         onClick={handleBack}
       />

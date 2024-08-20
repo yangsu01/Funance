@@ -73,7 +73,7 @@ const Portfolio = () => {
     return (
       <>
         {/* page title */}
-        <Title title="My Portfolio" subtitle="For the game" />
+        <Title title="My Portfolio" />
         <Loading />
       </>
     );
@@ -84,7 +84,7 @@ const Portfolio = () => {
       {/* page title */}
       <Title
         title="My Portfolio"
-        subtitle={`For game: ${portfolioData.portfolioDetails.gameName}`}
+        subtitle={portfolioData.portfolioDetails.gameName}
         button="Leaderboard"
         onClick={handleLeaderboard}
       />
@@ -97,17 +97,18 @@ const Portfolio = () => {
         portfolioId={portfolioData.portfolioDetails.portfolioId}
       />
 
+      <PortfolioOrders
+        pendingOrders={portfolioData.pendingOrders}
+        onCancelOrder={handleCancelOrder}
+      />
+
       {portfolioData.portfolioDetails.gameStatus === "Not Started" ? (
         <EmptyMessage
-          title={`Game will start on: ${portfolioData.portfolioDetails.gameStartDate}`}
-          subtitle="Analytics will be available once the game starts."
+          title={`Game starts on: ${portfolioData.portfolioDetails.gameStartDate}`}
+          subtitle="Add buy orders now and it will be executed when the game starts."
         />
       ) : (
         <>
-          <PortfolioOrders
-            pendingOrders={portfolioData.pendingOrders}
-            onCancelOrder={handleCancelOrder}
-          />
           <PortfolioHistoryPlots
             closeData={portfolioData.closingHistory}
             dailyData={portfolioData.dailyHistory}

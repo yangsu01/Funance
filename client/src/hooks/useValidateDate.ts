@@ -2,6 +2,7 @@ export default function useValidateDate (
     date: string,
     endDate?: string,
     nextMarketDate?: string,
+    gameStartDate?: string
 ) {
     const inputDate = new Date(date);
     const today = new Date();
@@ -25,6 +26,16 @@ export default function useValidateDate (
         nextMarket.setHours(0, 0, 0, 0);
         
         if (inputDate < nextMarket) {
+            return false;
+        }
+    }
+
+    // if game has not started, check if date is beyond game start date
+    if (gameStartDate) {
+        const gameStart = new Date(gameStartDate);
+        gameStart.setHours(0, 0, 0, 0);
+        
+        if (inputDate < gameStart) {
             return false;
         }
     }
