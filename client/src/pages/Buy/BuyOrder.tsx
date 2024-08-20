@@ -43,9 +43,6 @@ const BuyOrder = ({
     }
   };
 
-  console.log(nextMarketDate);
-  console.log(marketClosed);
-
   return (
     <CardWrapper className="d-flex mb-3">
       <Col md={4} className="mx-auto">
