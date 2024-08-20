@@ -83,6 +83,7 @@ const SellOrderForm = ({
         label="Target Price"
         id="targetPrice"
         type="number"
+        step="any"
         onChange={(e) => setTargetPrice(parseFloat(e.target.value))}
       />
 

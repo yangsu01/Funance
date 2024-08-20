@@ -162,11 +162,12 @@ const CreateGameForm = ({ onSubmit }: Props) => {
                   >
                     <Form.Control
                       type="number"
+                      step="any"
                       placeholder="0"
                       onChange={(e) =>
                         setFormData({
                           ...formData,
-                          transactionFee: Number(e.target.value),
+                          transactionFee: parseFloat(e.target.value),
                         })
                       }
                     />

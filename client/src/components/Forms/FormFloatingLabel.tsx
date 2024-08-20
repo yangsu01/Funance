@@ -9,6 +9,7 @@ type Props = {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   type: string;
   required?: boolean;
+  step?: string;
 };
 
 const FormFloatingLabel = ({
@@ -18,6 +19,7 @@ const FormFloatingLabel = ({
   onChange,
   type,
   required = true,
+  step,
 }: Props) => {
   return (
     <>
@@ -28,6 +30,7 @@ const FormFloatingLabel = ({
           type={type}
           placeholder={label}
           onChange={onChange}
+          step={step}
         />
       </FloatingLabel>
     </>

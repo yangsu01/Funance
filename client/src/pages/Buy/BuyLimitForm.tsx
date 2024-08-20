@@ -77,6 +77,7 @@ const BuyLimitForm = ({ cash, transactionFee, feeType, onSubmit }: Props) => {
         label="Target Price"
         id="targetPrice"
         type="number"
+        step="any"
         onChange={(e) => setTargetPrice(parseFloat(e.target.value))}
       />
 
