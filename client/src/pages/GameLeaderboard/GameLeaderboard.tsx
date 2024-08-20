@@ -122,12 +122,7 @@ const GameLeaderboard = () => {
     return (
       <>
         {/* page title */}
-        <Title
-          title="Game Leaderboard"
-          subtitle="Detailed stats for the game"
-          button="Back"
-          onClick={handleBack}
-        />
+        <Title title="Game Leaderboard" button="Back" onClick={handleBack} />
         <Loading />
       </>
     );
@@ -137,8 +132,8 @@ const GameLeaderboard = () => {
     <>
       {/* page title */}
       <Title
-        title={`${gameDetails.name} Leaderboard`}
-        subtitle="Detailed stats for the game"
+        title={gameDetails.name}
+        subtitle="Leaderboard"
         button="Back"
         onClick={handleBack}
       />
