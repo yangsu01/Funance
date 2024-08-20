@@ -84,7 +84,7 @@ def get_portfolio_details(portfolio_id: int, user_id: int) -> dict:
     change = round_number((current_value/starting_cash - 1) * 100)
     profit = round_number(current_value - starting_cash)
     last_updated = utc_to_est(portfolio.last_updated).strftime('%a, %b %d. %Y %I:%M%p') + ' EST'
-    day_change = portfolio.day_change
+    day_change = portfolio.day_change if portfolio.day_change is not None else 0
     day_change_percent = round_number(day_change/portfolio.last_close_value * 100, 2) if day_change is not None else 'n/a'
 
     return {

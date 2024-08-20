@@ -76,13 +76,16 @@ def get_stock_news(ticker: str) -> list:
     Returns:
         list: list of news articles and links
     """
-    news = yf.Ticker(ticker).news
-    articles = []
+    try:
+        news = yf.Ticker(ticker).news
+        articles = []
 
-    for n in news:
-        articles.append({
-            'name': n['title'],
-            'url': n['link']
-        })
+        for n in news:
+            articles.append({
+                'name': n['title'],
+                'url': n['link']
+            })
+    except Exception as e:
+        articles = [{'name': 'No news available', 'url': ''}]
 
     return articles
