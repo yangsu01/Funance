@@ -21,16 +21,16 @@ from src.routes.auth import auth
 from src.routes.portfolio_sim import portfolio_sim
 from src.routes.orders import orders
 
-api = Flask(__name__)
-api.config.from_object(AppConfig)
+app = Flask(__name__)
+app.config.from_object(AppConfig)
 
-CORS(api, supports_credentials=True)
+CORS(app, supports_credentials=True)
 
 # database migrations
-migrate = Migrate(api, db)
+migrate = Migrate(app, db)
 
 # server side authentication
-jwt = JWTManager(api)
+jwt = JWTManager(app)
 
 # automatic user loading
 @jwt.user_identity_loader
@@ -44,29 +44,29 @@ def user_lookup_callback(_, jwt_data):
     
 
 # initiate database
-db.init_app(api)
+db.init_app(app)
 
 #register blueprints
-api.register_blueprint(auth, url_prefix='/api')
-api.register_blueprint(portfolio_sim, url_prefix='/api')
-api.register_blueprint(orders, url_prefix='/api')
+app.register_blueprint(auth, url_prefix='/api')
+app.register_blueprint(portfolio_sim, url_prefix='/api')
+app.register_blueprint(orders, url_prefix='/api')
 
 
 # initiate scheduler
 scheduler = APScheduler()
-scheduler.init_app(api)
+scheduler.init_app(app)
 scheduler.start()
 
 # define jobs
 def run_periodically():
-    with api.app_context():
+    with app.app_context():
         if not check_market_closed():
             update_stock_prices()
             update_portfolios()
             save_daily_history()
 
 def run_at_open():
-    with api.app_context():
+    with app.app_context():
         if not check_market_closed():
             update_last_close_value()
             update_started_games()
@@ -75,7 +75,7 @@ def run_at_open():
             run_periodically()
         
 def run_at_close():
-    with api.app_context():
+    with app.app_context():
         # if not check_market_closed():
         run_periodically()
 
@@ -130,7 +130,7 @@ scheduler.add_job(
 
 
 if __name__ == '__main__':
-    with api.app_context():
+    with app.app_context():
         db.create_all()
 
-    api.run(debug=False, port=5000)
+    app.run(debug=False, port=5000)
