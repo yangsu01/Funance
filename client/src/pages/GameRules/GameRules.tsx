@@ -60,7 +60,10 @@ const GameRules = () => {
 
         <h5 className="text-white">Transactions:</h5>
         <ul className="fs-5">
-          <li>Transactions are available only after the game starts.</li>
+          <li>
+            Buy orders can be placed before the game begins but will only be
+            executed after start date.
+          </li>
           <li>
             Both buy and sell transactions incur fees. See specific game
             settings for details.

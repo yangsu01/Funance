@@ -144,12 +144,7 @@ const Sell = () => {
     return (
       <>
         {/* page title */}
-        <Title
-          title="Sell Stock"
-          subtitle={`For Game`}
-          button="Back"
-          onClick={handleBack}
-        />
+        <Title title="Sell Stock" button="Back" onClick={handleBack} />
         <Loading />
       </>
     );
@@ -160,7 +155,7 @@ const Sell = () => {
       {/* page title */}
       <Title
         title="Sell"
-        subtitle={`For Game: ${sellInfoRef.current.gameName}`}
+        subtitle={sellInfoRef.current.gameName}
         button="Back"
         onClick={handleBack}
       />
