@@ -61,11 +61,13 @@ const BuyLimitForm = ({ cash, transactionFee, feeType, onSubmit }: Props) => {
   // order submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (shares <= 0 || shares > maxShares) {
-      showAlert("Cannot afford this transaction!", "danger");
-      return;
+    if (targetPrice === null || targetPrice <= 0) {
+      showAlert("Invalid Target Price!", "danger");
+    } else if (shares <= 0 || shares > maxShares) {
+      showAlert("Invalid Shares Count!", "danger");
+    } else {
+      onSubmit(shares, "limit buy", orderExpiration, targetPrice);
     }
-    onSubmit(shares, "limit buy", orderExpiration, targetPrice);
   };
 
   return (
@@ -109,8 +111,8 @@ const BuyLimitForm = ({ cash, transactionFee, feeType, onSubmit }: Props) => {
 
       <p className="text-muted">
         <small>
-          *Limit Buy orders are executed when the stock price reaches the target
-          price
+          *Limit Buy orders are executed when the stock price is below the
+          target price
         </small>
       </p>
     </Form>
