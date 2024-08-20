@@ -14,6 +14,7 @@ from src.utils.scheduler import (
     # run at end of trading day
     save_closing_history, update_completed_games, close_expired_orders
 )
+from src.utils.time import check_market_closed
 
 # import blueprints
 from src.routes.auth import auth
@@ -59,20 +60,23 @@ scheduler.start()
 # define jobs
 def run_periodically():
     with api.app_context():
-        update_stock_prices()
-        update_portfolios()
-        save_daily_history()
+        if not check_market_closed():
+            update_stock_prices()
+            update_portfolios()
+            save_daily_history()
 
 def run_at_open():
     with api.app_context():
-        update_last_close_value()
-        update_started_games()
-        drop_prev_day_data()
+        if not check_market_closed():
+            update_last_close_value()
+            update_started_games()
+            drop_prev_day_data()
 
-        run_periodically()
+            run_periodically()
         
 def run_at_close():
     with api.app_context():
+        # if not check_market_closed():
         run_periodically()
 
         save_closing_history()
