@@ -8,9 +8,9 @@ const ChangeColors = ({ num, percentage }: Props) => {
 
   return (
     <span className={textColor}>
-      {num >= 0 ? "+" : ""}
+      {num >= 0 ? "+" : "-"}
       {percentage ? "" : "$"}
-      {num}
+      {Math.abs(num)}
       {percentage ? "%" : ""}
     </span>
   );
