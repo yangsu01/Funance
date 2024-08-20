@@ -65,10 +65,10 @@ def get_prev_market_date(est_time: datetime) -> datetime.date:
     
     # if its a weekend or holiday, subtract a day
     if est_time.weekday() >= 5 or est_time.date() in holidays:
-        return get_prev_market_date(est_time - pd.DateOffset(days=1))
+        return get_prev_market_date(est_time.date() - pd.DateOffset(days=1) + pd.DateOffset(hours=12))
     # if its before 9:30am (market has not opened yet), subtract a day
     elif est_time.hour < 9 or (est_time.hour == 9 and est_time.minute < 30):
-        return get_prev_market_date(est_time - pd.DateOffset(days=1))
+        return get_prev_market_date(est_time.date() - pd.DateOffset(days=1) + pd.DateOffset(hours=12))
     else:
         return est_time.date()
     
