@@ -60,14 +60,12 @@ scheduler.start()
 # define jobs
 def run_periodically():
     with app.app_context():
-        if not check_market_closed():
             update_stock_prices()
             update_portfolios()
             save_daily_history()
 
 def run_at_open():
     with app.app_context():
-        if not check_market_closed():
             update_last_close_value()
             update_started_games()
             drop_prev_day_data()
@@ -76,7 +74,6 @@ def run_at_open():
         
 def run_at_close():
     with app.app_context():
-        # if not check_market_closed():
         run_periodically()
 
         save_closing_history()
