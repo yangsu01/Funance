@@ -261,9 +261,9 @@ def get_game_details(game_id: int, user_id=None) -> dict:
     joined_game = portfolio is not None
     portfolio_id = portfolio.id if portfolio is not None else None
     transaction_fee = (
-        f'${round_number(game.transaction_fee, 0)}' 
+        f'${round_number(game.transaction_fee)}' 
         if game.fee_type == 'Flat Fee' 
-        else f'{round_number(game.transaction_fee * 100, 0)}%'
+        else f'{round_number(game.transaction_fee * 100)}%'
     )
     password_required = game.password is not None
     last_updated = (
