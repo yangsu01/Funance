@@ -5,8 +5,8 @@ type Props = {
   header?: string;
   title?: string;
   subtitle?: string;
-  text?: string;
-  infoList?: string[];
+  text?: string | JSX.Element;
+  infoList?: string[] | JSX.Element[];
   link?: string;
   footer?: string;
 };
