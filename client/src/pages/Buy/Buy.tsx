@@ -160,7 +160,7 @@ const Buy = () => {
     <>
       {/* page title */}
       <Title
-        title="Buy Stock"
+        title="Buy"
         subtitle={`For Game: ${buyInfoRef.current.gameName}`}
         button="Back"
         onClick={handleBack}

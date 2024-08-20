@@ -192,7 +192,7 @@ const GameLeaderboard = () => {
           {gameDetails.status === "In Progress" && (
             <GameLeaderboardRankings
               title={`Top Growers (${dailyHistoryDate})`}
-              subtitle="*Updated every 30 minutes during market hours"
+              subtitle="*Updated every 5 minutes during market hours"
               chartLabel={{
                 title: "Todays Portfolio Growth",
                 xLabel: "Time",

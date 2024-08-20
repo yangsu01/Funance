@@ -43,7 +43,7 @@ const PortfolioOrders = ({ pendingOrders, onCancelOrder }: Props) => {
           <Button
             variant="outline-light"
             size="sm"
-            className="mb-3"
+            className="mb-3 ms-3"
             style={{ maxWidth: "130px" }}
             onClick={() => handleShow()}
           >

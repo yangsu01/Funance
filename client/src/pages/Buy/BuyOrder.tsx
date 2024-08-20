@@ -35,7 +35,7 @@ const BuyOrder = ({
   onBuy,
   onOrder,
 }: Props) => {
-  const [buyType, setBuyType] = useState("Market Buy");
+  const [buyType, setBuyType] = useState("market buy");
 
   const handleOrderSelect = (eventKey: string | null) => {
     if (eventKey) {
@@ -56,24 +56,23 @@ const BuyOrder = ({
           </>
         )}
 
-        <h3 className="text-center mb-4">
+        <h4 className="text-center mb-4">
           <strong>${currentPrice}</strong> (
           <ChangeColors num={dayChange} percentage={true} /> Past Day)
-        </h3>
+        </h4>
 
         <DropdownButton
           id="order-selector"
           title={`${ticker}: ${buyType}`}
           variant="outline-light"
-          size="lg"
           className="mb-4 text-center"
           onSelect={handleOrderSelect}
         >
-          <Dropdown.Item eventKey="Market Buy">Market Buy</Dropdown.Item>
-          <Dropdown.Item eventKey="Limit Buy">Limit Buy</Dropdown.Item>
+          <Dropdown.Item eventKey="market buy">Market Buy</Dropdown.Item>
+          <Dropdown.Item eventKey="limit buy">Limit Buy</Dropdown.Item>
         </DropdownButton>
 
-        {buyType === "Market Buy" && (
+        {buyType === "market buy" && (
           <BuyMarketForm
             currentPrice={currentPrice}
             cash={info.availableCash}
@@ -83,7 +82,7 @@ const BuyOrder = ({
           />
         )}
 
-        {buyType === "Limit Buy" && (
+        {buyType === "limit buy" && (
           <BuyLimitForm
             cash={info.availableCash}
             transactionFee={info.transactionFee}

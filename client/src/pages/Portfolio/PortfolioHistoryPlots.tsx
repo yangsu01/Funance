@@ -52,7 +52,7 @@ const PortfolioHistoryPlots = ({
               radius={4}
             />
             <small className="text-muted">
-              *Updated every 30 minutes during market hours
+              *Updated every 5 minutes during market hours
             </small>
           </Col>
         )}
