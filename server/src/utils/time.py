@@ -38,6 +38,9 @@ def check_market_closed(date: datetime = get_est_time() ) -> bool:
         bool: True if market is closed, False if market is open
     """
     print(date)
+    est = pytz.timezone('US/Eastern')
+    print(datetime.now(est))
+    
     cal = USFederalHolidayCalendar()
     holidays = cal.holidays(start=date.date(), end=date.date()+pd.DateOffset(years=1))
     
