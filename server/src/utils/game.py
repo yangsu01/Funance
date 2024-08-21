@@ -438,7 +438,7 @@ def get_daily_history(game_id: int, filter='top5') -> dict:
     Returns:
         dict: dictionary of the list of daily history of portfolios and the date
     """
-    market_date = get_prev_market_date(get_est_time()) # last date the market was open
+    market_date = get_prev_market_date() # last date the market was open
     
     # query data depending on filter
     if filter=='top5':
