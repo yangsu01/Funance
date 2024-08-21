@@ -52,7 +52,7 @@ def check_market_closed() -> bool:
     return False
     
 
-def get_prev_market_date() -> datetime.date:
+def get_prev_market_date(est_time: datetime=None) -> datetime.date:
     """ Gets the last day the stock market was open
         If the market is currently open, returns the current date
     
@@ -62,7 +62,8 @@ def get_prev_market_date() -> datetime.date:
     Returns:
         datetime.date: date of last market day
     """
-    est_time = get_est_time()
+    if est_time is None:
+        est_time = get_est_time()
     cal = USFederalHolidayCalendar()
     holidays = cal.holidays(start=est_time.date(), end=est_time.date()+pd.DateOffset(years=1))
     
@@ -76,7 +77,7 @@ def get_prev_market_date() -> datetime.date:
         return est_time.date()
     
 
-def get_next_market_date() -> str:
+def get_next_market_date(est_time: datetime=None) -> str:
     """ Gets the next day the stock market will be open
         If the market is currently open, returns the current date
         If the market has not opened yet, returns the current date
@@ -84,7 +85,8 @@ def get_next_market_date() -> str:
     Returns:
         str: date of next market day
     """
-    est_time = get_est_time()
+    if est_time is None:
+        est_time = get_est_time()
     cal = USFederalHolidayCalendar()
     holidays = cal.holidays(start=est_time.date(), end=est_time.date()+pd.DateOffset(years=1))
     
