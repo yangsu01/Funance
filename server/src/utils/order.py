@@ -125,7 +125,7 @@ def validate_order(
     # if limit sell or stop-loss, check if user has enough shares
     if order_type == 'limit sell' or order_type == 'stop-loss':
         holding = Holding.query.filter_by(portfolio_id=portfolio_id, stock_id=stock_id).first()
-        if holding is None or holding.shares_owned < shares:
+        if holding is None or holding.quantity < shares:
             raise Exception('Insufficient shares')
         
     
@@ -224,7 +224,7 @@ def execute_order(order: Order) -> None:
             db.session.commit()
             return
         else:
-            shares_owned = holding.shares_owned
+            shares_owned = holding.quantity
         
         # sell all shares if order shares exceed shares owned
         shares = min(shares_owned, order.shares)

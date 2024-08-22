@@ -187,7 +187,7 @@ def get_holdings_breakdown(portfolio_id: int) -> dict:
     if holdings is not None:
         for holding in holdings:
             holding_breakdown.setdefault("labels", []).append(holding.stock.ticker)
-            holding_breakdown.setdefault("values", []).append(holding.shares_owned * holding.stock.current_price)
+            holding_breakdown.setdefault("values", []).append(holding.quantity * holding.stock.current_price)
 
     return holding_breakdown
 
@@ -208,7 +208,7 @@ def get_sector_breakdown(portfolio_id: int) -> dict:
     if holdings is not None:
         for holding in holdings:
             sector = holding.stock.sector
-            sector_breakdown[sector] = sector_breakdown.get(sector, 0) + holding.stock.current_price * holding.shares_owned
+            sector_breakdown[sector] = sector_breakdown.get(sector, 0) + holding.stock.current_price * holding.quantity
 
     return {
         'labels': list(sector_breakdown.keys()),
@@ -267,12 +267,12 @@ def get_portfolio_holdings(portfolio_id: int) -> list:
             day_change_percent = round_number(day_change/holding.stock.opening_price * 100, 2)
             change = round_number(holding.stock.current_price - holding.average_price)
             change_percent = round_number(change/holding.average_price * 100, 2)
-            total_change = round_number(change * holding.shares_owned)
-            market_value = round_number(holding.shares_owned * holding.stock.current_price)
+            total_change = round_number(change * holding.quantity)
+            market_value = round_number(holding.quantity * holding.stock.current_price)
 
             holding_list.append({
                 'Ticker': holding.stock.ticker,
-                'Shares Owned': holding.shares_owned,
+                'Shares Owned': holding.quantity,
                 'Average Price': holding.average_price,
                 'Current Price': holding.stock.current_price,
                 'Net Change': change,

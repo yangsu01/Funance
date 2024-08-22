@@ -27,7 +27,7 @@ def buy_stock():
         return jsonify(msg='Market is closed! Please put in an order'), 400
 
     try:
-        record_transaction(portfolio_id, current_user.id, stock_id, 'buy', shares)
+        record_transaction(portfolio_id, current_user.id, 'stock', stock_id, 'buy', shares)
 
     except Exception as e:
         return jsonify(msg=str(e)), 400
@@ -54,7 +54,7 @@ def sell_stock():
         return jsonify(msg='Market is closed! Please put in an order'), 400
 
     try:
-        record_transaction(portfolio_id, current_user.id, stock_id, 'sell', shares)
+        record_transaction(portfolio_id, current_user.id, 'stock', stock_id, 'sell', shares)
 
     except Exception as e:
         return jsonify(msg=str(e)), 400
@@ -96,6 +96,12 @@ def submit_order():
         return jsonify(msg=str(e)), 400
     
     return jsonify(msg=f'{order_type} order submitted!'), 200
+
+
+@orders.route('/submit-options-order', methods=['POST'])
+@jwt_required()
+def submit_options_order():
+    pass
 
 
 @orders.route('/cancel-order', methods=['POST'])

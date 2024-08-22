@@ -1,4 +1,7 @@
-from src.data_models import db, Portfolio, Holding, Transaction, Stock
+from src.data_models import (
+    db, Portfolio, Holding, Transaction, Stock,
+    OptionHolding, OptionContract, OptionTransaction
+)
 from .time import get_est_time
 from .math_functions import round_number
 
@@ -46,36 +49,109 @@ def add_stock(stock_info: dict, ticker: str) -> int:
     return id
 
 
-def record_transaction(portfolio_id: int, user_id: int, stock_id: str, transaction_type: str, shares: int) -> None:
-    """ Records a transaction in the database and updates the portfolio
+def add_option(option_info: dict, symbol: str, stock_id: int) -> int:
+    """Adds an option contract to the database.
+        If the option already exists, update prices
+    
+    Args:
+        option_info (dict): info about the option contract
+        symbol (str): symbol of the option contract
+        stock_id (int): database id of underlying stock
+
+    Returns:
+        int: id of the option contract
+    """
+    option = OptionContract.query.filter_by(symbol=symbol).first()
+    
+    bid = option_info.get('bid')
+    ask = option_info.get('ask')
+    change = option_info.get('change')
+    percent_change = option_info.get('percentChange')
+    in_the_money = option_info.get('inTheMoney')
+    
+    # if option already exists, update price
+    if option is not None:
+        id = option.id
+        
+        option.bid = bid
+        option.ask = ask
+        option.change = change
+        option.percent_change = percent_change
+        option.in_the_money = in_the_money
+        
+        db.session.commit()
+    
+    # if option does not exist, create new option
+    else:
+        new_option = OptionContract(
+            symbol=symbol,
+            stock_id=stock_id,
+            option_type=option_info.get('optionType'),
+            strike_price=option_info.get('strikePrice'),
+            bid=bid,
+            ask=ask,
+            change=change,
+            percent_change=percent_change,
+            in_the_money=in_the_money,
+            expiration_date=option_info.get('expirationDate'),
+            status='active'
+        )
+        db.session.add(new_option)
+        db.session.commit()
+        
+        id = new_option.id
+    
+    return id
+
+
+def record_transaction(
+    portfolio_id: int,
+    user_id: int,
+    asset_type: str,
+    asset_id: int,
+    transaction_type: str,
+    quantity: int
+) -> None:
+    """Records a transaction in the database
 
     Args:
         portfolio_id (int): id of portfolio
-        user_id (int): id of user
-        stock_id (str): id of stock
-        transaction_type (str): type of transaction (buy or sell)
-        shares (int): number of shares
-        
+        user_id (int): id of the user
+        asset_type (str): type of asset (stock or option)
+        asset_id (int): database id of the asset
+        transaction_type (str): buy or sell
+        quantity (int): number of shares or contracts
+
     Raises:
         Exception: if portfolio does not exist
         Exception: if stock does not exist
+        Exception: if option does not exist
         ValueError: if insufficient funds
     """
     portfolio = Portfolio.query.filter_by(id=portfolio_id, user_id=user_id).first()
-    stock = Stock.query.filter_by(id=stock_id).first()
-
+    
     if portfolio is None:
         raise Exception('Portfolio does not exist')
-    if stock is None:
-        raise Exception('Stock does not exist')
     
-    price = stock.current_price
+    if asset_type == 'stock':
+        stock = Stock.query.filter_by(id=asset_id).first()
+        if stock is None:
+            raise Exception('Stock does not exist')
+        
+        price = stock.current_price
+    else:
+        option = OptionContract.query.filter_by(id=asset_id).first()
+        if option is None:
+            raise Exception('Option does not exist')
+        
+        price = option.ask if type == 'buy' else option.bid
+
     fee = portfolio.parent_game.transaction_fee
     fee_type = portfolio.parent_game.fee_type
     cash = portfolio.available_cash
-    transaction_value = price*shares if transaction_type == 'buy' else -1*price*shares
-    
-    # update available cash
+    transaction_value = price*quantity if type == 'buy' else -1*price*quantity
+
+    # update value with fees
     if fee_type == 'Flat Fee':
         transaction_value += fee
     elif fee_type == 'Percentage':
@@ -84,76 +160,131 @@ def record_transaction(portfolio_id: int, user_id: int, stock_id: str, transacti
     if transaction_value > cash:
         raise ValueError('Insufficient funds. Prices may have changed. Please refresh the page.')
     
-    add_transaction(portfolio_id, stock_id, transaction_type, shares, price) # add transaction to database
-    update_holding(portfolio_id, stock_id, shares, price, transaction_type) # update holding in database
+    add_transaction(portfolio_id, asset_id, asset_type, transaction_type, quantity, price) # add transaction to database
+    update_holding(portfolio_id, asset_id, asset_type, transaction_type, quantity, price) # update holding in database
     
     # update portfolio cash
     portfolio.available_cash = round_number(portfolio.available_cash - transaction_value, 2)
     db.session.commit()
     
     
-def add_transaction(portfolio_id: int, stock_id: int, transaction_type: str, shares: int, price: float) -> None:
-    """ Adds transaction to the database
+def add_transaction(
+    portfolio_id: int, 
+    asset_id: int, 
+    asset_type: str,
+    transaction_type: str, 
+    quantity: int, 
+    price: float
+) -> None:
+    """Adds a transaction to the database
 
     Args:
         portfolio_id (int): id of portfolio
-        stock_id (int): id of stock
+        asset_id (int): id of the asset
+        asset_type (str): type of asset (stock or option)
         transaction_type (str): type of transaction (buy or sell)
-        shares (int): number of shares
-        price (float): price per share
+        quantity (int): number of shares or contracts
+        price (float): price per share or contract
 
     Raises:
-        Exception: if holding does not exist
+        Exception: if stock does not exist
+        Exception: if option does not exist
     """
     # if sell transaction, calculate profit/loss
-    if transaction_type == 'sell':
-        holding = Holding.query.filter_by(portfolio_id=portfolio_id, stock_id=stock_id).first()
-
+    if transaction_type == 'sell' and asset_type == 'stock':
+        holding = Holding.query.filter_by(
+            portfolio_id=portfolio_id, stock_id=asset_id
+        ).first()
+        
         if holding is None:
             raise Exception('You do not own this stock.')
+        profit_loss = (price - holding.average_price) * quantity
         
-        profit_loss = (price - holding.average_price) * shares
+    elif transaction_type == 'sell' and asset_type == 'option':
+        holding = OptionHolding.query.filter_by(
+            portfolio_id=portfolio_id, option_id=asset_id
+        ).first()
+        
+        if holding is None:
+            raise Exception('You do not own this option.')
+        profit_loss = (price - holding.average_price) * quantity
+        
     else:
         profit_loss = None
 
-    transaction = Transaction(
-        transaction_date=get_est_time(),
-        portfolio_id=portfolio_id, 
-        stock_id=stock_id, 
-        transaction_type=transaction_type, 
-        number_of_shares=shares, 
-        price_per_share=price, 
-        total_value=shares * price,
-        profit_loss=profit_loss
-    )
+    if asset_type == 'stock':
+        transaction = Transaction(
+            portfolio_id=portfolio_id,
+            stock_id=asset_id,
+            transaction_date=get_est_time(),
+            transaction_type=transaction_type,
+            number_of_shares=quantity,
+            price_per_share=price,
+            total_value=quantity * price,
+            profit_loss=profit_loss
+        )
+    else:
+        transaction = OptionTransaction(
+            portfolio_id=portfolio_id,
+            option_id=asset_id,
+            transaction_date=get_est_time(),
+            transaction_type=transaction_type,
+            number_of_contracts=quantity,
+            price_per_contract=price,
+            total_value=quantity * price,
+            profit_loss=profit_loss
+        )
 
     db.session.add(transaction)
     db.session.commit()
     
     
-def update_holding(portfolio_id: int, stock_id: int, shares: int, price: float, transaction_type: str) -> None:
-    """_summary_
+def update_holding(
+    portfolio_id: int,
+    asset_id: int,
+    asset_type: str,
+    transaction_type: str,
+    quantity: int,
+    price: float
+) -> None:
+    """Updates the asset holding in the database
 
     Args:
         portfolio_id (int): id of portfolio
-        stock_id (int): if of stock
-        shares (int): number of shares
-        price (float): price per share
+        asset_id (int): id of the asset
+        asset_type (str): type of asset (stock or option)
         transaction_type (str): type of transaction (buy or sell)
+        quantity (int): quantity of shares or contracts
+        price (float): price per share or contract
 
     Raises:
-        Exception: if holding does not exist
-        ValueError: if insufficient shares
+        Exception: if user does not own the asset
+        ValueError: if user does not own that quantity
     """
-    holding = Holding.query.filter_by(portfolio_id=portfolio_id, stock_id=stock_id).first()
+    if asset_type == 'stock':
+        holding = Holding.query.filter_by(
+            portfolio_id=portfolio_id, stock_id=asset_id
+        ).first()
+    else:
+        holding = OptionHolding.query.filter_by(
+            portfolio_id=portfolio_id, option_id=asset_id
+        ).first()
 
     # if no holding, create new holding
     if holding is None:
-        if transaction_type == 'buy':
+        if transaction_type == 'buy' and asset_type == 'stock':
             new_holding = Holding(
                 portfolio_id=portfolio_id, 
-                stock_id=stock_id, 
-                shares_owned=shares, 
+                stock_id=asset_id, 
+                quantity=quantity, 
+                average_price=price
+            )
+            db.session.add(new_holding)
+        elif transaction_type == 'buy' and asset_type == 'option':
+            new_holding = OptionHolding(
+                portfolio_id=portfolio_id, 
+                option_id=asset_id, 
+                quantity=quantity, 
                 average_price=price
             )
             db.session.add(new_holding)
@@ -162,17 +293,20 @@ def update_holding(portfolio_id: int, stock_id: int, shares: int, price: float, 
         
     # if buy transaction, update average price and shares owned
     elif transaction_type == 'buy':
-        holding.average_price = round_number((holding.average_price*holding.shares_owned + price*shares) / (holding.shares_owned + shares), 2)
-        holding.shares_owned += shares
+        holding.average_price = round_number(
+            (holding.average_price*holding.quantity+price*quantity) / (holding.quantity+quantity),
+            2
+        )
+        holding.quantity += quantity
 
     # if sell transaction, update shares owned or delete holding if all shares sold
     else:
-        if holding.shares_owned < shares:
-            raise ValueError('You do not own that many shares!')
-        elif holding.shares_owned == shares:
+        if holding.quantity < quantity:
+            raise ValueError('You do not own that quantity!')
+        elif holding.quantity == quantity:
             db.session.delete(holding)
         else:
-            holding.shares_owned -= shares
+            holding.quantity -= quantity
 
     db.session.commit()
     
@@ -225,18 +359,27 @@ def get_sell_info(portfolio_id: int, user_id: int) -> dict:
         raise Exception('Portfolio does not exist')
     
     holdings = portfolio.holdings
+    option_holdings = portfolio.option_holdings
     holdings_info = {}
 
     if holdings is not None:
         for holding in holdings:
             holdings_info[holding.stock.ticker] = {
-                'sharesOwned': holding.shares_owned,
+                'quantity': holding.quantity,
                 'averagePrice': holding.average_price
             }
+    if option_holdings is not None:
+        for holding in option_holdings:
+            holdings_info[holding.option.symbol] = {
+                'quantity': holding.quantity,
+                'averagePrice': holding.average_price
+            }
+    
+    holdings_list = list(holdings_info.keys())
 
     return {
         'gameName': portfolio.parent_game.name,
-        'holdings': [holding.stock.ticker for holding in holdings],
+        'holdings': holdings_list,
         'holdingsInfo': holdings_info,
         'availableCash': portfolio.available_cash,
         'transactionFee': portfolio.parent_game.transaction_fee,
