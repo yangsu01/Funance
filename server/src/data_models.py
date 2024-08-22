@@ -80,6 +80,9 @@ class Portfolio(db.Model):
     daily_history = db.relationship('DailyHistory', backref='portfolio', lazy=True)
     closing_history = db.relationship('ClosingHistory', backref='portfolio', lazy=True)
     orders = db.relationship('Order', backref='portfolio', lazy=True)
+    option_orders = db.relationship('OptionOrders', backref='portfolio', lazy=True)
+    option_transactions = db.relationship('OptionTransactions', backref='portfolio', lazy=True)
+    option_holdings = db.relationship('OptionHolding', backref='portfolio', lazy=True) 
 
 
 class Stock(db.Model):
@@ -99,6 +102,27 @@ class Stock(db.Model):
     holdings = db.relationship('Holding', backref='stock', lazy=True)
     transactions = db.relationship('Transaction', backref='stock', lazy=True)
     orders = db.relationship('Order', backref='stock', lazy=True)
+    options = db.relationship('OptionContract', backref='stock', lazy=True)
+
+
+class OptionContract(db.Model):
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    stock_id = db.Column(db.Integer, db.ForeignKey('stock.id'), nullable=False)
+    
+    symbol = db.Column(db.String(100), nullable=False)
+    option_type = db.Column(db.String(10), nullable=False) # call, put
+    strike_price = db.Column(db.Float, nullable=False)
+    bid = db.Column(db.Float, nullable=False)
+    ask = db.Column(db.Float, nullable=False)
+    change = db.Column(db.Float, nullable=False)
+    percent_change = db.Column(db.Float, nullable=False)
+    in_the_money = db.Column(db.Boolean, nullable=False)
+    expiration_date = db.Column(db.Date, nullable=False)
+    status = db.Column(db.String(10), nullable=False) # active, expired
+    
+    option_holdings = db.relationship('OptionHolding', backref='option', lazy=True)
+    option_transactions = db.relationship('OptionTransactions', backref='option', lazy=True)
+    option_orders = db.relationship('OptionOrders', backref='option', lazy=True)
 
 
 class Holding(db.Model):
@@ -106,7 +130,16 @@ class Holding(db.Model):
     portfolio_id = db.Column(db.Integer, db.ForeignKey('portfolio.id'), nullable=False)
     stock_id = db.Column(db.Integer, db.ForeignKey('stock.id'), nullable=False)
 
-    shares_owned = db.Column(db.Integer, nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    average_price = db.Column(db.Float, nullable=False)
+    
+
+class OptionHolding(db.Model):
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    portfolio_id = db.Column(db.Integer, db.ForeignKey('portfolio.id'), nullable=False)
+    option_id = db.Column(db.Integer, db.ForeignKey('option_contract.id'), nullable=False)
+    
+    quantity = db.Column(db.Integer, nullable=False)
     average_price = db.Column(db.Float, nullable=False)
 
 
@@ -119,6 +152,19 @@ class Transaction(db.Model):
     transaction_type = db.Column(db.String(10), nullable=False) # buy, sell
     number_of_shares = db.Column(db.Integer, nullable=False)
     price_per_share = db.Column(db.Float, nullable=False)
+    total_value = db.Column(db.Float, nullable=False)
+    profit_loss = db.Column(db.Float, nullable=True)
+
+
+class OptionTransaction(db.Model):
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    portfolio_id = db.Column(db.Integer, db.ForeignKey('portfolio.id'), nullable=False)
+    option_id = db.Column(db.Integer, db.ForeignKey('option_contract.id'), nullable=False)
+    
+    transaction_date = db.Column(db.DateTime(timezone=True), nullable=False)
+    transaction_type = db.Column(db.String(10), nullable=False) # buy, sell
+    number_of_contracts = db.Column(db.Integer, nullable=False)
+    price_per_contract = db.Column(db.Float, nullable=False)
     total_value = db.Column(db.Float, nullable=False)
     profit_loss = db.Column(db.Float, nullable=True)
 
@@ -145,6 +191,21 @@ class Order(db.Model):
     stock_id = db.Column(db.Integer, db.ForeignKey('stock.id'), nullable=False)
     portfolio_id = db.Column(db.Integer, db.ForeignKey('portfolio.id'), nullable=False)
 
+    # order types: limit buy/sell, stop-loss
+    order_type = db.Column(db.String(100), nullable=False)
+    shares = db.Column(db.Integer, nullable=False)
+    target_price = db.Column(db.Float, nullable=True)
+    order_date = db.Column(db.DateTime(timezone=True), nullable=False)
+    # order status: pending, filled, cancelled, expired
+    order_status = db.Column(db.String(10), nullable=False) 
+    order_expiration = db.Column(db.Date, nullable=True)
+
+
+class OptionOrders(db.Model):
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    portfolio_id = db.Column(db.Integer, db.ForeignKey('portfolio.id'), nullable=False)
+    option_id = db.Column(db.Integer, db.ForeignKey('option_contract.id'), nullable=False)
+    
     # order types: limit buy/sell, stop-loss
     order_type = db.Column(db.String(100), nullable=False)
     shares = db.Column(db.Integer, nullable=False)
