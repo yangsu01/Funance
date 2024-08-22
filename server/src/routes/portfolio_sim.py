@@ -4,9 +4,6 @@ from datetime import datetime
 
 from src.utils.game import add_game, add_portfolio, get_games_list, get_game_leaderboard
 from src.utils.portfolio import get_latest_portfolio_id, get_portfolio
-from src.utils.stock_data import get_stock_info, get_stock_news, get_stock_history
-from src.utils.transaction import add_stock, get_buy_info, get_sell_info
-from src.utils.time import check_market_closed, get_next_market_date
 
 
 portfolio_sim = Blueprint('portfolio_sim', __name__)
@@ -166,82 +163,6 @@ def portfolio(portfolio_id: str):
     except Exception as e:
         return jsonify(msg=str(e)), 400
 
-    return jsonify(
-        data=data,
-        msg="success"
-    ), 200
-
-
-@portfolio_sim.route('/stock-info/<ticker>', methods=['GET'])
-@jwt_required()
-def stock_info(ticker: str):
-    '''Get the stock information for a ticker
-
-        args:
-            ticker (str): stock ticker (uppercase)
-    '''
-    ticker = ticker.upper()
-    
-    try:
-        stock_info = get_stock_info(ticker)
-        news = get_stock_news(ticker)
-        history = get_stock_history(ticker, '1y')
-        
-        # add stock to database
-        stock_id = add_stock(stock_info, ticker)
-
-    except Exception as e:
-        return jsonify(msg=str(e)), 400
-
-    return jsonify(
-        data={
-            'tickerInfo': stock_info,
-            'news': news,
-            'history': history,
-            'stockId': stock_id,
-            'marketClosed': check_market_closed(),
-            'nextMarketDate': get_next_market_date()
-        },
-        msg="success"
-    ), 200
-
-
-@portfolio_sim.route('/buy-info/<portfolio_id>', methods=['GET'])
-@jwt_required()
-def buy_info(portfolio_id: str):
-    '''Gets portfolio information for buying a stock
-
-        args:
-            portfolioId (int): id of the portfolio
-    '''
-    portfolio_id = int(portfolio_id)
-
-    try:
-        data = get_buy_info(portfolio_id, current_user.id)
-    except Exception as e:
-        return jsonify(msg=str(e)), 400
-    
-    return jsonify(
-        data=data,
-        msg="success"
-    ), 200
-        
-
-@portfolio_sim.route('/sell-info/<portfolio_id>', methods=['GET'])
-@jwt_required()
-def sell_info(portfolio_id: str):
-    '''Gets portfolio information for selling a stock
-
-        args:
-            portfolioId (int): id of the portfolio
-    '''
-    portfolio_id = int(portfolio_id)
-
-    try:
-        data = get_sell_info(portfolio_id, current_user.id)
-    except Exception as e:
-        return jsonify(msg=str(e)), 400
-    
     return jsonify(
         data=data,
         msg="success"
