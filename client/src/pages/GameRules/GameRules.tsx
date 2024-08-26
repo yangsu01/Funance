@@ -53,9 +53,10 @@ const GameRules = () => {
             All prices are recorded in USD <sup>1</sup>
           </li>
           <li>
-            Available asset classes include <strong>Equity</strong> and{" "}
-            <strong>Options</strong>.
+            Available asset classes to trade: <strong>Equity</strong> (more on
+            the way...).
           </li>
+          <li>Dividend payments are currently not supported.</li>
         </ul>
 
         <h5 className="text-white">Transactions:</h5>
@@ -82,36 +83,14 @@ const GameRules = () => {
             market open.
           </li>
           <li>
-            For foreign stocks, add the appropriate stock exchange suffix (e.g.,
+            For foreign stocks, add the appropriate stock exchange suffix (e.g.
             ".TO" for TSX).
           </li>
-        </ul>
-
-        <h5 className="text-white">
-          Options Trading <sup>2</sup>:
-        </h5>
-        <ul className="fs-5">
-          <li>Only long positions are available.</li>
-          <li>Exercising options contracts is not currently supported.</li>
-          <li>
-            At expiration, any held contracts will automatically sell at the
-            current asking price.
-          </li>
-          <li>Liquidity is not considered.</li>
         </ul>
 
         <small>
           <sup>1</sup> There is currently no support for currency conversion.
           All prices are assumed to be USD, even for foreign-listed stocks.
-          <br />
-          <sup>2</sup> Options trading a work in progress. To learn the basics
-          of options, check out my blog post{" "}
-          <Link
-            className="text-white"
-            to="/blog/51epGWiq1HHy0BLIxpXWQN/options-trading"
-          >
-            here
-          </Link>
         </small>
       </Container>
     </>

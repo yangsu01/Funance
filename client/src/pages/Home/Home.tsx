@@ -17,10 +17,9 @@ const Home = () => {
 
       <p className="fs-5">
         Ready to test an investment strategy? Create or join a lobby in the{" "}
-        <strong>Portfolio Simulator</strong> (now complete with options
-        trading). Compete against others (or yourself) to see who can achieve
-        the highest returns using real-time stock data! Start by checking out
-        the{" "}
+        <strong>Portfolio Simulator</strong>. Compete against others (or
+        yourself) to see who can achieve the highest returns using real-time
+        stock data! Start by checking out the{" "}
         <Link to="/game-rules" className="text-white">
           Game Rules
         </Link>{" "}
