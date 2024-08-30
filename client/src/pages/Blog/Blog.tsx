@@ -74,7 +74,7 @@ const Blog = () => {
 
       <Row>
         {blogCatalog.map((blog, index) => (
-          <Col key={index} md={4} className="mb-4">
+          <Col key={index} md={6} className="mb-4">
             <InfoCard
               footer={`Uploaded On: ${formatDatetime(
                 blog.sys.firstPublishedAt

@@ -50,7 +50,7 @@ const BlogPost = () => {
         }
       }
     }
-    funanceBlogPostCollection (order: sys_firstPublishedAt_DESC) {
+    funanceBlogPostCollection (order: sys_firstPublishedAt_DESC, limit: 5) {
       items {
         sys {
           id
@@ -93,7 +93,7 @@ const BlogPost = () => {
     <>
       <Title
         title={blogPost.title}
-        subtitle={`Updated: ${formatDatetime(blogPost.sys.publishedAt)}`}
+        subtitle={`Last Updated: ${formatDatetime(blogPost.sys.publishedAt)}`}
       />
 
       <Row className="d-flex justify-content-center">
@@ -108,7 +108,7 @@ const BlogPost = () => {
           <div className="sticky-card">
             <Card>
               <Card.Header className="text-center">
-                <h4>Other Blog Posts</h4>
+                <h4>My Latest Posts</h4>
               </Card.Header>
               <Card.Body>
                 {relatedBlogs.map(
