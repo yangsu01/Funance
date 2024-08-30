@@ -72,8 +72,11 @@ const GameRules = () => {
           <li>No partial shares can be bought or sold</li>
           <li>Market orders are executed at the latest market price.</li>
           <li>
-            LLimit buy, sell, and stop-loss orders are checked every 5 minutes
+            Limit buy, sell, and stop-loss orders are checked every 5 minutes
             for fulfillment.
+          </li>
+          <li>
+            Orders are executed chronologically based on when they were placed.
           </li>
           <li>
             Orders are partially filled if there aren't enough funds or shares.
@@ -85,6 +88,19 @@ const GameRules = () => {
           <li>
             For foreign stocks, add the appropriate stock exchange suffix (e.g.
             ".TO" for TSX).
+          </li>
+        </ul>
+
+        <h5 className="text-white">Order Types:</h5>
+        <ul className="fs-5">
+          <li>
+            Market Buy/Sell: executes at market price when markets open or when
+            game starts
+          </li>
+          <li>Limit Buy: executes when current price is below target price</li>
+          <li>Limit Sell: executes when current price is above target price</li>
+          <li>
+            Stop-Loss: executes when current price falls below target price
           </li>
         </ul>
 
