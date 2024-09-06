@@ -71,7 +71,7 @@ const TopNavbar = () => {
             <Nav.Link as={NavLink} to="/blog" onClick={handleToggle}>
               Blog
             </Nav.Link>
-            <NavDropdown title="Portfolio Simulator" id="portfolio-simulator">
+            <NavDropdown title="Investment Simulator" id="investment-simulator">
               <NavDropdown.Item
                 as={NavLink}
                 to="/game-rules"
