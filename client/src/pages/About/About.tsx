@@ -27,8 +27,8 @@ const About = () => {
 
             <p className="fs-5">
               While working on the simulator, I saw its potential as a platform
-              to share my journey through quantitative finance. This inspired
-              the creation of Funance Blog where I explore different topics,
+              to share my quantitative finance journey. This inspired the
+              creation of Funance Blog where I explore different topics,
               implementing and analyzing the theory behind them. All the code is
               accessible on{" "}
               <a
@@ -38,16 +38,16 @@ const About = () => {
               >
                 GitHub
               </a>
-              , and each post provides real-world applications and data
-              visualizations that further break down the topics.
+              , and I strive to make investing more accessible for a broader
+              audience.
             </p>
 
             <p className="fs-5">
-              This project started off as a simple Flask App, but as the user
-              base grew, I transitioned the frontend to React while maintaining
-              Flask as the backend API. This update greatly improved performance
-              and user experience but was a challenging process, as I had
-              limited prior web development experience...
+              This project started off as a simple Flask App, but as the
+              userbase grew, I transitioned the frontend to React while
+              maintaining Flask as the backend API. This update greatly improved
+              performance and user experience but was a challenging process, as
+              I had limited prior web development experience...
             </p>
 
             <h3>
@@ -58,10 +58,10 @@ const About = () => {
             <p className="fs-5">
               I am a recent university graduate who began my career as a
               full-stack developer. While this role strengthened my software
-              development skills, I felt a disconnect and wanted to do more with
-              my skill set. Working on the Funance simulator and blog has helped
-              me realize the professional path I want to pursue. After six years
-              of studying engineering with only a vague sense of direction,
+              skills, I felt disconnect and wanted to do more with my skillset.
+              Working on the Funance simulator and blog has helped me realize
+              the professional path I want to pursue. After six years of
+              studying engineering with only a vague sense of direction,
               quantitative finance has reignited my curiosity and desire to
               learn. It may have taken time, but better late than never.
             </p>
