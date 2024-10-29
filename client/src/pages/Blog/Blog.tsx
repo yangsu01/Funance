@@ -6,6 +6,7 @@ import Title from "../../components/UI/Title";
 import Loading from "../../components/UI/Loading";
 import InfoCard from "../../components/UI/InfoCard";
 import SubscribeLink from "../../components/SubscribeLink";
+import AccordionCard from "../../components/UI/AccordionCard";
 // hooks
 import useGraphQL from "../../hooks/useGraphQL";
 // contexts
@@ -53,7 +54,7 @@ const Blog = () => {
         {/* page title */}
         <Title
           title="Funance Blog"
-          subtitle="Weekly Posts on Quantitative Finance!"
+          subtitle="Blog Posts on Everything Quantitative Finance!"
         />
         <Loading />
       </>
@@ -65,14 +66,38 @@ const Blog = () => {
       {/* page title */}
       <Title
         title="Funance Blog"
-        subtitle="Weekly Posts on Quantitative Finance!"
+        subtitle="Blog Posts on Everything Quantitative Finance!"
       />
 
-      <h5 className="mb-3">
-        <SubscribeLink /> to be notified of new posts!
-      </h5>
-
       <Row>
+        <Col md={12} className="mb-4">
+          <AccordionCard header="Welcome to Funance Blog">
+            <>
+              <figure className="text-center">
+                <blockquote className="blockquote">
+                  <i>
+                    "Any intelligent fool can make things bigger and more
+                    complex... It takes a touch of genius and a lot of courage
+                    to move in the opposite direction."
+                  </i>
+                </blockquote>
+                <figcaption className="blockquote-footer">
+                  E.F. Schumacher
+                </figcaption>
+              </figure>
+              <p className="fs-5">
+                Inspired by the quote above, I strive to break down topics in
+                quantitative finance, exploring theories and demonstrating how
+                they can be applied to our own investment portfolios. Each post
+                includes real-world examples and visualizations. A baseline
+                understanding of calculus and probability theory is recommended.
+              </p>
+              <p className="fs-5 text-center">
+                <SubscribeLink /> to be notified of new posts.
+              </p>
+            </>
+          </AccordionCard>
+        </Col>
         {blogCatalog.map((blog, index) => (
           <Col key={index} md={6} className="mb-4">
             <InfoCard
