@@ -1,8 +1,8 @@
 # Funance
 
-Finance webapp v1
+Investment Simulator and Quantitative Finance Blog.
 
-https://www.funance.lol/
+[www.funance.lol](www.funance.lol)
 
 ## Installation
 
@@ -72,11 +72,51 @@ Run the server and client separately
 In the server folder, run the Flask app
 
 ```properties
-flask --app api run --debug
+flask run --debug
 ```
 
 In the client folder, run the React app
 
 ```properties
 npm run dev
+```
+
+## Database Migrations
+
+Initiate migration environment
+
+```properties
+flask db init
+```
+
+Create new migration
+
+```properties
+flask db migrate -m "message"
+```
+
+Apply migration
+
+```properties
+flask db upgrade
+```
+
+## Railway CLI
+
+Log into account (if not already)
+
+```properties
+railway login
+```
+
+Select project
+
+```properties
+railway init
+```
+
+Run commands
+
+```properties
+railway run ...
 ```
