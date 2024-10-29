@@ -11,7 +11,7 @@ const GameRules = () => {
 
   return (
     <>
-      <Title title="Rules" subtitle="Investment Simulator" />
+      <Title title="Rules" subtitle="Portfolio Simulator" />
       <Container>
         <p className="fs-5">
           Create a portfolio by creating or joining a game and begin investing!

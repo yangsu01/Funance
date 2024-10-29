@@ -82,7 +82,7 @@ const BlogPost = () => {
         {/* page title */}
         <Title
           title={blogTitle ? blogTitle : "Funance Blog"}
-          subtitle="Weekly Blog Posts!"
+          subtitle="Posts on Everything Quantitative Finance!"
         />
         <Loading />
       </>
@@ -93,7 +93,9 @@ const BlogPost = () => {
     <>
       <Title
         title={blogPost.title}
-        subtitle={`Last Updated: ${formatDatetime(blogPost.sys.publishedAt)}`}
+        subtitle={`Uploaded On: ${formatDatetime(
+          blogPost.sys.firstPublishedAt
+        )}`}
       />
 
       <Row className="d-flex justify-content-center">

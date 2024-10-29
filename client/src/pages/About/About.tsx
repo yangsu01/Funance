@@ -13,23 +13,24 @@ const About = () => {
           <Col md={10}>
             <h3>
               <strong>
-                <i>About Funance</i>
+                <i>Funance</i>
               </strong>
             </h3>
             <p className="fs-5">
-              Funance was born from my interest in finance and investing. With a
-              background in engineering, I enjoy the iterative process of design
-              and implementation, which let me to build an investment simulator
-              from scratch. The simulator serves as both a learning tool and a
-              testing ground for various investment strategies.
+              Funance was born from my passion for finance and investing. With a
+              background in engineering and software development, I enjoy the
+              iterative process of design and implementation, which let me to
+              build a portfolio simulator from scratch. The simulator serves as
+              both a learning tool and a platform for testing various trading
+              strategies.
             </p>
 
             <p className="fs-5">
-              As I developed the simulator, I realized it could also serve as a
-              platform to share what I learn about quantitative finance. This
-              inspired the creation of Funance Blog. Each week, I explore a new
-              topic and implement/analyze the theory using Python (all the
-              notebooks can be found on{" "}
+              While working on the simulator, I saw its potential as a platform
+              to share my journey through quantitative finance. This inspired
+              the creation of Funance Blog where I explore different topics,
+              implementing and analyzing the theory behind them. All the code is
+              accessible on{" "}
               <a
                 href="https://github.com/yangsu01/funance_blog"
                 target="_blank"
@@ -37,33 +38,32 @@ const About = () => {
               >
                 GitHub
               </a>
-              ). I then condense and summarize my learnings in the blog posts.
-              Please note that some weeks may have no posts as I'm likely
-              working on the simulator or other parts of the website.
+              , and each post provides real-world applications and data
+              visualizations that further break down the topics.
             </p>
 
             <p className="fs-5">
-              The project started off as a simple Flask App. However, as the
-              number of users grew, the simplicity of the app started to impact
-              the performance. To improve the user experience, I transitioned
-              the frontend to React while retaining Flask as the backend API.
-              This was a challenging process, as I had limited prior web
-              development experience...
+              This project started off as a simple Flask App, but as the user
+              base grew, I transitioned the frontend to React while maintaining
+              Flask as the backend API. This update greatly improved performance
+              and user experience but was a challenging process, as I had
+              limited prior web development experience...
             </p>
 
             <h3>
               <strong>
-                <i>About Me</i>
+                <i>Me</i>
               </strong>
             </h3>
             <p className="fs-5">
-              I am a recent university graduate who worked as a full-stack
-              developer after graduation. While I enjoy coding, I felt
-              disconnected from the pure software aspect of my job. Working on
-              Funance made me realize what I wanted from my professional career.
-              After spending six years studying engineering with only a vague
-              idea of my future, I finally have a clear goal to work towards. It
-              may have taken some time, but it's better late than never.
+              I am a recent university graduate who began my career as a
+              full-stack developer. While this role strengthened my software
+              development skills, I felt a disconnect and wanted to do more with
+              my skill set. Working on the Funance simulator and blog has helped
+              me realize the professional path I want to pursue. After six years
+              of studying engineering with only a vague sense of direction,
+              quantitative finance has reignited my curiosity and desire to
+              learn. It may have taken time, but better late than never.
             </p>
             <p className="fs-5">Outside of work, my hobbies include:</p>
             <ul className="fs-5">
@@ -80,6 +80,7 @@ const About = () => {
                 >
                   <i>@soappppics</i>
                 </a>
+                .
               </li>
               <li>
                 <strong>Board Games:</strong> Started a few years ago with Catan
@@ -98,21 +99,12 @@ const About = () => {
               <li>
                 <strong>Travel:</strong> My love for travel began during an
                 exchange semester in Denmark, where I had the opportunity to
-                travel to 11 countries (mostly solo). My current top three
-                cities? Lisbon, Athens, and Budapest. In the last year, I also
-                visited New York, Montreal, and Portland. You can also find my
-                travel photos at{" "}
-                <a
-                  href="https://www.instagram.com/soappppics/"
-                  target="_blank"
-                  className="link"
-                >
-                  <i>@soappppics</i>
-                </a>
+                travel to 11 countries (mostly solo). In the past year, I also
+                visited New York, Montreal, and Portland.
               </li>
             </ul>
             <p className="fs-5">
-              If you want to reach out, feel free to contact me at{" "}
+              Got any feedback or suggestions? Feel free to reach out at{" "}
               <a href="mailto:funance.blog@gmail.com" className="link">
                 <i>funance.blog@gmail.com</i>
               </a>
