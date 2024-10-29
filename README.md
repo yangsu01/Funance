@@ -103,20 +103,4 @@ flask db upgrade
 
 ## Railway CLI
 
-Log into account (if not already)
-
-```properties
-railway login
-```
-
-Select project
-
-```properties
-railway init
-```
-
-Run commands
-
-```properties
-railway run ...
-```
+https://docs.railway.app/guides/cli
