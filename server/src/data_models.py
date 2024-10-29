@@ -150,6 +150,6 @@ class Order(db.Model):
     shares = db.Column(db.Integer, nullable=False)
     target_price = db.Column(db.Float, nullable=True)
     order_date = db.Column(db.DateTime(timezone=True), nullable=False)
-    # order status: pending, filled, cancelled, expired
-    order_status = db.Column(db.String(10), nullable=False) 
+    # order status: pending, filled, partially filled, cancelled, expired
+    order_status = db.Column(db.String(50), nullable=False) 
     order_expiration = db.Column(db.Date, nullable=True)
