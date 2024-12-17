@@ -4,7 +4,7 @@ import { Col, Row } from "react-bootstrap";
 // components
 import Title from "../../components/UI/Title";
 import Loading from "../../components/UI/Loading";
-import InfoCard from "../../components/UI/InfoCard";
+import BlogCard from "./BlogCard";
 import SubscribeLink from "../../components/SubscribeLink";
 import AccordionCard from "../../components/UI/AccordionCard";
 // hooks
@@ -33,6 +33,7 @@ const Blog = () => {
         route
         title
         description
+        thumbnail { url }
       }
     }
   }`;
@@ -99,14 +100,15 @@ const Blog = () => {
           </AccordionCard>
         </Col>
         {blogCatalog.map((blog, index) => (
-          <Col key={index} md={6} className="mb-4">
-            <InfoCard
+          <Col key={index} lg={6} className="mb-4">
+            <BlogCard
               footer={`Uploaded On: ${formatDatetime(
                 blog.sys.firstPublishedAt
               )}`}
               title={blog.title}
               text={blog.description}
               link={`/blog/${blog.sys.id}/${blog.route}`}
+              img={blog.thumbnail.url}
             />
           </Col>
         ))}
