@@ -245,6 +245,9 @@ export type BlogItem = {
     route: string;
     title: string;
     description: string;
+    thumbnail: {
+        url: string;
+    };
 }
 
 export type BlogListData = {
