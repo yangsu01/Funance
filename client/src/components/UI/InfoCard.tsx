@@ -32,7 +32,7 @@ const GameCard = ({
         {title && (
           <Card.Title>
             {link ? (
-              <Link to={link} className="text-white">
+              <Link to={link} className="text-white text-decoration-none">
                 <h3>
                   <strong>{title}</strong>
                 </h3>
