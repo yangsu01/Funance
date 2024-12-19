@@ -31,7 +31,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 
 function App() {
   // app version
-  const version = "v1.3.2";
+  const version = "v1.3.3";
 
   return (
     <AuthProvider>
