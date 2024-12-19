@@ -121,3 +121,52 @@
 .red {
   color: #ff0000;
 }
+
+.blog-card {
+  height: 530px; /* Set standard height */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* content spacing */
+}
+
+.blog-card-body {
+  overflow: auto;
+  flex-grow: 1; /* Allow body to grow */
+}
+
+.blog-card-image-container {
+  height: 300px; /* Default height for larger screens */
+  display: flex; /* Flexbox to center the image */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  overflow: hidden; /* Prevent overflow */
+  background-color: #ffffff; /* Optional: Background color for empty space */
+  border-radius: 8px; /* Add rounded corners */
+}
+
+.blog-card-image {
+  max-height: 100%; /* Constrain the image height to the container */
+  max-width: 100%; /* Maintain the aspect ratio */
+  object-fit: contain; /* Ensure the image fits within the container */
+  object-position: center; /* Center the image */
+}
+
+.blog-card-text {
+  position: absolute; /* Position text absolutely within the card */
+  top: 320px; /* Set the absolute height of the text */
+  width: 95%; /* Ensure the text spans the card's width */
+}
+
+/* Media query for small screens (max width 768px, e.g., tablets or smaller) */
+@media (max-width: 992px) {
+  .blog-card {
+    height: auto; /* Reduce the body height for small screens */
+  }
+  .blog-card-image-container {
+    height: auto; /* Reduce the container height for small screens */
+  }
+  .blog-card-text {
+    position: relative; /* Reset the text position */
+    top: auto; /* Reduce the absolute height of the text */
+  }
+}

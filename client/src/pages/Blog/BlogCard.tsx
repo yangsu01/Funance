@@ -11,18 +11,21 @@ type Props = {
 
 const BlogCard = ({ img, title, text, link, footer }: Props) => {
   return (
-    <Card>
+    <Card className="blog-card">
       <Link to={link} className="text-white text-decoration-none">
-        <Card.Body>
-          <Card.Img variant="top" className="rounded" src={img} />
+        <Card.Body className="blog-card-body">
+          <div className="blog-card-image-container">
+            <Card.Img src={img} alt={title} className="blog-card-image" />
+          </div>
 
-          <Card.Title>
-            <h3 className="mt-3">
-              <strong>{title}</strong>
-            </h3>
-          </Card.Title>
-
-          <Card.Text>{text}</Card.Text>
+          <div className="blog-card-text">
+            <Card.Title>
+              <h3 className="mt-3">
+                <strong>{title}</strong>
+              </h3>
+            </Card.Title>
+            <Card.Text>{text}</Card.Text>
+          </div>
         </Card.Body>
       </Link>
 
