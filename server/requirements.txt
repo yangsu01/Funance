@@ -29,6 +29,7 @@ numpy==1.24.4
 packaging==24.1
 pandas==2.0.3
 peewee==3.17.5
+platformdirs==4.3.6
 psycopg2-binary==2.9.9
 PyJWT==2.8.0
 python-dateutil==2.9.0.post0
@@ -44,4 +45,4 @@ tzlocal==5.2
 urllib3==2.2.2
 webencodings==0.5.1
 Werkzeug==3.0.3
-yfinance==0.2.36
+yfinance==0.2.54
