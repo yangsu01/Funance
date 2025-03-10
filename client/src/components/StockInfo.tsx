@@ -50,7 +50,7 @@ const StockInfo = ({ data, ticker }: Props) => {
         />
       </AccordionCard>
 
-      <AccordionCard header={`${ticker} News`} open={false}>
+      <AccordionCard header={"Related News"} open={false}>
         <InfoList
           items={data.news.map((news) => news.name)}
           links={data.news.map((news) => news.url)}
