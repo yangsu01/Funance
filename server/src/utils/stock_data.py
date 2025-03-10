@@ -1,9 +1,10 @@
+from typing import List, Dict
 import yfinance as yf
 
 from .math_functions import round_number
 
 
-def get_stock_info(ticker: str) -> dict:
+def get_stock_info(ticker: str) -> Dict[str, str]:
     """ Gets the stock information for a given ticker
 
     Args:
@@ -37,7 +38,7 @@ def get_stock_info(ticker: str) -> dict:
     }
         
 
-def get_stock_history(ticker: str, period='5y', detailed=False) -> dict:
+def get_stock_history(ticker: str, period='5y', detailed=False) -> Dict[str, List[float]]:
     """ Gets the stock history for a given ticker
 
     Args:
@@ -67,14 +68,14 @@ def get_stock_history(ticker: str, period='5y', detailed=False) -> dict:
     return history
 
 
-def get_stock_news(ticker: str) -> list:
+def get_stock_news(ticker: str) -> List[Dict[str, str]]:
     """ Gets the latest news articles for a given stock
 
     Args:
         ticker (str): ticker of the stock
 
     Returns:
-        list: list of news articles and links
+        list: list of news articles
     """
     try:
         news = yf.Ticker(ticker).news
@@ -82,10 +83,39 @@ def get_stock_news(ticker: str) -> list:
 
         for n in news:
             articles.append({
-                'name': n['title'],
-                'url': n['link']
+                'name': n['content']['title'],
+                'url': n['content']['canonicalUrl']['url']
             })
     except Exception as e:
         articles = [{'name': 'No news available', 'url': ''}]
 
     return articles
+
+
+def get_stock_prices(stock_tickers: list) -> Dict[str, float]:
+    """ Gets the current price of a list of tickers
+
+    Args:
+        stock_tickers (list): list of tickers
+
+    Returns:
+        dict: current price, previous close, and opening price of each ticker
+    """
+    price_data = yf.Tickers(stock_tickers).tickers
+    data = {}
+    for ticker in stock_tickers:
+        try:
+            stock_info = price_data[ticker].info
+            data[ticker] = {
+                'curr_price': stock_info.get('currentPrice', None),
+                'prev_close': stock_info.get('previousClose', None),
+                'open_price': stock_info.get('open', None)
+            }
+        except Exception as e:
+            data[ticker] = {
+                'curr_price': None,
+                'prev_close': None,
+                'open_price': None
+            }
+    
+    return data

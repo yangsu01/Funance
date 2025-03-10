@@ -1,9 +1,8 @@
-import yfinance as yf
-
 from ..data_models import db, Stock, DailyHistory, ClosingHistory, Portfolio, Game, Order
 from .time import get_est_time
 from .math_functions import round_number
 from .order import check_order_expired, check_orders
+from .stock_data import get_stock_prices
 
 
 # run periodically when markets are open
@@ -14,15 +13,16 @@ def update_stock_prices() -> None:
     stocks = Stock.query.all()
 
     tickers = [stock.ticker for stock in stocks]
-    tickers_str = ' '.join(tickers)
-    data = yf.Tickers(tickers_str)
+    data = get_stock_prices(tickers)
     update_time = get_est_time()
 
     for stock in stocks:
-        stock.current_price = data.tickers[stock.ticker].info.get('currentPrice', stock.current_price)
-        stock.previous_close = data.tickers[stock.ticker].info.get('previousClose', stock.previous_close)
-        stock.opening_price = data.tickers[stock.ticker].info.get('open', stock.opening_price)
-        stock.last_updated = update_time
+        prices = data[stock.ticker]
+        
+        stock.current_price = prices['curr_price'] if prices['curr_price'] is not None else stock.current_price
+        stock.opening_price = prices['open_price'] if prices['open_price'] is not None else stock.opening_price
+        stock.previous_close = prices['prev_close'] if prices['prev_close'] is not None else stock.previous_close
+        stock.last_updated = update_time if prices['curr_price'] is not None else stock.last_updated
 
     db.session.commit()
 
